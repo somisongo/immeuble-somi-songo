@@ -9,6 +9,8 @@ import { CreateLeaseDialog } from "./CreateLeaseDialog";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
+import jsPDF from 'jspdf';
+import html2canvas from 'html2canvas';
 
 interface Lease {
   id: string;
@@ -134,7 +136,7 @@ export const LeaseManagement = () => {
 
           console.log('Données du bail récupérées:', leaseData);
 
-          // Appel de la fonction Edge
+          // Appel de la fonction Edge pour générer le HTML
           const { data, error } = await supabase.functions.invoke('generate-contract', {
             body: {
               tenant: leaseData.tenants,
@@ -155,26 +157,63 @@ export const LeaseManagement = () => {
             throw error;
           }
 
-          console.log('Contrat généré:', data);
+          console.log('Contrat HTML généré');
 
-          // Créer un blob à partir du HTML et le télécharger
-          const blob = new Blob([data.html], { type: 'text/html' });
-          const url = window.URL.createObjectURL(blob);
-          const a = document.createElement('a');
-          a.style.display = 'none';
-          a.href = url;
-          a.download = data.filename || `contrat-${lease.tenant.replace(/\s+/g, '-')}.html`;
-          document.body.appendChild(a);
-          a.click();
-          window.URL.revokeObjectURL(url);
-          document.body.removeChild(a);
+          // Créer un élément temporaire pour le rendu
+          const tempDiv = document.createElement('div');
+          tempDiv.innerHTML = data.html;
+          tempDiv.style.position = 'absolute';
+          tempDiv.style.left = '-9999px';
+          tempDiv.style.top = '0';
+          tempDiv.style.width = '794px'; // Largeur A4 en pixels (approximative)
+          tempDiv.style.backgroundColor = '#ffffff';
+          document.body.appendChild(tempDiv);
 
-          return "Contrat téléchargé avec succès";
+          // Capturer le contenu en canvas
+          const canvas = await html2canvas(tempDiv, {
+            scale: 2,
+            useCORS: true,
+            backgroundColor: '#ffffff',
+            width: 794,
+            height: 1123 // Hauteur A4 approximative
+          });
+
+          // Supprimer l'élément temporaire
+          document.body.removeChild(tempDiv);
+
+          // Créer le PDF
+          const pdf = new jsPDF('p', 'mm', 'a4');
+          const imgData = canvas.toDataURL('image/png');
+          
+          // Calculer les dimensions pour s'adapter à la page A4
+          const imgWidth = 210; // Largeur A4 en mm
+          const pageHeight = 297; // Hauteur A4 en mm
+          const imgHeight = (canvas.height * imgWidth) / canvas.width;
+          let heightLeft = imgHeight;
+          let position = 0;
+
+          // Ajouter la première page
+          pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+          heightLeft -= pageHeight;
+
+          // Ajouter des pages supplémentaires si nécessaire
+          while (heightLeft >= 0) {
+            position = heightLeft - imgHeight;
+            pdf.addPage();
+            pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+            heightLeft -= pageHeight;
+          }
+
+          // Télécharger le PDF
+          const filename = `Contrat_Bail_${lease.tenant.replace(/\s+/g, '_')}.pdf`;
+          pdf.save(filename);
+
+          return "Contrat PDF téléchargé avec succès";
         })(),
         {
-          loading: 'Génération du contrat en cours...',
+          loading: 'Génération du contrat PDF en cours...',
           success: (message) => message,
-          error: 'Erreur lors de la génération du contrat'
+          error: 'Erreur lors de la génération du contrat PDF'
         }
       );
     } catch (error) {
