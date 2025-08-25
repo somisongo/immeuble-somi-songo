@@ -8,7 +8,7 @@ interface Property {
   bathrooms: number;
   tenant?: string;
   rent: number;
-  status: "occupied" | "vacant";
+  status: "occupied" | "vacant" | "maintenance";
   leaseEnd?: string;
 }
 

@@ -10,6 +10,7 @@ import { UserRoleManager } from "@/components/UserRoleManager";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { useAuth } from "@/hooks/useAuth";
 import { useUserRole } from "@/hooks/useUserRole";
+import { useProperties } from "@/hooks/useProperties";
 import { Building2, BarChart3, FileText, CreditCard, Users, LogOut, Settings } from "lucide-react";
 import { toast } from "sonner";
 
@@ -17,6 +18,7 @@ const Index = () => {
   const [activeTab, setActiveTab] = useState("dashboard");
   const { signOut, user } = useAuth();
   const { role, loading } = useUserRole();
+  const { properties, loading: propertiesLoading } = useProperties();
 
   useEffect(() => {
     if (!loading && user && role === 'tenant') {
@@ -33,56 +35,6 @@ const Index = () => {
     }
   };
 
-  const properties = [
-    {
-      id: "1",
-      unit: "A1",
-      bedrooms: 3,
-      bathrooms: 2,
-      tenant: "Jean Dupont",
-      rent: 650,
-      status: "occupied" as const,
-      leaseEnd: "31 Déc 2024"
-    },
-    {
-      id: "2",
-      unit: "A2",
-      bedrooms: 3,
-      bathrooms: 2,
-      tenant: "Marie Martin",
-      rent: 650,
-      status: "occupied" as const,
-      leaseEnd: "31 Mai 2024"
-    },
-    {
-      id: "3",
-      unit: "A3",
-      bedrooms: 3,
-      bathrooms: 2,
-      tenant: "Pierre Bernard",
-      rent: 650,
-      status: "occupied" as const,
-      leaseEnd: "28 Fév 2025"
-    },
-    {
-      id: "4",
-      unit: "A4",
-      bedrooms: 3,
-      bathrooms: 2,
-      tenant: "Sophie Dubois",
-      rent: 650,
-      status: "occupied" as const,
-      leaseEnd: "31 Août 2024"
-    },
-    {
-      id: "5",
-      unit: "A5",
-      bedrooms: 3,
-      bathrooms: 2,
-      rent: 1000,
-      status: "vacant" as const
-    }
-  ];
 
   const handleLease = () => {
     setActiveTab("leases");
@@ -92,7 +44,7 @@ const Index = () => {
     setActiveTab("payments");
   };
 
-  if (loading) {
+  if (loading || propertiesLoading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-background to-muted/30 flex items-center justify-center">
         <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary"></div>
