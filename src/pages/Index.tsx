@@ -5,9 +5,10 @@ import { PropertyCard } from "@/components/PropertyCard";
 import { DashboardMetrics } from "@/components/DashboardMetrics";
 import { LeaseManagement } from "@/components/LeaseManagement";
 import { PaymentTracking } from "@/components/PaymentTracking";
+import { TenantManagement } from "@/components/TenantManagement";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { useAuth } from "@/hooks/useAuth";
-import { Building2, BarChart3, FileText, CreditCard, LogOut } from "lucide-react";
+import { Building2, BarChart3, FileText, CreditCard, Users, LogOut } from "lucide-react";
 import { toast } from "sonner";
 
 const Index = () => {
@@ -116,7 +117,7 @@ const Index = () => {
         {/* Main Content */}
         <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-            <TabsList className="grid w-full grid-cols-4 bg-card shadow-card">
+            <TabsList className="grid w-full grid-cols-5 bg-card shadow-card">
               <TabsTrigger value="dashboard" className="flex items-center gap-2">
                 <BarChart3 className="h-4 w-4" />
                 Tableau de bord
@@ -124,6 +125,10 @@ const Index = () => {
               <TabsTrigger value="properties" className="flex items-center gap-2">
                 <Building2 className="h-4 w-4" />
                 Propriétés
+              </TabsTrigger>
+              <TabsTrigger value="tenants" className="flex items-center gap-2">
+                <Users className="h-4 w-4" />
+                Locataires
               </TabsTrigger>
               <TabsTrigger value="leases" className="flex items-center gap-2">
                 <FileText className="h-4 w-4" />
@@ -167,6 +172,10 @@ const Index = () => {
                   ))}
                 </div>
               </div>
+            </TabsContent>
+
+            <TabsContent value="tenants">
+              <TenantManagement />
             </TabsContent>
 
             <TabsContent value="leases">
