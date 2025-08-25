@@ -104,39 +104,58 @@ export const LeaseManagement = () => {
     try {
       toast.promise(
         (async () => {
-          // Récupérer les données complètes du locataire
-          const { data: tenantData, error: tenantError } = await supabase
-            .from('tenants')
-            .select('*')
-            .eq('first_name', lease.tenant.split(' ')[0])
-            .eq('last_name', lease.tenant.split(' ')[1])
-            .eq('owner_id', user?.id)
+          // Récupérer les données complètes du bail avec les relations
+          const { data: leaseData, error: leaseError } = await supabase
+            .from('leases')
+            .select(`
+              *,
+              tenants:tenant_id (
+                id,
+                first_name,
+                last_name,
+                email,
+                phone
+              ),
+              properties:property_id (
+                id,
+                unit_number,
+                rent_amount,
+                bedrooms,
+                bathrooms
+              )
+            `)
+            .eq('id', lease.id)
             .single();
 
-          if (tenantError) throw tenantError;
+          if (leaseError) {
+            console.error('Erreur lors de la récupération du bail:', leaseError);
+            throw leaseError;
+          }
 
-          // Récupérer les données de la propriété
-          const { data: propertyData, error: propertyError } = await supabase
-            .from('properties')
-            .select('*')
-            .eq('unit_number', lease.unit)
-            .eq('owner_id', user?.id)
-            .single();
-
-          if (propertyError) throw propertyError;
+          console.log('Données du bail récupérées:', leaseData);
 
           // Appel de la fonction Edge
           const { data, error } = await supabase.functions.invoke('generate-contract', {
             body: {
-              tenant: tenantData,
+              tenant: leaseData.tenants,
               lease: {
-                ...lease,
-                property: propertyData
+                id: leaseData.id,
+                rent_amount: leaseData.rent_amount,
+                deposit_amount: leaseData.deposit_amount,
+                start_date: leaseData.start_date,
+                end_date: leaseData.end_date,
+                status: leaseData.status,
+                property: leaseData.properties
               }
             }
           });
 
-          if (error) throw error;
+          if (error) {
+            console.error('Erreur lors de l\'appel à generate-contract:', error);
+            throw error;
+          }
+
+          console.log('Contrat généré:', data);
 
           // Créer un blob à partir du HTML et le télécharger
           const blob = new Blob([data.html], { type: 'text/html' });
