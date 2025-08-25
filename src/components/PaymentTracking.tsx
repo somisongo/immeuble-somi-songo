@@ -18,7 +18,7 @@ export const PaymentTracking = () => {
     {
       id: "1",
       unit: "A1",
-      tenant: "John Smith",
+      tenant: "Jean Dupont",
       amount: 2200,
       dueDate: "2024-01-01",
       paidDate: "2023-12-28",
@@ -27,7 +27,7 @@ export const PaymentTracking = () => {
     {
       id: "2",
       unit: "A2",
-      tenant: "Sarah Johnson",
+      tenant: "Marie Martin",
       amount: 2100,
       dueDate: "2024-01-01",
       status: "pending"
@@ -35,7 +35,7 @@ export const PaymentTracking = () => {
     {
       id: "3",
       unit: "A3",
-      tenant: "Mike Wilson",
+      tenant: "Pierre Bernard",
       amount: 2300,
       dueDate: "2023-12-15",
       status: "overdue"
@@ -43,7 +43,7 @@ export const PaymentTracking = () => {
     {
       id: "4",
       unit: "A4",
-      tenant: "Emma Davis",
+      tenant: "Sophie Dubois",
       amount: 2000,
       dueDate: "2024-01-01",
       paidDate: "2023-12-30",
@@ -85,6 +85,19 @@ export const PaymentTracking = () => {
     }
   };
 
+  const getStatusText = (status: string) => {
+    switch (status) {
+      case "paid":
+        return "Payé";
+      case "pending":
+        return "En attente";
+      case "overdue":
+        return "En retard";
+      default:
+        return status;
+    }
+  };
+
   const totalPaid = payments.filter(p => p.status === "paid").reduce((sum, p) => sum + p.amount, 0);
   const totalPending = payments.filter(p => p.status === "pending" && p.amount > 0).reduce((sum, p) => sum + p.amount, 0);
   const totalOverdue = payments.filter(p => p.status === "overdue").reduce((sum, p) => sum + p.amount, 0);
@@ -92,9 +105,9 @@ export const PaymentTracking = () => {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h2 className="text-2xl font-bold">Payment Tracking</h2>
+        <h2 className="text-2xl font-bold">Suivi des Paiements</h2>
         <Button className="bg-gradient-primary hover:bg-primary-dark">
-          Generate Report
+          Générer Rapport
         </Button>
       </div>
       
@@ -102,28 +115,28 @@ export const PaymentTracking = () => {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
         <Card className="bg-success-light border-success">
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm text-success">Paid This Month</CardTitle>
+            <CardTitle className="text-sm text-success">Payé ce Mois</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-success">${totalPaid.toLocaleString()}</div>
+            <div className="text-2xl font-bold text-success">{totalPaid.toLocaleString()}€</div>
           </CardContent>
         </Card>
         
         <Card className="bg-warning-light border-warning">
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm text-warning">Pending</CardTitle>
+            <CardTitle className="text-sm text-warning">En Attente</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-warning">${totalPending.toLocaleString()}</div>
+            <div className="text-2xl font-bold text-warning">{totalPending.toLocaleString()}€</div>
           </CardContent>
         </Card>
         
         <Card className="bg-destructive/10 border-destructive">
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm text-destructive">Overdue</CardTitle>
+            <CardTitle className="text-sm text-destructive">En Retard</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-destructive">${totalOverdue.toLocaleString()}</div>
+            <div className="text-2xl font-bold text-destructive">{totalOverdue.toLocaleString()}€</div>
           </CardContent>
         </Card>
       </div>
@@ -139,41 +152,41 @@ export const PaymentTracking = () => {
                     {getStatusIcon(payment.status)}
                     <div>
                       <h3 className="font-semibold">{payment.tenant}</h3>
-                      <p className="text-sm text-muted-foreground">Unit {payment.unit}</p>
+                      <p className="text-sm text-muted-foreground">Appartement {payment.unit}</p>
                     </div>
                   </div>
                   
                   <div className="flex items-center gap-2">
                     <DollarSign className="h-4 w-4 text-muted-foreground" />
-                    <span className="font-semibold text-lg">${payment.amount.toLocaleString()}</span>
+                    <span className="font-semibold text-lg">{payment.amount.toLocaleString()}€</span>
                   </div>
                   
                   <div className="flex items-center gap-2">
                     <Calendar className="h-4 w-4 text-muted-foreground" />
                     <div className="text-sm">
-                      <div>Due: {payment.dueDate}</div>
-                      {payment.paidDate && <div className="text-success">Paid: {payment.paidDate}</div>}
+                      <div>Échéance: {payment.dueDate}</div>
+                      {payment.paidDate && <div className="text-success">Payé: {payment.paidDate}</div>}
                     </div>
                   </div>
                   
                   <Badge className={getStatusColor(payment.status)}>
-                    {payment.status}
+                    {getStatusText(payment.status)}
                   </Badge>
                 </div>
                 
                 <div className="flex gap-2">
                   {payment.status === "pending" && (
                     <Button size="sm" className="bg-gradient-success">
-                      Mark as Paid
+                      Marquer comme Payé
                     </Button>
                   )}
                   {payment.status === "overdue" && (
                     <Button size="sm" variant="destructive">
-                      Send Reminder
+                      Envoyer Rappel
                     </Button>
                   )}
                   <Button variant="outline" size="sm">
-                    View Details
+                    Voir Détails
                   </Button>
                 </div>
               </div>

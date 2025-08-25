@@ -40,13 +40,26 @@ export const PropertyCard = ({
     }
   };
 
+  const getStatusText = (status: string) => {
+    switch (status) {
+      case "occupied":
+        return "Occupé";
+      case "vacant":
+        return "Vacant";
+      case "maintenance":
+        return "Maintenance";
+      default:
+        return status;
+    }
+  };
+
   return (
     <Card className="bg-gradient-card shadow-card hover:shadow-elevated transition-all duration-300 hover:-translate-y-1">
       <CardHeader className="pb-3">
         <div className="flex items-center justify-between">
-          <CardTitle className="text-xl font-semibold">Unit {unit}</CardTitle>
+          <CardTitle className="text-xl font-semibold">Appartement {unit}</CardTitle>
           <Badge className={getStatusColor(status)}>
-            {status.charAt(0).toUpperCase() + status.slice(1)}
+            {getStatusText(status)}
           </Badge>
         </div>
       </CardHeader>
@@ -54,11 +67,11 @@ export const PropertyCard = ({
         <div className="flex items-center gap-4 text-sm text-muted-foreground">
           <div className="flex items-center gap-1">
             <Bed className="h-4 w-4" />
-            <span>{bedrooms} bed</span>
+            <span>{bedrooms} ch</span>
           </div>
           <div className="flex items-center gap-1">
             <Bath className="h-4 w-4" />
-            <span>{bathrooms} bath</span>
+            <span>{bathrooms} sdb</span>
           </div>
         </div>
         
@@ -71,22 +84,22 @@ export const PropertyCard = ({
         
         <div className="flex items-center gap-2">
           <DollarSign className="h-4 w-4 text-muted-foreground" />
-          <span className="font-semibold text-lg">${rent.toLocaleString()}/month</span>
+          <span className="font-semibold text-lg">{rent.toLocaleString()}€/mois</span>
         </div>
         
         {leaseEnd && (
           <div className="flex items-center gap-2 text-sm text-muted-foreground">
             <Calendar className="h-4 w-4" />
-            <span>Lease ends: {leaseEnd}</span>
+            <span>Bail expire : {leaseEnd}</span>
           </div>
         )}
         
         <div className="flex gap-2 pt-2">
           <Button onClick={onManageLease} variant="outline" className="flex-1">
-            Manage Lease
+            Gérer le Bail
           </Button>
           <Button onClick={onManagePayment} className="flex-1 bg-gradient-primary hover:bg-primary-dark">
-            Payment
+            Paiement
           </Button>
         </div>
       </CardContent>

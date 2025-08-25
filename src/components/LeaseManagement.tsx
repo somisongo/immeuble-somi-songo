@@ -23,7 +23,7 @@ export const LeaseManagement = () => {
     {
       id: "1",
       unit: "A1",
-      tenant: "John Smith",
+      tenant: "Jean Dupont",
       startDate: "2024-01-01",
       endDate: "2024-12-31",
       rent: 2200,
@@ -32,7 +32,7 @@ export const LeaseManagement = () => {
     {
       id: "2",
       unit: "A2",
-      tenant: "Sarah Johnson",
+      tenant: "Marie Martin",
       startDate: "2023-06-01",
       endDate: "2024-05-31",
       rent: 2100,
@@ -41,7 +41,7 @@ export const LeaseManagement = () => {
     {
       id: "3",
       unit: "A3",
-      tenant: "Mike Wilson",
+      tenant: "Pierre Bernard",
       startDate: "2024-03-01",
       endDate: "2025-02-28",
       rent: 2300,
@@ -50,7 +50,7 @@ export const LeaseManagement = () => {
     {
       id: "4",
       unit: "A4",
-      tenant: "Emma Davis",
+      tenant: "Sophie Dubois",
       startDate: "2023-09-01",
       endDate: "2024-08-31",
       rent: 2000,
@@ -71,13 +71,26 @@ export const LeaseManagement = () => {
     }
   };
 
+  const getStatusText = (status: string) => {
+    switch (status) {
+      case "active":
+        return "Actif";
+      case "expiring":
+        return "Expire bientôt";
+      case "expired":
+        return "Expiré";
+      default:
+        return status;
+    }
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h2 className="text-2xl font-bold">Lease Management</h2>
+        <h2 className="text-2xl font-bold">Gestion des Baux</h2>
         <Button className="bg-gradient-primary hover:bg-primary-dark">
           <Plus className="mr-2 h-4 w-4" />
-          New Lease
+          Nouveau Bail
         </Button>
       </div>
       
@@ -91,7 +104,7 @@ export const LeaseManagement = () => {
                     <User className="h-5 w-5 text-muted-foreground" />
                     <div>
                       <h3 className="font-semibold">{lease.tenant}</h3>
-                      <p className="text-sm text-muted-foreground">Unit {lease.unit}</p>
+                      <p className="text-sm text-muted-foreground">Appartement {lease.unit}</p>
                     </div>
                   </div>
                   
@@ -100,49 +113,49 @@ export const LeaseManagement = () => {
                     <span className="text-sm">{lease.startDate} - {lease.endDate}</span>
                   </div>
                   
-                  <div className="font-semibold">${lease.rent}/month</div>
+                  <div className="font-semibold">{lease.rent}€/mois</div>
                   
                   <Badge className={getStatusColor(lease.status)}>
-                    {lease.status}
+                    {getStatusText(lease.status)}
                   </Badge>
                 </div>
                 
                 <div className="flex gap-2">
                   <Button variant="outline" size="sm">
                     <FileText className="mr-2 h-4 w-4" />
-                    View Contract
+                    Voir Contrat
                   </Button>
                   <Button variant="outline" size="sm" onClick={() => setSelectedLease(lease.id)}>
                     <Edit className="mr-2 h-4 w-4" />
-                    Edit
+                    Modifier
                   </Button>
                 </div>
               </div>
               
               {selectedLease === lease.id && (
                 <div className="mt-4 p-4 bg-muted/50 rounded-lg">
-                  <h4 className="font-semibold mb-3">Edit Lease Details</h4>
+                  <h4 className="font-semibold mb-3">Modifier les Détails du Bail</h4>
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <Label htmlFor="tenant">Tenant Name</Label>
+                      <Label htmlFor="tenant">Nom du Locataire</Label>
                       <Input id="tenant" defaultValue={lease.tenant} />
                     </div>
                     <div>
-                      <Label htmlFor="rent">Monthly Rent</Label>
+                      <Label htmlFor="rent">Loyer Mensuel</Label>
                       <Input id="rent" type="number" defaultValue={lease.rent} />
                     </div>
                     <div>
-                      <Label htmlFor="start">Start Date</Label>
+                      <Label htmlFor="start">Date de Début</Label>
                       <Input id="start" type="date" defaultValue={lease.startDate} />
                     </div>
                     <div>
-                      <Label htmlFor="end">End Date</Label>
+                      <Label htmlFor="end">Date de Fin</Label>
                       <Input id="end" type="date" defaultValue={lease.endDate} />
                     </div>
                   </div>
                   <div className="flex gap-2 mt-4">
-                    <Button size="sm" className="bg-gradient-success">Save Changes</Button>
-                    <Button size="sm" variant="outline" onClick={() => setSelectedLease(null)}>Cancel</Button>
+                    <Button size="sm" className="bg-gradient-success">Sauvegarder</Button>
+                    <Button size="sm" variant="outline" onClick={() => setSelectedLease(null)}>Annuler</Button>
                   </div>
                 </div>
               )}

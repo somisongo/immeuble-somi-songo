@@ -16,40 +16,40 @@ const Index = () => {
       unit: "A1",
       bedrooms: 3,
       bathrooms: 2,
-      tenant: "John Smith",
+      tenant: "Jean Dupont",
       rent: 2200,
       status: "occupied" as const,
-      leaseEnd: "Dec 31, 2024"
+      leaseEnd: "31 Déc 2024"
     },
     {
       id: "2",
       unit: "A2",
       bedrooms: 3,
       bathrooms: 2,
-      tenant: "Sarah Johnson",
+      tenant: "Marie Martin",
       rent: 2100,
       status: "occupied" as const,
-      leaseEnd: "May 31, 2024"
+      leaseEnd: "31 Mai 2024"
     },
     {
       id: "3",
       unit: "A3",
       bedrooms: 3,
       bathrooms: 2,
-      tenant: "Mike Wilson",
+      tenant: "Pierre Bernard",
       rent: 2300,
       status: "occupied" as const,
-      leaseEnd: "Feb 28, 2025"
+      leaseEnd: "28 Fév 2025"
     },
     {
       id: "4",
       unit: "A4",
       bedrooms: 3,
       bathrooms: 2,
-      tenant: "Emma Davis",
+      tenant: "Sophie Dubois",
       rent: 2000,
       status: "occupied" as const,
-      leaseEnd: "Aug 31, 2024"
+      leaseEnd: "31 Août 2024"
     },
     {
       id: "5",
@@ -78,12 +78,12 @@ const Index = () => {
             <div className="flex items-center gap-3">
               <Building2 className="h-8 w-8 text-primary-foreground" />
               <div>
-                <h1 className="text-2xl font-bold text-primary-foreground">Property Manager</h1>
-                <p className="text-primary-foreground/80">5-Unit Apartment Building</p>
+                <h1 className="text-2xl font-bold text-primary-foreground">Gestionnaire Immobilier</h1>
+                <p className="text-primary-foreground/80">Immeuble de 5 Appartements</p>
               </div>
             </div>
             <Button variant="secondary" className="shadow-md">
-              Settings
+              Paramètres
             </Button>
           </div>
         </div>
@@ -95,19 +95,19 @@ const Index = () => {
           <TabsList className="grid w-full grid-cols-4 bg-card shadow-card">
             <TabsTrigger value="dashboard" className="flex items-center gap-2">
               <BarChart3 className="h-4 w-4" />
-              Dashboard
+              Tableau de bord
             </TabsTrigger>
             <TabsTrigger value="properties" className="flex items-center gap-2">
               <Building2 className="h-4 w-4" />
-              Properties
+              Propriétés
             </TabsTrigger>
             <TabsTrigger value="leases" className="flex items-center gap-2">
               <FileText className="h-4 w-4" />
-              Leases
+              Baux
             </TabsTrigger>
             <TabsTrigger value="payments" className="flex items-center gap-2">
               <CreditCard className="h-4 w-4" />
-              Payments
+              Paiements
             </TabsTrigger>
           </TabsList>
 
@@ -115,7 +115,7 @@ const Index = () => {
             <DashboardMetrics />
             
             <div>
-              <h2 className="text-2xl font-bold mb-6">Property Overview</h2>
+              <h2 className="text-2xl font-bold mb-6">Aperçu des Propriétés</h2>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {properties.map((property) => (
                   <PropertyCard
@@ -131,7 +131,7 @@ const Index = () => {
 
           <TabsContent value="properties">
             <div>
-              <h2 className="text-2xl font-bold mb-6">All Properties</h2>
+              <h2 className="text-2xl font-bold mb-6">Toutes les Propriétés</h2>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {properties.map((property) => (
                   <PropertyCard
@@ -159,7 +159,7 @@ const Index = () => {
       <footer className="bg-card border-t mt-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <div className="text-center text-muted-foreground">
-            <p>&copy; 2024 Property Manager. Managing your 5-unit apartment building efficiently.</p>
+            <p>&copy; 2024 Gestionnaire Immobilier. Gestion efficace de votre immeuble de 5 appartements.</p>
           </div>
         </div>
       </footer>
