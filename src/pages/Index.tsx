@@ -93,7 +93,7 @@ const Index = () => {
               <div className="flex items-center gap-3">
                 <Building2 className="h-8 w-8 text-primary-foreground" />
                 <div>
-                  <h1 className="text-2xl font-bold text-primary-foreground">Gestionnaire Immobilier</h1>
+                  <h1 className="text-2xl font-bold text-primary-foreground">Gestionnaire Immobilier - Immeuble SOMI SONGO</h1>
                   <p className="text-primary-foreground/80">Immeuble de 5 Appartements</p>
                 </div>
               </div>
