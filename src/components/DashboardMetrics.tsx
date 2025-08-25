@@ -52,7 +52,7 @@ export const DashboardMetrics = ({ properties }: DashboardMetricsProps) => {
           <DollarSign className="h-4 w-4 text-muted-foreground" />
         </CardHeader>
         <CardContent>
-          <div className="text-2xl font-bold text-success">{monthlyRevenue.toLocaleString('fr-FR')}€</div>
+          <div className="text-2xl font-bold text-success">{monthlyRevenue.toLocaleString('fr-FR')}</div>
           <p className="text-xs text-muted-foreground">De {occupiedCount} appartements occupés</p>
         </CardContent>
       </Card>
