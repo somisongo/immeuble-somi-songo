@@ -155,6 +155,7 @@ export type Database = {
           first_name: string
           id: string
           last_name: string
+          owner_id: string | null
           phone: string | null
           updated_at: string
         }
@@ -164,6 +165,7 @@ export type Database = {
           first_name: string
           id?: string
           last_name: string
+          owner_id?: string | null
           phone?: string | null
           updated_at?: string
         }
@@ -173,6 +175,7 @@ export type Database = {
           first_name?: string
           id?: string
           last_name?: string
+          owner_id?: string | null
           phone?: string | null
           updated_at?: string
         }
