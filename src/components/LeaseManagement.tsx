@@ -3,8 +3,12 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Calendar, User, FileText, Edit, Plus } from "lucide-react";
-import { useState } from "react";
+import { Calendar, User, FileText, Edit } from "lucide-react";
+import { useState, useEffect } from "react";
+import { CreateLeaseDialog } from "./CreateLeaseDialog";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/useAuth";
+import { toast } from "sonner";
 
 interface Lease {
   id: string;
@@ -18,45 +22,57 @@ interface Lease {
 
 export const LeaseManagement = () => {
   const [selectedLease, setSelectedLease] = useState<string | null>(null);
-  
-  const leases: Lease[] = [
-    {
-      id: "1",
-      unit: "A1",
-      tenant: "Jean Dupont",
-      startDate: "2024-01-01",
-      endDate: "2024-12-31",
-      rent: 2200,
-      status: "active"
-    },
-    {
-      id: "2",
-      unit: "A2",
-      tenant: "Marie Martin",
-      startDate: "2023-06-01",
-      endDate: "2024-05-31",
-      rent: 2100,
-      status: "expiring"
-    },
-    {
-      id: "3",
-      unit: "A3",
-      tenant: "Pierre Bernard",
-      startDate: "2024-03-01",
-      endDate: "2025-02-28",
-      rent: 2300,
-      status: "active"
-    },
-    {
-      id: "4",
-      unit: "A4",
-      tenant: "Sophie Dubois",
-      startDate: "2023-09-01",
-      endDate: "2024-08-31",
-      rent: 2000,
-      status: "active"
+  const [leases, setLeases] = useState<Lease[]>([]);
+  const [loading, setLoading] = useState(true);
+  const { user } = useAuth();
+
+  useEffect(() => {
+    fetchLeases();
+  }, [user]);
+
+  const fetchLeases = async () => {
+    if (!user?.id) return;
+
+    try {
+      const { data, error } = await supabase
+        .from('leases')
+        .select(`
+          id,
+          rent_amount,
+          start_date,
+          end_date,
+          status,
+          properties:property_id (
+            unit_number
+          ),
+          tenants:tenant_id (
+            first_name,
+            last_name
+          )
+        `)
+        .eq('owner_id', user.id)
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+
+      const formattedLeases: Lease[] = (data || []).map((lease: any) => ({
+        id: lease.id,
+        unit: lease.properties?.unit_number || 'N/A',
+        tenant: lease.tenants ? `${lease.tenants.first_name} ${lease.tenants.last_name}` : 'N/A',
+        startDate: lease.start_date,
+        endDate: lease.end_date,
+        rent: lease.rent_amount,
+        status: lease.status as "active" | "expiring" | "expired"
+      }));
+
+      setLeases(formattedLeases);
+    } catch (error) {
+      console.error('Erreur lors du chargement des baux:', error);
+      toast.error('Erreur lors du chargement des baux');
+    } finally {
+      setLoading(false);
     }
-  ];
+  };
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -84,14 +100,19 @@ export const LeaseManagement = () => {
     }
   };
 
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center p-8">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h2 className="text-2xl font-bold">Gestion des Baux</h2>
-        <Button className="bg-gradient-primary hover:bg-primary-dark">
-          <Plus className="mr-2 h-4 w-4" />
-          Nouveau Bail
-        </Button>
+        <CreateLeaseDialog onLeaseCreated={fetchLeases} />
       </div>
       
       <div className="grid gap-4">
