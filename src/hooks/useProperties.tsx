@@ -26,6 +26,8 @@ export const useProperties = () => {
     }
 
     try {
+      console.log('Fetching properties for user:', user.id);
+      
       // Récupérer les propriétés avec les informations des locataires
       const { data: propertiesData, error: propertiesError } = await supabase
         .from('properties')
@@ -33,13 +35,16 @@ export const useProperties = () => {
         .eq('owner_id', user.id);
 
       if (propertiesError) throw propertiesError;
+      console.log('Properties data:', propertiesData);
 
       // Pour chaque propriété, récupérer les informations du bail actif et du locataire
       const propertiesWithTenants: Property[] = [];
 
       for (const property of propertiesData || []) {
+        console.log('Processing property:', property.unit_number);
+        
         // Récupérer le bail actif pour cette propriété
-        const { data: leaseData } = await supabase
+        const { data: leaseData, error: leaseError } = await supabase
           .from('leases')
           .select(`
             *,
@@ -51,6 +56,9 @@ export const useProperties = () => {
           .eq('property_id', property.id)
           .eq('status', 'active')
           .maybeSingle();
+
+        console.log('Lease data for', property.unit_number, ':', leaseData);
+        if (leaseError) console.error('Lease error:', leaseError);
 
         const propertyWithTenant: Property = {
           id: property.id,
@@ -71,9 +79,11 @@ export const useProperties = () => {
             : undefined
         };
 
+        console.log('Property with tenant:', propertyWithTenant);
         propertiesWithTenants.push(propertyWithTenant);
       }
 
+      console.log('Final properties with tenants:', propertiesWithTenants);
       setProperties(propertiesWithTenants);
     } catch (error) {
       console.error('Erreur lors du chargement des propriétés:', error);

@@ -27,6 +27,7 @@ export const PropertyCard = ({
   onManageLease,
   onManagePayment
 }: PropertyCardProps) => {
+  console.log('PropertyCard props:', { unit, tenant, status, leaseEnd });
   const getStatusColor = (status: string) => {
     switch (status) {
       case "occupied":
