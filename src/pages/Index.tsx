@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { PropertyCard } from "@/components/PropertyCard";
@@ -6,14 +6,23 @@ import { DashboardMetrics } from "@/components/DashboardMetrics";
 import { LeaseManagement } from "@/components/LeaseManagement";
 import { PaymentTracking } from "@/components/PaymentTracking";
 import { TenantManagement } from "@/components/TenantManagement";
+import { UserRoleManager } from "@/components/UserRoleManager";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { useAuth } from "@/hooks/useAuth";
-import { Building2, BarChart3, FileText, CreditCard, Users, LogOut } from "lucide-react";
+import { useUserRole } from "@/hooks/useUserRole";
+import { Building2, BarChart3, FileText, CreditCard, Users, LogOut, Settings } from "lucide-react";
 import { toast } from "sonner";
 
 const Index = () => {
   const [activeTab, setActiveTab] = useState("dashboard");
   const { signOut, user } = useAuth();
+  const { role, loading } = useUserRole();
+
+  useEffect(() => {
+    if (!loading && user && role === 'tenant') {
+      window.location.href = '/tenant';
+    }
+  }, [user, role, loading]);
 
   const handleSignOut = async () => {
     const { error } = await signOut();
@@ -83,6 +92,14 @@ const Index = () => {
     setActiveTab("payments");
   };
 
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-background to-muted/30 flex items-center justify-center">
+        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary"></div>
+      </div>
+    );
+  }
+
   return (
     <ProtectedRoute>
       <div className="min-h-screen bg-gradient-to-br from-background to-muted/30">
@@ -117,7 +134,7 @@ const Index = () => {
         {/* Main Content */}
         <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-            <TabsList className="grid w-full grid-cols-5 bg-card shadow-card">
+            <TabsList className="grid w-full grid-cols-6 bg-card shadow-card">
               <TabsTrigger value="dashboard" className="flex items-center gap-2">
                 <BarChart3 className="h-4 w-4" />
                 Tableau de bord
@@ -137,6 +154,10 @@ const Index = () => {
               <TabsTrigger value="payments" className="flex items-center gap-2">
                 <CreditCard className="h-4 w-4" />
                 Paiements
+              </TabsTrigger>
+              <TabsTrigger value="users" className="flex items-center gap-2">
+                <Settings className="h-4 w-4" />
+                Utilisateurs
               </TabsTrigger>
             </TabsList>
 
@@ -184,6 +205,10 @@ const Index = () => {
 
             <TabsContent value="payments">
               <PaymentTracking />
+            </TabsContent>
+
+            <TabsContent value="users">
+              <UserRoleManager />
             </TabsContent>
           </Tabs>
         </main>
