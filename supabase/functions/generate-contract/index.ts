@@ -17,7 +17,7 @@ interface ContractData {
     end_date: string;
     rent_amount: number;
     deposit_amount?: number;
-    properties: {
+    property: {
       unit_number: string;
       bedrooms: number;
       bathrooms: number;
@@ -76,7 +76,7 @@ const generateContractHTML = (data: ContractData): string => {
         <div class="article">
             <div class="article-title">Article 1er - Objet :</div>
             <p>Le (la) bailleur (resse) donne en location au locataire qui accepte son appartement dans l'immeuble résidentiel sis Avenue Saka n° 14, Quartier Kinsuka, Commune de Ngaliema</p>
-            <p><strong>Appartement ${data.lease.properties.unit_number} - ${data.lease.properties.bedrooms} chambres, ${data.lease.properties.bathrooms} salle(s) de bain</strong></p>
+            <p><strong>Appartement ${data.lease.property.unit_number} - ${data.lease.property.bedrooms} chambres, ${data.lease.property.bathrooms} salle(s) de bain</strong></p>
         </div>
 
         <div class="article">
