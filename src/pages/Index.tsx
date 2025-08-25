@@ -50,7 +50,7 @@ const Index = () => {
       bedrooms: 3,
       bathrooms: 2,
       tenant: "Pierre Bernard",
-      rent: 2300,
+      rent: 650,
       status: "occupied" as const,
       leaseEnd: "28 Fév 2025"
     },
@@ -60,7 +60,7 @@ const Index = () => {
       bedrooms: 3,
       bathrooms: 2,
       tenant: "Sophie Dubois",
-      rent: 2000,
+      rent: 650,
       status: "occupied" as const,
       leaseEnd: "31 Août 2024"
     },
