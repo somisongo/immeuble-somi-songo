@@ -37,18 +37,90 @@ const generateContractHTML = (data: ContractData): string => {
     <meta charset="UTF-8">
     <title>Contrat de Bail</title>
     <style>
-        body { font-family: Arial, sans-serif; line-height: 1.6; margin: 40px; }
-        .header { text-align: center; margin-bottom: 40px; }
-        .title { font-size: 24px; font-weight: bold; margin-bottom: 10px; }
-        .subtitle { font-size: 18px; margin-bottom: 20px; }
-        .section { margin-bottom: 25px; }
-        .article { margin-bottom: 20px; }
-        .article-title { font-weight: bold; margin-bottom: 10px; }
-        .signature-section { margin-top: 60px; display: flex; justify-content: space-between; }
-        .signature-box { text-align: center; width: 45%; }
-        .date { text-align: right; margin-top: 40px; }
-        .amount { font-weight: bold; }
-        .bank-account { font-size: 18px; font-weight: bold; text-align: center; margin: 20px 0; }
+        body { 
+            font-family: Arial, sans-serif; 
+            line-height: 1.6; 
+            margin: 0;
+            padding: 40px;
+            max-width: 210mm;
+            box-sizing: border-box;
+        }
+        .header { 
+            text-align: center; 
+            margin-bottom: 40px; 
+        }
+        .title { 
+            font-size: 24px; 
+            font-weight: bold; 
+            margin-bottom: 10px; 
+        }
+        .subtitle { 
+            font-size: 18px; 
+            margin-bottom: 20px; 
+        }
+        .section { 
+            margin-bottom: 25px; 
+            padding: 0 20px;
+        }
+        .article { 
+            margin-bottom: 20px; 
+            padding-left: 10px;
+        }
+        .article-title { 
+            font-weight: bold; 
+            margin-bottom: 10px; 
+        }
+        .signature-section { 
+            margin-top: 60px; 
+            display: flex; 
+            justify-content: space-between;
+            padding: 0 20px;
+        }
+        .signature-box { 
+            text-align: center; 
+            width: 45%; 
+        }
+        .date { 
+            text-align: right; 
+            margin-top: 40px;
+            padding-right: 20px;
+        }
+        .amount { 
+            font-weight: bold; 
+        }
+        .bank-account { 
+            font-size: 18px; 
+            font-weight: bold; 
+            text-align: center; 
+            margin: 20px 0;
+            padding: 10px;
+            border: 2px solid #000;
+            display: inline-block;
+        }
+        h3 {
+            margin-top: 30px;
+            margin-bottom: 15px;
+            font-size: 16px;
+        }
+        h4 {
+            margin-top: 20px;
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+        p {
+            margin-bottom: 10px;
+            text-align: justify;
+        }
+        ol {
+            padding-left: 30px;
+        }
+        li {
+            margin-bottom: 8px;
+        }
+        .page-break {
+            page-break-before: always;
+            padding-top: 40px;
+        }
     </style>
 </head>
 <body>
@@ -191,7 +263,7 @@ const generateContractHTML = (data: ContractData): string => {
         <div style="height: 80px; border-bottom: 1px solid #000; margin-top: 20px; width: 300px; display: inline-block;"></div>
     </div>
 
-    <div style="page-break-before: always;">
+    <div style="page-break-before: always; padding-top: 40px;">
         <h3 style="text-decoration: underline; margin-bottom: 30px;">ANNEXE</h3>
         <h4 style="font-style: italic; margin-bottom: 20px;">Biens qui sont dans l'appartement</h4>
         
