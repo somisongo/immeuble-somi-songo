@@ -100,6 +100,69 @@ export const LeaseManagement = () => {
     }
   };
 
+  const downloadContract = async (lease: Lease) => {
+    try {
+      toast.promise(
+        (async () => {
+          // Récupérer les données complètes du locataire
+          const { data: tenantData, error: tenantError } = await supabase
+            .from('tenants')
+            .select('*')
+            .eq('first_name', lease.tenant.split(' ')[0])
+            .eq('last_name', lease.tenant.split(' ')[1])
+            .eq('owner_id', user?.id)
+            .single();
+
+          if (tenantError) throw tenantError;
+
+          // Récupérer les données de la propriété
+          const { data: propertyData, error: propertyError } = await supabase
+            .from('properties')
+            .select('*')
+            .eq('unit_number', lease.unit)
+            .eq('owner_id', user?.id)
+            .single();
+
+          if (propertyError) throw propertyError;
+
+          // Appel de la fonction Edge
+          const { data, error } = await supabase.functions.invoke('generate-contract', {
+            body: {
+              tenant: tenantData,
+              lease: {
+                ...lease,
+                property: propertyData
+              }
+            }
+          });
+
+          if (error) throw error;
+
+          // Créer un blob à partir du HTML et le télécharger
+          const blob = new Blob([data.html], { type: 'text/html' });
+          const url = window.URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.style.display = 'none';
+          a.href = url;
+          a.download = data.filename || `contrat-${lease.tenant.replace(/\s+/g, '-')}.html`;
+          document.body.appendChild(a);
+          a.click();
+          window.URL.revokeObjectURL(url);
+          document.body.removeChild(a);
+
+          return "Contrat téléchargé avec succès";
+        })(),
+        {
+          loading: 'Génération du contrat en cours...',
+          success: (message) => message,
+          error: 'Erreur lors de la génération du contrat'
+        }
+      );
+    } catch (error) {
+      console.error('Erreur lors du téléchargement du contrat:', error);
+    }
+  };
+
   if (loading) {
     return (
       <div className="flex items-center justify-center p-8">
@@ -142,7 +205,7 @@ export const LeaseManagement = () => {
                 </div>
                 
                 <div className="flex gap-2">
-                  <Button variant="outline" size="sm">
+                  <Button variant="outline" size="sm" onClick={() => downloadContract(lease)}>
                     <FileText className="mr-2 h-4 w-4" />
                     Voir Contrat
                   </Button>
