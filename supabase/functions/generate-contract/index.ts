@@ -41,7 +41,7 @@ const generateContractHTML = (data: ContractData): string => {
             font-family: Arial, sans-serif; 
             line-height: 1.6; 
             margin: 0;
-            padding: 40px;
+            padding: 48px 96px 96px 96px; /* 0.5" top, 1" right, 1" bottom, 1" left */
             max-width: 210mm;
             box-sizing: border-box;
         }
