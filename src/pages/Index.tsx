@@ -136,7 +136,7 @@ const Index = () => {
             </TabsList>
 
             <TabsContent value="dashboard" className="space-y-6">
-              <DashboardMetrics />
+              <DashboardMetrics properties={properties} />
               
               <div>
                 <h2 className="text-2xl font-bold mb-6">Aperçu des Propriétés</h2>
