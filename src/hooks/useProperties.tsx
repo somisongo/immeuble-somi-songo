@@ -43,22 +43,31 @@ export const useProperties = () => {
       for (const property of propertiesData || []) {
         console.log('Processing property:', property.unit_number);
         
-        // Récupérer le bail actif pour cette propriété
+        // Récupérer les informations du bail actif pour cette propriété - ÉVITER LA RÉCURSION
+        // Ne pas faire de jointure complexe, récupérer séparément
         const { data: leaseData, error: leaseError } = await supabase
           .from('leases')
-          .select(`
-            *,
-            tenants (
-              first_name,
-              last_name
-            )
-          `)
+          .select('end_date, tenant_id')
           .eq('property_id', property.id)
           .eq('status', 'active')
           .maybeSingle();
 
         console.log('Lease data for', property.unit_number, ':', leaseData);
         if (leaseError) console.error('Lease error:', leaseError);
+
+        let tenantName = undefined;
+        if (leaseData?.tenant_id) {
+          // Récupérer le nom du locataire séparément pour éviter la récursion
+          const { data: tenantData } = await supabase
+            .from('tenants')
+            .select('first_name, last_name')
+            .eq('id', leaseData.tenant_id)
+            .maybeSingle();
+          
+          if (tenantData) {
+            tenantName = `${tenantData.first_name} ${tenantData.last_name}`;
+          }
+        }
 
         const propertyWithTenant: Property = {
           id: property.id,
@@ -67,9 +76,7 @@ export const useProperties = () => {
           bathrooms: property.bathrooms,
           rent: Number(property.rent_amount),
           status: property.status as "occupied" | "vacant" | "maintenance",
-          tenant: leaseData?.tenants 
-            ? `${leaseData.tenants.first_name} ${leaseData.tenants.last_name}`
-            : undefined,
+          tenant: tenantName,
           leaseEnd: leaseData?.end_date 
             ? new Date(leaseData.end_date).toLocaleDateString('fr-FR', {
                 day: '2-digit',
