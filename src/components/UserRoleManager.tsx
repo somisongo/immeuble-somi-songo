@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
-import { toast } from "@/hooks/use-toast";
+import { toast } from '@/hooks/use-toast';
 import { User, UserPlus, Shield } from 'lucide-react';
 
 interface UserRole {
@@ -73,7 +73,7 @@ export const UserRoleManager = () => {
   const createUserAccount = async () => {
     if (!newUserEmail || !newUserPassword) {
       toast({
-        title: "Erreur", 
+        title: "Erreur",
         description: "Veuillez remplir tous les champs.",
         variant: "destructive",
       });

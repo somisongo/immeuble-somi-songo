@@ -48,6 +48,14 @@ export const PaymentTracking = () => {
       dueDate: "2024-01-01",
       paidDate: "2023-12-30",
       status: "paid"
+    },
+    {
+      id: "5",
+      unit: "A5",
+      tenant: "Vacant",
+      amount: 0,
+      dueDate: "-",
+      status: "pending"
     }
   ];
 
@@ -91,7 +99,7 @@ export const PaymentTracking = () => {
   };
 
   const totalPaid = payments.filter(p => p.status === "paid").reduce((sum, p) => sum + p.amount, 0);
-  const totalPending = payments.filter(p => p.status === "pending").reduce((sum, p) => sum + p.amount, 0);
+  const totalPending = payments.filter(p => p.status === "pending" && p.amount > 0).reduce((sum, p) => sum + p.amount, 0);
   const totalOverdue = payments.filter(p => p.status === "overdue").reduce((sum, p) => sum + p.amount, 0);
 
   return (
@@ -135,7 +143,7 @@ export const PaymentTracking = () => {
       
       {/* Payment List */}
       <div className="grid gap-4">
-        {payments.map((payment) => (
+        {payments.filter(p => p.tenant !== "Vacant").map((payment) => (
           <Card key={payment.id} className="bg-gradient-card shadow-card">
             <CardContent className="pt-6">
               <div className="flex items-center justify-between">
