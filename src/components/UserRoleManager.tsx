@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
-import { toast } from "sonner";
+import { toast } from "@/hooks/use-toast";
 import { User, UserPlus, Shield } from 'lucide-react';
 
 interface UserRole {
@@ -60,7 +60,11 @@ export const UserRoleManager = () => {
       setTenants(tenantsData || []);
     } catch (error) {
       console.error('Error fetching data:', error);
-      toast.error("Impossible de charger les données.");
+      toast({
+        title: "Erreur",
+        description: "Impossible de charger les données.",
+        variant: "destructive",
+      });
     } finally {
       setLoading(false);
     }
@@ -68,7 +72,11 @@ export const UserRoleManager = () => {
 
   const createUserAccount = async () => {
     if (!newUserEmail || !newUserPassword) {
-      toast.error("Veuillez remplir tous les champs.");
+      toast({
+        title: "Erreur", 
+        description: "Veuillez remplir tous les champs.",
+        variant: "destructive",
+      });
       return;
     }
 
@@ -108,7 +116,10 @@ export const UserRoleManager = () => {
         if (linkError) throw linkError;
       }
 
-      toast.success("Compte utilisateur créé avec succès.");
+      toast({
+        title: "Succès",
+        description: "Compte utilisateur créé avec succès.",
+      });
 
       // Reset form
       setNewUserEmail('');
@@ -118,7 +129,11 @@ export const UserRoleManager = () => {
       fetchData();
     } catch (error: any) {
       console.error('Error creating user:', error);
-      toast.error(error.message || "Impossible de créer le compte.");
+      toast({
+        title: "Erreur",
+        description: error.message || "Impossible de créer le compte.",
+        variant: "destructive",
+      });
     }
   };
 
@@ -131,12 +146,19 @@ export const UserRoleManager = () => {
 
       if (error) throw error;
 
-      toast.success("Rôle supprimé avec succès.");
+      toast({
+        title: "Succès",
+        description: "Rôle supprimé avec succès.",
+      });
 
       fetchData();
     } catch (error: any) {
       console.error('Error removing role:', error);
-      toast.error("Impossible de supprimer le rôle.");
+      toast({
+        title: "Erreur",
+        description: "Impossible de supprimer le rôle.",
+        variant: "destructive",
+      });
     }
   };
 
