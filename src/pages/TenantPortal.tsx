@@ -31,8 +31,8 @@ export default function TenantPortal() {
       // Nettoyage forcé de la session locale
       localStorage.removeItem('supabase.auth.token');
       sessionStorage.clear();
-      // Redirection forcée
-      window.location.href = '/auth';
+      // Utiliser navigate au lieu de window.location.href
+      navigate('/auth', { replace: true });
     } catch (err) {
       console.error('Unexpected logout error:', err);
       toast({
@@ -42,7 +42,7 @@ export default function TenantPortal() {
       // Nettoyage forcé même en cas d'erreur
       localStorage.removeItem('supabase.auth.token');
       sessionStorage.clear();
-      window.location.href = '/auth';
+      navigate('/auth', { replace: true });
     }
   };
 

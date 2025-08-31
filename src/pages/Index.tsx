@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from 'react-router-dom';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { PropertyCard } from "@/components/PropertyCard";
@@ -20,6 +21,7 @@ const Index = () => {
   const { signOut, user } = useAuth();
   const { role, loading } = useUserRole();
   const { properties, loading: propertiesLoading } = useProperties();
+  const navigate = useNavigate();
 
   useEffect(() => {
     // Only redirect if we're completely sure the user is a tenant
@@ -37,15 +39,15 @@ const Index = () => {
       // Nettoyage forcé de la session locale
       localStorage.removeItem('supabase.auth.token');
       sessionStorage.clear();
-      // Redirection forcée vers la page d'auth
-      window.location.href = '/auth';
+      // Utiliser navigate au lieu de window.location.href
+      navigate('/auth', { replace: true });
     } catch (err) {
       console.error('Unexpected logout error:', err);
       toast.success('Déconnexion réussie');
       // Nettoyage forcé même en cas d'erreur
       localStorage.removeItem('supabase.auth.token');
       sessionStorage.clear();
-      window.location.href = '/auth';
+      navigate('/auth', { replace: true });
     }
   };
 

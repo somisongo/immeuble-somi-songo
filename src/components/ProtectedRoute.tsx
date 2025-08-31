@@ -13,9 +13,10 @@ export const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
 
   useEffect(() => {
     if (!loading && !user) {
-      navigate('/auth');
+      // Utiliser window.location.href pour forcer le rechargement complet
+      window.location.href = '/auth';
     }
-  }, [user, loading, navigate]);
+  }, [user, loading]);
 
   if (loading) {
     return (
