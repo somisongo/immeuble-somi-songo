@@ -3,7 +3,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Download, CreditCard, FileText, User } from 'lucide-react';
+import { Download, CreditCard, FileText, User, Receipt } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 
 interface TenantData {
@@ -154,6 +154,102 @@ export const TenantDashboard = () => {
     }
   };
 
+  const generatePaymentReport = async () => {
+    if (!tenantData || !payments.length) {
+      toast({
+        title: "Erreur",
+        description: "Aucun paiement à inclure dans le rapport.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    try {
+      // Calculer les totaux
+      const totalPaid = payments
+        .filter(p => p.status === 'paid')
+        .reduce((sum, p) => sum + Number(p.amount), 0);
+      
+      const totalPending = payments
+        .filter(p => p.status === 'pending')
+        .reduce((sum, p) => sum + Number(p.amount), 0);
+
+      const totalOverdue = payments
+        .filter(p => p.status === 'overdue')
+        .reduce((sum, p) => sum + Number(p.amount), 0);
+
+      // Créer le contenu HTML du rapport
+      const reportContent = `
+        <html>
+          <head>
+            <title>Rapport de Paiements - ${tenantData.first_name} ${tenantData.last_name}</title>
+            <style>
+              body { font-family: Arial, sans-serif; margin: 20px; }
+              .header { text-align: center; margin-bottom: 30px; }
+              .summary { background: #f5f5f5; padding: 15px; margin: 20px 0; border-radius: 8px; }
+              .payment { border: 1px solid #ddd; margin: 10px 0; padding: 15px; border-radius: 5px; }
+              .paid { border-left: 5px solid #22c55e; }
+              .pending { border-left: 5px solid #f59e0b; }
+              .overdue { border-left: 5px solid #ef4444; }
+              .total { font-weight: bold; font-size: 1.1em; }
+            </style>
+          </head>
+          <body>
+            <div class="header">
+              <h1>Rapport de Paiements</h1>
+              <h2>Immeuble SOMI SONGO</h2>
+              <p><strong>Locataire:</strong> ${tenantData.first_name} ${tenantData.last_name}</p>
+              <p><strong>Appartement:</strong> ${leaseData?.properties?.unit_number || 'N/A'}</p>
+              <p><strong>Généré le:</strong> ${new Date().toLocaleDateString('fr-FR')}</p>
+            </div>
+            
+            <div class="summary">
+              <h3>Résumé des Paiements</h3>
+              <p><strong>Total payé:</strong> $${totalPaid.toFixed(2)}</p>
+              <p><strong>Total en attente:</strong> $${totalPending.toFixed(2)}</p>
+              <p><strong>Total en retard:</strong> $${totalOverdue.toFixed(2)}</p>
+              <p class="total"><strong>Total général:</strong> $${(totalPaid + totalPending + totalOverdue).toFixed(2)}</p>
+            </div>
+
+            <h3>Détail des Paiements</h3>
+            ${payments.map(payment => `
+              <div class="payment ${payment.status}">
+                <p><strong>Montant:</strong> $${Number(payment.amount).toFixed(2)}</p>
+                <p><strong>Date d'échéance:</strong> ${new Date(payment.due_date).toLocaleDateString('fr-FR')}</p>
+                ${payment.paid_date ? `<p><strong>Date de paiement:</strong> ${new Date(payment.paid_date).toLocaleDateString('fr-FR')}</p>` : ''}
+                <p><strong>Statut:</strong> ${getStatusText(payment.status)}</p>
+                ${payment.payment_method ? `<p><strong>Méthode:</strong> ${payment.payment_method}</p>` : ''}
+              </div>
+            `).join('')}
+          </body>
+        </html>
+      `;
+
+      // Créer et télécharger le fichier HTML
+      const blob = new Blob([reportContent], { type: 'text/html' });
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `Rapport_Paiements_${tenantData.first_name}_${tenantData.last_name}_${new Date().toISOString().split('T')[0]}.html`;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+
+      toast({
+        title: "Succès",
+        description: "Rapport de paiements généré avec succès.",
+      });
+    } catch (error) {
+      console.error('Error generating payment report:', error);
+      toast({
+        title: "Erreur",
+        description: "Impossible de générer le rapport.",
+        variant: "destructive",
+      });
+    }
+  };
+
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'paid':
@@ -234,7 +330,7 @@ export const TenantDashboard = () => {
         </div>
 
         {/* Quick Actions */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           <Button 
             onClick={downloadContract} 
             className="h-16 flex flex-col gap-2"
@@ -246,6 +342,15 @@ export const TenantDashboard = () => {
           <Button variant="outline" className="h-16 flex flex-col gap-2">
             <CreditCard className="h-5 w-5" />
             Effectuer un Paiement
+          </Button>
+          <Button 
+            variant="outline" 
+            className="h-16 flex flex-col gap-2"
+            onClick={generatePaymentReport}
+            disabled={!payments.length}
+          >
+            <Receipt className="h-5 w-5" />
+            Rapport de Paiements
           </Button>
           <Button variant="outline" className="h-16 flex flex-col gap-2">
             <FileText className="h-5 w-5" />
