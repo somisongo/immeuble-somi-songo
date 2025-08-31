@@ -32,23 +32,9 @@ const Index = () => {
   }, [user, role, loading]);
 
   const handleSignOut = async () => {
-    try {
-      const { error } = await signOut();
-      // Toujours considérer la déconnexion comme réussie pour l'UX
-      toast.success('Déconnexion réussie');
-      // Nettoyage forcé de la session locale
-      localStorage.removeItem('supabase.auth.token');
-      sessionStorage.clear();
-      // Utiliser navigate au lieu de window.location.href
-      navigate('/auth', { replace: true });
-    } catch (err) {
-      console.error('Unexpected logout error:', err);
-      toast.success('Déconnexion réussie');
-      // Nettoyage forcé même en cas d'erreur
-      localStorage.removeItem('supabase.auth.token');
-      sessionStorage.clear();
-      navigate('/auth', { replace: true });
-    }
+    toast.success('Déconnexion réussie');
+    // La fonction signOut gère déjà la redirection
+    await signOut();
   };
 
 

@@ -21,29 +21,12 @@ export default function TenantPortal() {
   }, [user, role, loading, navigate]);
 
   const handleSignOut = async () => {
-    try {
-      const { error } = await signOut();
-      // Toujours considérer la déconnexion comme réussie pour l'UX
-      toast({
-        title: "Déconnexion",
-        description: "Vous avez été déconnecté avec succès",
-      });
-      // Nettoyage forcé de la session locale
-      localStorage.removeItem('supabase.auth.token');
-      sessionStorage.clear();
-      // Utiliser navigate au lieu de window.location.href
-      navigate('/auth', { replace: true });
-    } catch (err) {
-      console.error('Unexpected logout error:', err);
-      toast({
-        title: "Déconnexion", 
-        description: "Vous avez été déconnecté avec succès",
-      });
-      // Nettoyage forcé même en cas d'erreur
-      localStorage.removeItem('supabase.auth.token');
-      sessionStorage.clear();
-      navigate('/auth', { replace: true });
-    }
+    toast({
+      title: "Déconnexion",
+      description: "Vous avez été déconnecté avec succès",
+    });
+    // La fonction signOut gère déjà la redirection
+    await signOut();
   };
 
   if (loading) {

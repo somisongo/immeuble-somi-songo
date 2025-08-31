@@ -73,16 +73,29 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
   const signOut = async () => {
     try {
+      // Forcer la réinitialisation de l'état local d'abord
+      setSession(null);
+      setUser(null);
+      
+      // Nettoyer le stockage local
+      localStorage.removeItem('supabase.auth.token');
+      sessionStorage.clear();
+      
+      // Tenter la déconnexion côté serveur (ignorer les erreurs de session)
       const { error } = await supabase.auth.signOut();
-      // Même si il y a une erreur de session manquante, on continue la déconnexion
-      if (error && !error.message.includes('Auth session missing')) {
-        console.error('Logout error:', error);
-        return { error };
-      }
+      
+      // Rediriger immédiatement vers la page d'authentification
+      window.location.href = '/auth';
+      
       return { error: null };
     } catch (error) {
       console.error('Logout error:', error);
-      // On considère que la déconnexion a réussi même avec une session manquante
+      // Même en cas d'erreur, forcer la redirection
+      setSession(null);
+      setUser(null);
+      localStorage.removeItem('supabase.auth.token');
+      sessionStorage.clear();
+      window.location.href = '/auth';
       return { error: null };
     }
   };
