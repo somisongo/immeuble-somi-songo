@@ -6,7 +6,8 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
-import { DollarSign, Calendar, AlertCircle, CheckCircle, Clock, Plus, Edit, CalendarDays, Trash2 } from "lucide-react";
+import { DollarSign, Calendar, AlertCircle, CheckCircle, Clock, Plus, Edit, CalendarDays, Trash2, FileText, Receipt } from "lucide-react";
+import jsPDF from 'jspdf';
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
@@ -295,6 +296,156 @@ export const PaymentTracking = () => {
       console.error('Erreur lors de la suppression du paiement:', error);
       toast.error('Erreur lors de la suppression du paiement');
     }
+  };
+
+  const generateReport = () => {
+    const doc = new jsPDF();
+    
+    // En-tête du rapport
+    doc.setFontSize(18);
+    doc.text('RAPPORT DE PAIEMENTS', 105, 20, { align: 'center' });
+    
+    doc.setFontSize(12);
+    doc.text(`Date de génération: ${new Date().toLocaleDateString('fr-FR')}`, 20, 35);
+    
+    // Statistiques globales
+    let yPosition = 50;
+    doc.setFontSize(14);
+    doc.text('RÉSUMÉ GLOBAL', 20, yPosition);
+    yPosition += 10;
+    
+    doc.setFontSize(10);
+    doc.text(`Total Payé: $${totalPaid.toLocaleString()}`, 20, yPosition);
+    yPosition += 5;
+    doc.text(`Total En Attente: $${totalPending.toLocaleString()}`, 20, yPosition);
+    yPosition += 5;
+    doc.text(`Total En Retard: $${totalOverdue.toLocaleString()}`, 20, yPosition);
+    yPosition += 15;
+    
+    // Grouper les paiements par locataire
+    const paymentsByTenant = payments.reduce((acc: {[key: string]: Payment[]}, payment) => {
+      if (!acc[payment.tenant]) {
+        acc[payment.tenant] = [];
+      }
+      acc[payment.tenant].push(payment);
+      return acc;
+    }, {});
+    
+    // Tableau par locataire
+    Object.entries(paymentsByTenant).forEach(([tenant, tenantPayments]) => {
+      if (yPosition > 250) {
+        doc.addPage();
+        yPosition = 20;
+      }
+      
+      // En-tête locataire
+      doc.setFontSize(12);
+      doc.text(`LOCATAIRE: ${tenant}`, 20, yPosition);
+      yPosition += 10;
+      
+      // En-têtes du tableau
+      doc.setFontSize(8);
+      doc.text('Appartement', 20, yPosition);
+      doc.text('Montant', 60, yPosition);
+      doc.text('Échéance', 90, yPosition);
+      doc.text('Statut', 120, yPosition);
+      doc.text('Payé le', 150, yPosition);
+      doc.text('Méthode', 180, yPosition);
+      yPosition += 5;
+      
+      // Ligne de séparation
+      doc.line(20, yPosition, 200, yPosition);
+      yPosition += 5;
+      
+      // Données du locataire
+      tenantPayments.forEach(payment => {
+        if (yPosition > 270) {
+          doc.addPage();
+          yPosition = 20;
+        }
+        
+        doc.text(payment.unit, 20, yPosition);
+        doc.text(`$${payment.amount}`, 60, yPosition);
+        doc.text(payment.due_date, 90, yPosition);
+        doc.text(getStatusText(payment.status), 120, yPosition);
+        doc.text(payment.paid_date || '-', 150, yPosition);
+        doc.text(payment.payment_method || '-', 180, yPosition);
+        yPosition += 5;
+      });
+      
+      // Sous-total par locataire
+      const tenantTotal = tenantPayments.reduce((sum, p) => sum + p.amount, 0);
+      yPosition += 5;
+      doc.setFontSize(9);
+      doc.text(`Sous-total: $${tenantTotal.toLocaleString()}`, 20, yPosition);
+      yPosition += 15;
+    });
+    
+    doc.save(`rapport-paiements-${new Date().toISOString().split('T')[0]}.pdf`);
+    toast.success('Rapport généré avec succès');
+  };
+
+  const generateReceipt = (payment: Payment) => {
+    const doc = new jsPDF();
+    
+    // En-tête du reçu
+    doc.setFontSize(20);
+    doc.text('REÇU DE PAIEMENT', 105, 30, { align: 'center' });
+    
+    // Informations du reçu
+    let yPosition = 60;
+    doc.setFontSize(12);
+    
+    doc.text('INFORMATIONS DU PAIEMENT', 20, yPosition);
+    yPosition += 15;
+    
+    doc.setFontSize(10);
+    doc.text(`N° de reçu: ${payment.id.substring(0, 8).toUpperCase()}`, 20, yPosition);
+    yPosition += 8;
+    doc.text(`Date de génération: ${new Date().toLocaleDateString('fr-FR')}`, 20, yPosition);
+    yPosition += 8;
+    doc.text(`Locataire: ${payment.tenant}`, 20, yPosition);
+    yPosition += 8;
+    doc.text(`Appartement: ${payment.unit}`, 20, yPosition);
+    yPosition += 8;
+    doc.text(`Montant: $${payment.amount.toLocaleString()}`, 20, yPosition);
+    yPosition += 8;
+    doc.text(`Date d'échéance: ${payment.due_date}`, 20, yPosition);
+    yPosition += 8;
+    doc.text(`Statut: ${getStatusText(payment.status)}`, 20, yPosition);
+    
+    if (payment.paid_date) {
+      yPosition += 8;
+      doc.text(`Date de paiement: ${payment.paid_date}`, 20, yPosition);
+    }
+    
+    if (payment.payment_method) {
+      yPosition += 8;
+      doc.text(`Méthode de paiement: ${payment.payment_method}`, 20, yPosition);
+    }
+    
+    if (payment.notes) {
+      yPosition += 15;
+      doc.text('NOTES:', 20, yPosition);
+      yPosition += 8;
+      // Diviser les notes longues
+      const notes = payment.notes;
+      const lines = doc.splitTextToSize(notes, 170);
+      doc.text(lines, 20, yPosition);
+    }
+    
+    // Signature
+    yPosition += 40;
+    doc.line(20, yPosition, 90, yPosition);
+    yPosition += 8;
+    doc.text('Signature du propriétaire', 20, yPosition);
+    
+    // Pied de page
+    doc.setFontSize(8);
+    doc.text(`Généré le ${new Date().toLocaleString('fr-FR')}`, 105, 280, { align: 'center' });
+    
+    doc.save(`recu-${payment.tenant.replace(/\s+/g, '-')}-${payment.due_date}.pdf`);
+    toast.success('Reçu généré avec succès');
   };
 
   const getStatusIcon = (status: string) => {
@@ -587,7 +738,8 @@ export const PaymentTracking = () => {
             </DialogContent>
           </Dialog>
 
-          <Button variant="outline">
+          <Button variant="outline" onClick={generateReport}>
+            <FileText className="mr-2 h-4 w-4" />
             Générer Rapport
           </Button>
         </div>
@@ -701,32 +853,41 @@ export const PaymentTracking = () => {
                       </SelectContent>
                     </Select>
                     
-                    <AlertDialog>
-                      <AlertDialogTrigger asChild>
-                        <Button size="sm" variant="outline" className="text-destructive hover:bg-destructive/10 hover:text-destructive border-destructive/30">
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
-                      </AlertDialogTrigger>
-                      <AlertDialogContent>
-                        <AlertDialogHeader>
-                          <AlertDialogTitle>Supprimer le paiement</AlertDialogTitle>
-                          <AlertDialogDescription>
-                            Êtes-vous sûr de vouloir supprimer ce paiement ? Cette action est irréversible.
-                            <br /><br />
-                            <strong>Paiement:</strong> {payment.tenant} - ${payment.amount} (échéance: {payment.due_date})
-                          </AlertDialogDescription>
-                        </AlertDialogHeader>
-                        <AlertDialogFooter>
-                          <AlertDialogCancel>Annuler</AlertDialogCancel>
-                          <AlertDialogAction 
-                            onClick={() => deletePayment(payment.id)}
-                            className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                          >
-                            Supprimer
-                          </AlertDialogAction>
-                        </AlertDialogFooter>
-                      </AlertDialogContent>
-                    </AlertDialog>
+                     <Button 
+                       size="sm" 
+                       variant="outline"
+                       onClick={() => generateReceipt(payment)}
+                       className="text-primary hover:bg-primary/10 hover:text-primary border-primary/30"
+                     >
+                       <Receipt className="h-4 w-4" />
+                     </Button>
+                     
+                     <AlertDialog>
+                       <AlertDialogTrigger asChild>
+                         <Button size="sm" variant="outline" className="text-destructive hover:bg-destructive/10 hover:text-destructive border-destructive/30">
+                           <Trash2 className="h-4 w-4" />
+                         </Button>
+                       </AlertDialogTrigger>
+                       <AlertDialogContent>
+                         <AlertDialogHeader>
+                           <AlertDialogTitle>Supprimer le paiement</AlertDialogTitle>
+                           <AlertDialogDescription>
+                             Êtes-vous sûr de vouloir supprimer ce paiement ? Cette action est irréversible.
+                             <br /><br />
+                             <strong>Paiement:</strong> {payment.tenant} - ${payment.amount} (échéance: {payment.due_date})
+                           </AlertDialogDescription>
+                         </AlertDialogHeader>
+                         <AlertDialogFooter>
+                           <AlertDialogCancel>Annuler</AlertDialogCancel>
+                           <AlertDialogAction 
+                             onClick={() => deletePayment(payment.id)}
+                             className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                           >
+                             Supprimer
+                           </AlertDialogAction>
+                         </AlertDialogFooter>
+                       </AlertDialogContent>
+                     </AlertDialog>
                   </div>
                 </div>
                 {payment.notes && (
