@@ -36,15 +36,15 @@ export default function TenantPortal() {
           description: "Vous avez été déconnecté avec succès",
         });
       }
-      // Redirection forcée même en cas d'erreur de session expirée
-      navigate('/auth');
+      // Redirection forcée avec window.location pour éviter les problèmes de navigation
+      window.location.href = '/auth';
     } catch (err) {
       console.error('Unexpected logout error:', err);
       toast({
-        title: "Déconnexion",
+        title: "Déconnexion", 
         description: "Vous avez été déconnecté avec succès",
       });
-      navigate('/auth');
+      window.location.href = '/auth';
     }
   };
 
