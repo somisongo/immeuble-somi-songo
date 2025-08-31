@@ -72,8 +72,19 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   };
 
   const signOut = async () => {
-    const { error } = await supabase.auth.signOut();
-    return { error };
+    try {
+      const { error } = await supabase.auth.signOut();
+      // Même si il y a une erreur de session manquante, on continue la déconnexion
+      if (error && !error.message.includes('Auth session missing')) {
+        console.error('Logout error:', error);
+        return { error };
+      }
+      return { error: null };
+    } catch (error) {
+      console.error('Logout error:', error);
+      // On considère que la déconnexion a réussi même avec une session manquante
+      return { error: null };
+    }
   };
 
   const value = {

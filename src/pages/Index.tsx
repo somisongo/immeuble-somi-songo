@@ -32,17 +32,19 @@ const Index = () => {
   const handleSignOut = async () => {
     try {
       const { error } = await signOut();
-      if (error && error.message !== 'Session from session_id claim in JWT does not exist') {
-        toast.error('Erreur lors de la déconnexion');
-        console.error('Logout error:', error);
-      } else {
-        toast.success('Déconnexion réussie');
-        // Redirection forcée vers la page d'auth même en cas d'erreur de session
-        window.location.href = '/auth';
-      }
+      // Toujours considérer la déconnexion comme réussie pour l'UX
+      toast.success('Déconnexion réussie');
+      // Nettoyage forcé de la session locale
+      localStorage.removeItem('supabase.auth.token');
+      sessionStorage.clear();
+      // Redirection forcée vers la page d'auth
+      window.location.href = '/auth';
     } catch (err) {
       console.error('Unexpected logout error:', err);
       toast.success('Déconnexion réussie');
+      // Nettoyage forcé même en cas d'erreur
+      localStorage.removeItem('supabase.auth.token');
+      sessionStorage.clear();
       window.location.href = '/auth';
     }
   };

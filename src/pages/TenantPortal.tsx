@@ -23,20 +23,15 @@ export default function TenantPortal() {
   const handleSignOut = async () => {
     try {
       const { error } = await signOut();
-      if (error && error.message !== 'Session from session_id claim in JWT does not exist') {
-        toast({
-          title: "Erreur",
-          description: "Impossible de se déconnecter",
-          variant: "destructive",
-        });
-        console.error('Logout error:', error);
-      } else {
-        toast({
-          title: "Déconnexion",
-          description: "Vous avez été déconnecté avec succès",
-        });
-      }
-      // Redirection forcée avec window.location pour éviter les problèmes de navigation
+      // Toujours considérer la déconnexion comme réussie pour l'UX
+      toast({
+        title: "Déconnexion",
+        description: "Vous avez été déconnecté avec succès",
+      });
+      // Nettoyage forcé de la session locale
+      localStorage.removeItem('supabase.auth.token');
+      sessionStorage.clear();
+      // Redirection forcée
       window.location.href = '/auth';
     } catch (err) {
       console.error('Unexpected logout error:', err);
@@ -44,6 +39,9 @@ export default function TenantPortal() {
         title: "Déconnexion", 
         description: "Vous avez été déconnecté avec succès",
       });
+      // Nettoyage forcé même en cas d'erreur
+      localStorage.removeItem('supabase.auth.token');
+      sessionStorage.clear();
       window.location.href = '/auth';
     }
   };
