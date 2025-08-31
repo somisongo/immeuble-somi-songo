@@ -19,14 +19,25 @@ export default function TenantPortal() {
   }, [user, role, loading, navigate]);
 
   const handleSignOut = async () => {
-    const { error } = await signOut();
-    if (error) {
-      toast({
-        title: "Erreur",
-        description: "Impossible de se déconnecter",
-        variant: "destructive",
-      });
-    } else {
+    try {
+      const { error } = await signOut();
+      if (error && error.message !== 'Session from session_id claim in JWT does not exist') {
+        toast({
+          title: "Erreur",
+          description: "Impossible de se déconnecter",
+          variant: "destructive",
+        });
+        console.error('Logout error:', error);
+      } else {
+        toast({
+          title: "Déconnexion",
+          description: "Vous avez été déconnecté avec succès",
+        });
+      }
+      // Redirection forcée même en cas d'erreur de session expirée
+      navigate('/auth');
+    } catch (err) {
+      console.error('Unexpected logout error:', err);
       toast({
         title: "Déconnexion",
         description: "Vous avez été déconnecté avec succès",

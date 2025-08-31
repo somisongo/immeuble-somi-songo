@@ -28,11 +28,20 @@ const Index = () => {
   }, [user, role, loading]);
 
   const handleSignOut = async () => {
-    const { error } = await signOut();
-    if (error) {
-      toast.error('Erreur lors de la déconnexion');
-    } else {
+    try {
+      const { error } = await signOut();
+      if (error && error.message !== 'Session from session_id claim in JWT does not exist') {
+        toast.error('Erreur lors de la déconnexion');
+        console.error('Logout error:', error);
+      } else {
+        toast.success('Déconnexion réussie');
+        // Redirection forcée vers la page d'auth même en cas d'erreur de session
+        window.location.href = '/auth';
+      }
+    } catch (err) {
+      console.error('Unexpected logout error:', err);
       toast.success('Déconnexion réussie');
+      window.location.href = '/auth';
     }
   };
 
