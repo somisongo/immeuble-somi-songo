@@ -1,7 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Bed, Bath, Users, DollarSign, Calendar } from "lucide-react";
+import { Bed, Bath, Users, DollarSign, Calendar, UserPlus } from "lucide-react";
 
 interface PropertyCardProps {
   id: string;
@@ -14,6 +14,7 @@ interface PropertyCardProps {
   leaseEnd?: string;
   onManageLease: () => void;
   onManagePayment: () => void;
+  onAssignTenant?: () => void;
 }
 
 export const PropertyCard = ({
@@ -25,7 +26,8 @@ export const PropertyCard = ({
   status,
   leaseEnd,
   onManageLease,
-  onManagePayment
+  onManagePayment,
+  onAssignTenant
 }: PropertyCardProps) => {
   console.log('PropertyCard props:', { unit, tenant, status, leaseEnd });
   const getStatusColor = (status: string) => {
@@ -96,12 +98,21 @@ export const PropertyCard = ({
         )}
         
         <div className="flex gap-2 pt-2">
-          <Button onClick={onManageLease} variant="outline" className="flex-1">
-            Gérer le Bail
-          </Button>
-          <Button onClick={onManagePayment} className="flex-1 bg-gradient-primary hover:bg-primary-dark">
-            Paiement
-          </Button>
+          {status === 'vacant' && onAssignTenant ? (
+            <Button onClick={onAssignTenant} className="flex-1 bg-gradient-success hover:bg-success-dark">
+              <UserPlus className="mr-2 h-4 w-4" />
+              Assigner Locataire
+            </Button>
+          ) : (
+            <>
+              <Button onClick={onManageLease} variant="outline" className="flex-1">
+                Gérer le Bail
+              </Button>
+              <Button onClick={onManagePayment} className="flex-1 bg-gradient-primary hover:bg-primary-dark">
+                Paiement
+              </Button>
+            </>
+          )}
         </div>
       </CardContent>
     </Card>

@@ -6,12 +6,13 @@ import { DashboardMetrics } from "@/components/DashboardMetrics";
 import { LeaseManagement } from "@/components/LeaseManagement";
 import { PaymentTracking } from "@/components/PaymentTracking";
 import { TenantManagement } from "@/components/TenantManagement";
+import { PropertyAssignment } from "@/components/PropertyAssignment";
 import { UserRoleManager } from "@/components/UserRoleManager";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { useAuth } from "@/hooks/useAuth";
 import { useUserRole } from "@/hooks/useUserRole";
 import { useProperties } from "@/hooks/useProperties";
-import { Building2, BarChart3, FileText, CreditCard, Users, LogOut, Settings } from "lucide-react";
+import { Building2, BarChart3, FileText, CreditCard, Users, LogOut, Settings, UserPlus } from "lucide-react";
 import { toast } from "sonner";
 
 const Index = () => {
@@ -35,6 +36,10 @@ const Index = () => {
     }
   };
 
+
+  const handleAssignment = () => {
+    setActiveTab("assignments");
+  };
 
   const handleLease = () => {
     setActiveTab("leases");
@@ -86,7 +91,7 @@ const Index = () => {
         {/* Main Content */}
         <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-            <TabsList className="grid w-full grid-cols-6 bg-card shadow-card">
+            <TabsList className="grid w-full grid-cols-7 bg-card shadow-card">
               <TabsTrigger value="dashboard" className="flex items-center gap-2">
                 <BarChart3 className="h-4 w-4" />
                 Tableau de bord
@@ -98,6 +103,10 @@ const Index = () => {
               <TabsTrigger value="tenants" className="flex items-center gap-2">
                 <Users className="h-4 w-4" />
                 Locataires
+              </TabsTrigger>
+              <TabsTrigger value="assignments" className="flex items-center gap-2">
+                <UserPlus className="h-4 w-4" />
+                Assignations
               </TabsTrigger>
               <TabsTrigger value="leases" className="flex items-center gap-2">
                 <FileText className="h-4 w-4" />
@@ -125,6 +134,7 @@ const Index = () => {
                       {...property}
                       onManageLease={handleLease}
                       onManagePayment={handlePayment}
+                      onAssignTenant={handleAssignment}
                     />
                   ))}
                 </div>
@@ -141,6 +151,7 @@ const Index = () => {
                       {...property}
                       onManageLease={handleLease}
                       onManagePayment={handlePayment}
+                      onAssignTenant={handleAssignment}
                     />
                   ))}
                 </div>
@@ -149,6 +160,10 @@ const Index = () => {
 
             <TabsContent value="tenants">
               <TenantManagement />
+            </TabsContent>
+
+            <TabsContent value="assignments">
+              <PropertyAssignment />
             </TabsContent>
 
             <TabsContent value="leases">

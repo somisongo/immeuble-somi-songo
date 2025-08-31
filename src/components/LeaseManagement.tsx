@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Calendar, User, FileText, Edit } from "lucide-react";
 import { useState, useEffect } from "react";
 import { CreateLeaseDialog } from "./CreateLeaseDialog";
@@ -20,12 +21,14 @@ interface Lease {
   endDate: string;
   rent: number;
   status: "active" | "expiring" | "expired";
+  propertyId: string;
 }
 
 export const LeaseManagement = () => {
   const [selectedLease, setSelectedLease] = useState<string | null>(null);
   const [leases, setLeases] = useState<Lease[]>([]);
   const [loading, setLoading] = useState(true);
+  const [editData, setEditData] = useState<any>({});
   const { user } = useAuth();
 
   useEffect(() => {
@@ -40,6 +43,7 @@ export const LeaseManagement = () => {
         .from('leases')
         .select(`
           id,
+          property_id,
           rent_amount,
           start_date,
           end_date,
@@ -64,7 +68,8 @@ export const LeaseManagement = () => {
         startDate: lease.start_date,
         endDate: lease.end_date,
         rent: lease.rent_amount,
-        status: lease.status as "active" | "expiring" | "expired"
+        status: lease.status as "active" | "expiring" | "expired",
+        propertyId: lease.property_id
       }));
 
       setLeases(formattedLeases);
@@ -221,6 +226,72 @@ export const LeaseManagement = () => {
     }
   };
 
+  const handleEditLease = (lease: Lease) => {
+    setSelectedLease(lease.id);
+    setEditData({
+      rent_amount: lease.rent,
+      start_date: lease.startDate,
+      end_date: lease.endDate,
+      status: lease.status
+    });
+  };
+
+  const saveLeaseChanges = async (leaseId: string) => {
+    if (!user?.id) return;
+
+    try {
+      const { error } = await supabase
+        .from('leases')
+        .update({
+          rent_amount: parseFloat(editData.rent_amount),
+          start_date: editData.start_date,
+          end_date: editData.end_date,
+          status: editData.status
+        })
+        .eq('id', leaseId)
+        .eq('owner_id', user.id);
+
+      if (error) throw error;
+
+      toast.success('Bail modifié avec succès');
+      setSelectedLease(null);
+      fetchLeases();
+    } catch (error) {
+      console.error('Erreur lors de la modification du bail:', error);
+      toast.error('Erreur lors de la modification du bail');
+    }
+  };
+
+  const terminateLease = async (leaseId: string, propertyId: string) => {
+    if (!user?.id) return;
+
+    try {
+      // Mettre à jour le statut du bail
+      const { error: leaseError } = await supabase
+        .from('leases')
+        .update({ status: 'expired' })
+        .eq('id', leaseId)
+        .eq('owner_id', user.id);
+
+      if (leaseError) throw leaseError;
+
+      // Libérer l'appartement
+      const { error: propertyError } = await supabase
+        .from('properties')
+        .update({ status: 'vacant' })
+        .eq('id', propertyId)
+        .eq('owner_id', user.id);
+
+      if (propertyError) throw propertyError;
+
+      toast.success('Bail terminé et appartement libéré');
+      fetchLeases();
+    } catch (error) {
+      console.error('Erreur lors de la terminaison du bail:', error);
+      toast.error('Erreur lors de la terminaison du bail');
+    }
+  };
+
   if (loading) {
     return (
       <div className="flex items-center justify-center p-8">
@@ -267,39 +338,85 @@ export const LeaseManagement = () => {
                     <FileText className="mr-2 h-4 w-4" />
                     Voir Contrat
                   </Button>
-                  <Button variant="outline" size="sm" onClick={() => setSelectedLease(lease.id)}>
+                  <Button variant="outline" size="sm" onClick={() => handleEditLease(lease)}>
                     <Edit className="mr-2 h-4 w-4" />
                     Modifier
                   </Button>
+                  {lease.status === 'active' && (
+                    <Button 
+                      variant="destructive" 
+                      size="sm" 
+                      onClick={() => {
+                        if (confirm('Êtes-vous sûr de vouloir terminer ce bail ? L\'appartement sera libéré.')) {
+                          terminateLease(lease.id, lease.propertyId);
+                        }
+                      }}
+                    >
+                      Terminer Bail
+                    </Button>
+                  )}
                 </div>
               </div>
               
               {selectedLease === lease.id && (
-                <div className="mt-4 p-4 bg-muted/50 rounded-lg">
-                  <h4 className="font-semibold mb-3">Modifier les Détails du Bail</h4>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <Label htmlFor="tenant">Nom du Locataire</Label>
-                      <Input id="tenant" defaultValue={lease.tenant} />
+                  <div className="mt-4 p-4 bg-muted/50 rounded-lg">
+                    <h4 className="font-semibold mb-3">Modifier les Détails du Bail</h4>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <Label htmlFor="rent">Loyer Mensuel (€)</Label>
+                        <Input 
+                          id="rent" 
+                          type="number" 
+                          value={editData.rent_amount || ''} 
+                          onChange={(e) => setEditData(prev => ({ ...prev, rent_amount: e.target.value }))}
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="status">Statut</Label>
+                        <Select 
+                          value={editData.status || ''} 
+                          onValueChange={(value) => setEditData(prev => ({ ...prev, status: value }))}
+                        >
+                          <SelectTrigger>
+                            <SelectValue placeholder="Choisir le statut" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="active">Actif</SelectItem>
+                            <SelectItem value="expiring">Expire bientôt</SelectItem>
+                            <SelectItem value="expired">Expiré</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div>
+                        <Label htmlFor="start">Date de Début</Label>
+                        <Input 
+                          id="start" 
+                          type="date" 
+                          value={editData.start_date || ''} 
+                          onChange={(e) => setEditData(prev => ({ ...prev, start_date: e.target.value }))}
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="end">Date de Fin</Label>
+                        <Input 
+                          id="end" 
+                          type="date" 
+                          value={editData.end_date || ''} 
+                          onChange={(e) => setEditData(prev => ({ ...prev, end_date: e.target.value }))}
+                        />
+                      </div>
                     </div>
-                    <div>
-                      <Label htmlFor="rent">Loyer Mensuel</Label>
-                      <Input id="rent" type="number" defaultValue={lease.rent} />
-                    </div>
-                    <div>
-                      <Label htmlFor="start">Date de Début</Label>
-                      <Input id="start" type="date" defaultValue={lease.startDate} />
-                    </div>
-                    <div>
-                      <Label htmlFor="end">Date de Fin</Label>
-                      <Input id="end" type="date" defaultValue={lease.endDate} />
+                    <div className="flex gap-2 mt-4">
+                      <Button 
+                        size="sm" 
+                        className="bg-gradient-success"
+                        onClick={() => saveLeaseChanges(lease.id)}
+                      >
+                        Sauvegarder
+                      </Button>
+                      <Button size="sm" variant="outline" onClick={() => setSelectedLease(null)}>Annuler</Button>
                     </div>
                   </div>
-                  <div className="flex gap-2 mt-4">
-                    <Button size="sm" className="bg-gradient-success">Sauvegarder</Button>
-                    <Button size="sm" variant="outline" onClick={() => setSelectedLease(null)}>Annuler</Button>
-                  </div>
-                </div>
               )}
             </CardContent>
           </Card>
