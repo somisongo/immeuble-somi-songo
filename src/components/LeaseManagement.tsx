@@ -326,7 +326,7 @@ export const LeaseManagement = () => {
                     <span className="text-sm">{lease.startDate} - {lease.endDate}</span>
                   </div>
                   
-                  <div className="font-semibold">{lease.rent}€/mois</div>
+                  <div className="font-semibold">${lease.rent}/mois</div>
                   
                   <Badge className={getStatusColor(lease.status)}>
                     {getStatusText(lease.status)}
@@ -363,7 +363,7 @@ export const LeaseManagement = () => {
                     <h4 className="font-semibold mb-3">Modifier les Détails du Bail</h4>
                     <div className="grid grid-cols-2 gap-4">
                       <div>
-                        <Label htmlFor="rent">Loyer Mensuel (€)</Label>
+                        <Label htmlFor="rent">Loyer Mensuel ($)</Label>
                         <Input 
                           id="rent" 
                           type="number" 

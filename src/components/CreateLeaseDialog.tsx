@@ -164,7 +164,7 @@ export const CreateLeaseDialog = ({ onLeaseCreated }: CreateLeaseDialogProps) =>
               <SelectContent>
                 {properties.map((property) => (
                   <SelectItem key={property.id} value={property.id}>
-                    Appartement {property.unit_number} - {property.rent_amount}€/mois
+                    Appartement {property.unit_number} - ${property.rent_amount}/mois
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -189,7 +189,7 @@ export const CreateLeaseDialog = ({ onLeaseCreated }: CreateLeaseDialogProps) =>
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <Label htmlFor="rent_amount">Loyer mensuel (€)</Label>
+              <Label htmlFor="rent_amount">Loyer mensuel ($)</Label>
               <Input
                 id="rent_amount"
                 type="number"
@@ -200,7 +200,7 @@ export const CreateLeaseDialog = ({ onLeaseCreated }: CreateLeaseDialogProps) =>
               />
             </div>
             <div>
-              <Label htmlFor="deposit_amount">Dépôt de garantie (€)</Label>
+              <Label htmlFor="deposit_amount">Dépôt de garantie ($)</Label>
               <Input
                 id="deposit_amount"
                 type="number"

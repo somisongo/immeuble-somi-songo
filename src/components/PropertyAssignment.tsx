@@ -304,7 +304,7 @@ export const PropertyAssignment = () => {
                     <div>
                       <h4 className="font-semibold">Appartement {property.unit_number}</h4>
                       <p className="text-sm text-muted-foreground">
-                        {property.bedrooms} ch. • {property.bathrooms} sdb • {property.rent_amount}€/mois
+                        {property.bedrooms} ch. • {property.bathrooms} sdb • ${property.rent_amount}/mois
                       </p>
                     </div>
                     <Badge className={getStatusColor(property.status)}>
@@ -350,7 +350,7 @@ export const PropertyAssignment = () => {
                       </h4>
                       <p className="text-sm text-muted-foreground">
                         Appartement {assignment.property.unit_number} • 
-                        {assignment.rent_amount}€/mois • 
+                        ${assignment.rent_amount}/mois • 
                         Du {assignment.start_date} au {assignment.end_date}
                       </p>
                     </div>
@@ -394,7 +394,7 @@ export const PropertyAssignment = () => {
 
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <Label htmlFor="rent_amount">Loyer mensuel (€)</Label>
+                <Label htmlFor="rent_amount">Loyer mensuel ($)</Label>
                 <Input
                   id="rent_amount"
                   type="number"
@@ -405,7 +405,7 @@ export const PropertyAssignment = () => {
                 />
               </div>
               <div>
-                <Label htmlFor="deposit_amount">Dépôt de garantie (€)</Label>
+                <Label htmlFor="deposit_amount">Dépôt de garantie ($)</Label>
                 <Input
                   id="deposit_amount"
                   type="number"

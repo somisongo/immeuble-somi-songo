@@ -273,9 +273,9 @@ export const TenantDashboard = () => {
                 </div>
                 <div>
                   <h4 className="font-semibold mb-2">Montants</h4>
-                  <p>Loyer: {leaseData.rent_amount} USD</p>
+                  <p>Loyer: ${leaseData.rent_amount}</p>
                   {leaseData.deposit_amount && (
-                    <p>Caution: {leaseData.deposit_amount} USD</p>
+                    <p>Caution: ${leaseData.deposit_amount}</p>
                   )}
                 </div>
               </div>
@@ -301,7 +301,7 @@ export const TenantDashboard = () => {
                     className="flex items-center justify-between p-4 border rounded-lg"
                   >
                     <div>
-                      <p className="font-medium">{payment.amount} USD</p>
+                      <p className="font-medium">${payment.amount}</p>
                       <p className="text-sm text-muted-foreground">
                         Échéance: {new Date(payment.due_date).toLocaleDateString('fr-FR')}
                       </p>

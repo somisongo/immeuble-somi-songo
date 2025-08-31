@@ -312,7 +312,7 @@ export const PaymentTracking = () => {
 
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <Label htmlFor="amount">Montant (€)</Label>
+                    <Label htmlFor="amount">Montant ($)</Label>
                     <Input
                       id="amount"
                       type="number"
@@ -394,7 +394,7 @@ export const PaymentTracking = () => {
             <CardTitle className="text-sm text-success">Payé ce Mois</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-success">{totalPaid.toLocaleString()}€</div>
+            <div className="text-2xl font-bold text-success">${totalPaid.toLocaleString()}</div>
           </CardContent>
         </Card>
         
@@ -403,7 +403,7 @@ export const PaymentTracking = () => {
             <CardTitle className="text-sm text-warning">En Attente</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-warning">{totalPending.toLocaleString()}€</div>
+            <div className="text-2xl font-bold text-warning">${totalPending.toLocaleString()}</div>
           </CardContent>
         </Card>
         
@@ -412,7 +412,7 @@ export const PaymentTracking = () => {
             <CardTitle className="text-sm text-destructive">En Retard</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-destructive">{totalOverdue.toLocaleString()}€</div>
+            <div className="text-2xl font-bold text-destructive">${totalOverdue.toLocaleString()}</div>
           </CardContent>
         </Card>
       </div>
@@ -449,7 +449,7 @@ export const PaymentTracking = () => {
                     
                     <div className="flex items-center gap-2">
                       <DollarSign className="h-4 w-4 text-muted-foreground" />
-                      <span className="font-semibold text-lg">{payment.amount.toLocaleString()}€</span>
+                      <span className="font-semibold text-lg">${payment.amount.toLocaleString()}</span>
                     </div>
                     
                     <div className="flex items-center gap-2">
