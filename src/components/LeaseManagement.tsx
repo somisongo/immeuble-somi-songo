@@ -164,53 +164,119 @@ export const LeaseManagement = () => {
 
           console.log('Contrat HTML généré');
 
-          // Créer un élément temporaire pour le rendu
+          // Créer un élément temporaire pour le rendu avec taille automatique
           const tempDiv = document.createElement('div');
           tempDiv.innerHTML = data.html;
           tempDiv.style.position = 'absolute';
           tempDiv.style.left = '-9999px';
           tempDiv.style.top = '0';
-          tempDiv.style.width = '794px'; // Largeur A4 en pixels (approximative)
+          tempDiv.style.width = '210mm'; // Largeur A4 exacte
+          tempDiv.style.minHeight = '297mm'; // Hauteur A4 minimale
           tempDiv.style.backgroundColor = '#ffffff';
+          tempDiv.style.fontFamily = 'Arial, sans-serif';
+          tempDiv.style.fontSize = '12px';
+          tempDiv.style.lineHeight = '1.4';
+          tempDiv.style.padding = '20mm';
+          tempDiv.style.boxSizing = 'border-box';
           document.body.appendChild(tempDiv);
 
-          // Capturer le contenu en canvas
+          // Attendre que le contenu soit rendu
+          await new Promise(resolve => setTimeout(resolve, 500));
+
+          // Obtenir les dimensions réelles du contenu
+          const elementHeight = tempDiv.scrollHeight;
+          const elementWidth = tempDiv.scrollWidth;
+
+          console.log('Dimensions du contenu:', { width: elementWidth, height: elementHeight });
+
+          // Capturer le contenu en canvas avec des paramètres optimisés
           const canvas = await html2canvas(tempDiv, {
-            scale: 2,
+            scale: 3, // Haute résolution pour une meilleure qualité
             useCORS: true,
+            allowTaint: true,
             backgroundColor: '#ffffff',
-            width: 794,
-            height: 1123 // Hauteur A4 approximative
+            logging: false,
+            windowWidth: Math.max(elementWidth, 794), // 210mm en pixels à 96 DPI
+            windowHeight: Math.max(elementHeight, 1123), // 297mm en pixels à 96 DPI
+            scrollX: 0,
+            scrollY: 0,
+            x: 0,
+            y: 0,
+            width: Math.max(elementWidth, 794),
+            height: Math.max(elementHeight, 1123)
           });
 
           // Supprimer l'élément temporaire
           document.body.removeChild(tempDiv);
 
-          // Créer le PDF
-          const pdf = new jsPDF('p', 'mm', 'a4');
-          const imgData = canvas.toDataURL('image/png');
+          // Créer le PDF avec optimisation pour contenu complet
+          const pdf = new jsPDF({
+            orientation: 'portrait',
+            unit: 'mm',
+            format: 'a4',
+            compress: true,
+            precision: 2
+          });
+
+          const imgData = canvas.toDataURL('image/jpeg', 0.95);
           
-          // Calculer les dimensions pour s'adapter à la page A4
-          const imgWidth = 210; // Largeur A4 en mm
-          const pageHeight = 297; // Hauteur A4 en mm
+          // Dimensions A4 en mm
+          const pageWidth = 210;
+          const pageHeight = 297;
+          const margin = 10; // Marge de 10mm
+          const pdfContentWidth = pageWidth - (margin * 2);
+          const pdfContentHeight = pageHeight - (margin * 2);
+          
+          // Calculer les dimensions de l'image pour s'adapter à la page
+          const imgWidth = pdfContentWidth;
           const imgHeight = (canvas.height * imgWidth) / canvas.width;
-          let heightLeft = imgHeight;
-          let position = 0;
+          
+          let yPosition = margin;
+          let remainingHeight = imgHeight;
+          let sourceY = 0;
+          let pageCount = 0;
 
-          // Ajouter la première page
-          pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
-          heightLeft -= pageHeight;
+          // Ajouter le contenu page par page
+          while (remainingHeight > 0) {
+            if (pageCount > 0) {
+              pdf.addPage();
+            }
 
-          // Ajouter des pages supplémentaires si nécessaire
-          while (heightLeft >= 0) {
-            position = heightLeft - imgHeight;
-            pdf.addPage();
-            pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
-            heightLeft -= pageHeight;
+            const currentPageHeight = Math.min(remainingHeight, pdfContentHeight);
+            const sourceHeight = (currentPageHeight * canvas.height) / imgHeight;
+
+            // Créer un canvas temporaire pour cette portion
+            const pageCanvas = document.createElement('canvas');
+            const pageContext = pageCanvas.getContext('2d');
+            pageCanvas.width = canvas.width;
+            pageCanvas.height = sourceHeight;
+
+            // Copier la portion appropriée du canvas principal
+            pageContext.drawImage(
+              canvas,
+              0, sourceY, canvas.width, sourceHeight,
+              0, 0, canvas.width, sourceHeight
+            );
+
+            const pageImgData = pageCanvas.toDataURL('image/jpeg', 0.95);
+            pdf.addImage(pageImgData, 'JPEG', margin, yPosition, imgWidth, currentPageHeight);
+
+            remainingHeight -= currentPageHeight;
+            sourceY += sourceHeight;
+            pageCount++;
+            yPosition = margin; // Reset position for next page
           }
 
-          // Télécharger le PDF
-          const filename = `Contrat_Bail_${lease.tenant.replace(/\s+/g, '_')}.pdf`;
+          // Ajouter les métadonnées du PDF
+          pdf.setProperties({
+            title: `Contrat de Bail - ${lease.tenant}`,
+            subject: 'Contrat de Bail',
+            author: 'Système de Gestion Immobilière',
+            creator: 'Property Management System'
+          });
+
+          // Télécharger le PDF avec un nom de fichier propre
+          const filename = `Contrat_Bail_${lease.tenant.replace(/[^a-zA-Z0-9]/g, '_')}_${new Date().toISOString().split('T')[0]}.pdf`;
           pdf.save(filename);
 
           return "Contrat PDF téléchargé avec succès";
