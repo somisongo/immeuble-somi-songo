@@ -22,6 +22,8 @@ const Index = () => {
   const { properties, loading: propertiesLoading } = useProperties();
 
   useEffect(() => {
+    // Only redirect if we're completely sure the user is a tenant
+    // Avoid redirecting during loading states to prevent loops
     if (!loading && user && role === 'tenant') {
       window.location.href = '/tenant';
     }

@@ -13,7 +13,9 @@ export default function TenantPortal() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (!loading && user && role !== 'tenant') {
+    // Only redirect if we're sure the user is authenticated but not a tenant
+    // Avoid redirecting during loading states to prevent loops
+    if (!loading && user && role !== null && role !== 'tenant') {
       navigate('/');
     }
   }, [user, role, loading, navigate]);
