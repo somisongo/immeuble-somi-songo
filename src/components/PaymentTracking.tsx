@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { DollarSign, Calendar, AlertCircle, CheckCircle, Clock, Plus, Edit } from "lucide-react";
+import { DollarSign, Calendar, AlertCircle, CheckCircle, Clock, Plus, Edit, CalendarDays } from "lucide-react";
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
@@ -40,12 +40,21 @@ export const PaymentTracking = () => {
   const [leases, setLeases] = useState<Lease[]>([]);
   const [loading, setLoading] = useState(true);
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
+  const [multiplePaymentsDialogOpen, setMultiplePaymentsDialogOpen] = useState(false);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [selectedPayment, setSelectedPayment] = useState<Payment | null>(null);
   const [formData, setFormData] = useState({
     lease_id: "",
     amount: "",
     due_date: "",
+    payment_method: "",
+    notes: ""
+  });
+  const [multiplePaymentsData, setMultiplePaymentsData] = useState({
+    lease_id: "",
+    amount: "",
+    start_date: "",
+    months_count: "1",
     payment_method: "",
     notes: ""
   });
@@ -170,6 +179,52 @@ export const PaymentTracking = () => {
     } catch (error) {
       console.error('Erreur lors de la création du paiement:', error);
       toast.error('Erreur lors de la création du paiement');
+    }
+  };
+
+  const createMultiplePayments = async () => {
+    if (!user?.id) return;
+
+    try {
+      const paymentsToCreate = [];
+      const startDate = new Date(multiplePaymentsData.start_date);
+      const monthsCount = parseInt(multiplePaymentsData.months_count);
+
+      for (let i = 0; i < monthsCount; i++) {
+        const dueDate = new Date(startDate);
+        dueDate.setMonth(dueDate.getMonth() + i);
+        
+        paymentsToCreate.push({
+          lease_id: multiplePaymentsData.lease_id,
+          amount: parseFloat(multiplePaymentsData.amount),
+          due_date: dueDate.toISOString().split('T')[0],
+          payment_method: multiplePaymentsData.payment_method || null,
+          notes: `${multiplePaymentsData.notes} (Mois ${i + 1}/${monthsCount})`,
+          status: 'pending',
+          owner_id: user.id
+        });
+      }
+
+      const { error } = await supabase
+        .from('payments')
+        .insert(paymentsToCreate);
+
+      if (error) throw error;
+
+      toast.success(`${monthsCount} paiements créés avec succès`);
+      setMultiplePaymentsDialogOpen(false);
+      setMultiplePaymentsData({
+        lease_id: "",
+        amount: "",
+        start_date: "",
+        months_count: "1",
+        payment_method: "",
+        notes: ""
+      });
+      fetchPayments();
+    } catch (error) {
+      console.error('Erreur lors de la création des paiements multiples:', error);
+      toast.error('Erreur lors de la création des paiements multiples');
     }
   };
 
@@ -381,6 +436,136 @@ export const PaymentTracking = () => {
               </div>
             </DialogContent>
           </Dialog>
+
+          <Dialog open={multiplePaymentsDialogOpen} onOpenChange={setMultiplePaymentsDialogOpen}>
+            <DialogTrigger asChild>
+              <Button variant="outline" className="border-primary text-primary hover:bg-primary/10">
+                <CalendarDays className="mr-2 h-4 w-4" />
+                Paiements Multiples
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-[500px]">
+              <DialogHeader>
+                <DialogTitle>Créer des Paiements pour Plusieurs Mois</DialogTitle>
+              </DialogHeader>
+              <div className="space-y-4">
+                <div>
+                  <Label htmlFor="multiple_lease">Bail</Label>
+                  <Select 
+                    value={multiplePaymentsData.lease_id} 
+                    onValueChange={(value) => setMultiplePaymentsData(prev => ({ ...prev, lease_id: value }))}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Sélectionner un bail" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {leases.map((lease) => (
+                        <SelectItem key={lease.id} value={lease.id}>
+                          Appt {lease.properties?.unit_number} - {lease.tenants 
+                            ? `${lease.tenants.first_name} ${lease.tenants.last_name}` 
+                            : 'N/A'}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="grid grid-cols-3 gap-4">
+                  <div>
+                    <Label htmlFor="multiple_amount">Montant/Mois ($)</Label>
+                    <Input
+                      id="multiple_amount"
+                      type="number"
+                      step="0.01"
+                      value={multiplePaymentsData.amount}
+                      onChange={(e) => setMultiplePaymentsData(prev => ({ ...prev, amount: e.target.value }))}
+                      required
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="start_date">Date de début</Label>
+                    <Input
+                      id="start_date"
+                      type="date"
+                      value={multiplePaymentsData.start_date}
+                      onChange={(e) => setMultiplePaymentsData(prev => ({ ...prev, start_date: e.target.value }))}
+                      required
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="months_count">Nombre de mois</Label>
+                    <Select 
+                      value={multiplePaymentsData.months_count} 
+                      onValueChange={(value) => setMultiplePaymentsData(prev => ({ ...prev, months_count: value }))}
+                    >
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {[1,2,3,4,5,6,7,8,9,10,11,12].map((month) => (
+                          <SelectItem key={month} value={month.toString()}>
+                            {month} mois
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+
+                <div>
+                  <Label htmlFor="multiple_payment_method">Méthode de paiement</Label>
+                  <Select 
+                    value={multiplePaymentsData.payment_method} 
+                    onValueChange={(value) => setMultiplePaymentsData(prev => ({ ...prev, payment_method: value }))}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Sélectionner une méthode" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="cash">Espèces</SelectItem>
+                      <SelectItem value="check">Chèque</SelectItem>
+                      <SelectItem value="transfer">Virement</SelectItem>
+                      <SelectItem value="card">Carte bancaire</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div>
+                  <Label htmlFor="multiple_notes">Notes</Label>
+                  <Input
+                    id="multiple_notes"
+                    value={multiplePaymentsData.notes}
+                    onChange={(e) => setMultiplePaymentsData(prev => ({ ...prev, notes: e.target.value }))}
+                    placeholder="Notes optionnelles"
+                  />
+                </div>
+
+                <div className="bg-blue-50 dark:bg-blue-950 p-3 rounded-md">
+                  <p className="text-sm text-blue-700 dark:text-blue-300">
+                    📅 Cette action créera {multiplePaymentsData.months_count} paiements consécutifs à partir du {multiplePaymentsData.start_date}
+                  </p>
+                </div>
+
+                <div className="flex justify-end gap-2 pt-4">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => setMultiplePaymentsDialogOpen(false)}
+                  >
+                    Annuler
+                  </Button>
+                  <Button
+                    onClick={createMultiplePayments}
+                    disabled={!multiplePaymentsData.lease_id || !multiplePaymentsData.amount || !multiplePaymentsData.start_date}
+                    className="bg-gradient-primary"
+                  >
+                    Créer {multiplePaymentsData.months_count} Paiements
+                  </Button>
+                </div>
+              </div>
+            </DialogContent>
+          </Dialog>
+
           <Button variant="outline">
             Générer Rapport
           </Button>
