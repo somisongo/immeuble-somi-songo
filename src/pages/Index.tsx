@@ -67,7 +67,7 @@ const Index = () => {
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <img 
-                  src="/lovable-uploads/logo-somi-songo.png" 
+                  src="/lovable-uploads/fac5cb0d-2b04-4cba-81e5-079a75bbf8a8.png" 
                   alt="Immeuble SOMI SONGO Logo" 
                   className="h-16 w-auto"
                 />
