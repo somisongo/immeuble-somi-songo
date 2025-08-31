@@ -68,8 +68,8 @@ export const TenantDashboard = () => {
 
       setTenantData(tenant);
 
-      // Fetch lease data
-      const { data: lease, error: leaseError } = await supabase
+      // Fetch all leases for this tenant (active and expired)
+      const { data: leases, error: leasesError } = await supabase
         .from('leases')
         .select(`
           *,
@@ -80,25 +80,30 @@ export const TenantDashboard = () => {
           )
         `)
         .eq('tenant_id', tenant.id)
-        .eq('status', 'active')
-        .maybeSingle();
+        .order('created_at', { ascending: false });
 
-      if (leaseError) {
-        console.error('Error fetching lease:', leaseError);
+      if (leasesError) {
+        console.error('Error fetching leases:', leasesError);
       } else {
-        setLeaseData(lease);
+        // Set the most recent lease as the primary lease for display
+        const activeLease = leases?.find(l => l.status === 'active') || leases?.[0];
+        setLeaseData(activeLease);
 
-        // Fetch payments for this lease
-        const { data: paymentsData, error: paymentsError } = await supabase
-          .from('payments')
-          .select('*')
-          .eq('lease_id', lease.id)
-          .order('due_date', { ascending: false });
+        // Fetch payments for ALL leases of this tenant
+        if (leases && leases.length > 0) {
+          const leaseIds = leases.map(l => l.id);
+          const { data: paymentsData, error: paymentsError } = await supabase
+            .from('payments')
+            .select('*')
+            .in('lease_id', leaseIds)
+            .order('due_date', { ascending: false });
 
-        if (paymentsError) {
-          console.error('Error fetching payments:', paymentsError);
-        } else {
-          setPayments(paymentsData || []);
+          if (paymentsError) {
+            console.error('Error fetching payments:', paymentsError);
+          } else {
+            console.log('Payments found:', paymentsData);
+            setPayments(paymentsData || []);
+          }
         }
       }
     } catch (error) {
