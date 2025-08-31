@@ -28,29 +28,71 @@ export const useProperties = () => {
     try {
       console.log('Fetching properties for user:', user.id);
       
-      // Fetch properties only
+      // Fetch properties with current lease and tenant information
       const { data: propertiesData, error: propertiesError } = await supabase
         .from('properties')
-        .select('*')
-        .eq('owner_id', user.id);
+        .select(`
+          *,
+          leases!inner(
+            id,
+            status,
+            end_date,
+            tenants(
+              first_name,
+              last_name
+            )
+          )
+        `)
+        .eq('owner_id', user.id)
+        .eq('leases.status', 'active');
 
       if (propertiesError) throw propertiesError;
-      console.log('Properties data:', propertiesData);
 
-      // Convert to expected format without tenant information for now
-      const propertiesFormatted: Property[] = (propertiesData || []).map(property => ({
+      // Also fetch properties without active leases
+      const { data: vacantPropertiesData, error: vacantError } = await supabase
+        .from('properties')
+        .select('*')
+        .eq('owner_id', user.id)
+        .not('id', 'in', `(${(propertiesData || []).map(p => p.id).join(',') || 'null'})`);
+
+      if (vacantError) throw vacantError;
+
+      console.log('Properties with leases:', propertiesData);
+      console.log('Vacant properties:', vacantPropertiesData);
+
+      // Convert occupied properties to expected format
+      const occupiedProperties: Property[] = (propertiesData || []).map(property => {
+        const lease = property.leases[0]; // Get first active lease
+        const tenant = lease?.tenants;
+        const tenantName = tenant ? `${tenant.first_name} ${tenant.last_name}` : undefined;
+        
+        return {
+          id: property.id,
+          unit: property.unit_number,
+          bedrooms: property.bedrooms,
+          bathrooms: property.bathrooms,
+          rent: Number(property.rent_amount),
+          status: property.status as "occupied" | "vacant" | "maintenance",
+          tenant: tenantName,
+          leaseEnd: lease?.end_date ? new Date(lease.end_date).toLocaleDateString('fr-FR') : undefined
+        };
+      });
+
+      // Convert vacant properties to expected format
+      const vacantProperties: Property[] = (vacantPropertiesData || []).map(property => ({
         id: property.id,
         unit: property.unit_number,
         bedrooms: property.bedrooms,
         bathrooms: property.bathrooms,
         rent: Number(property.rent_amount),
         status: property.status as "occupied" | "vacant" | "maintenance",
-        tenant: undefined, // Will be updated separately if needed
+        tenant: undefined,
         leaseEnd: undefined
       }));
 
-      console.log('Final properties:', propertiesFormatted);
-      setProperties(propertiesFormatted);
+      const allProperties = [...occupiedProperties, ...vacantProperties];
+      console.log('Final properties:', allProperties);
+      setProperties(allProperties);
     } catch (error) {
       console.error('Erreur lors du chargement des propriétés:', error);
       toast.error('Erreur lors du chargement des propriétés');
