@@ -32,9 +32,9 @@ const Index = () => {
   }, [user, role, loading]);
 
   const handleSignOut = async () => {
-    toast.success('Déconnexion réussie');
-    // La fonction signOut gère déjà la redirection
     await signOut();
+    toast.success('Déconnexion réussie');
+    navigate('/auth', { replace: true });
   };
 
 

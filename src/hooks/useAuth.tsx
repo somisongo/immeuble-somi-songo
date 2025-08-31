@@ -72,32 +72,23 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   };
 
   const signOut = async () => {
+    // Réinitialiser immédiatement l'état local
+    setSession(null);
+    setUser(null);
+    setLoading(false);
+    
+    // Nettoyer le stockage
+    localStorage.clear();
+    sessionStorage.clear();
+    
     try {
-      // Forcer la réinitialisation de l'état local d'abord
-      setSession(null);
-      setUser(null);
-      
-      // Nettoyer le stockage local
-      localStorage.removeItem('supabase.auth.token');
-      sessionStorage.clear();
-      
-      // Tenter la déconnexion côté serveur (ignorer les erreurs de session)
-      const { error } = await supabase.auth.signOut();
-      
-      // Rediriger immédiatement vers la page d'authentification
-      window.location.href = '/auth';
-      
-      return { error: null };
+      // Tenter la déconnexion côté serveur (non bloquant)
+      await supabase.auth.signOut();
     } catch (error) {
-      console.error('Logout error:', error);
-      // Même en cas d'erreur, forcer la redirection
-      setSession(null);
-      setUser(null);
-      localStorage.removeItem('supabase.auth.token');
-      sessionStorage.clear();
-      window.location.href = '/auth';
-      return { error: null };
+      console.error('Logout error (ignored):', error);
     }
+    
+    return { error: null };
   };
 
   const value = {

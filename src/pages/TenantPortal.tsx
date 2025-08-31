@@ -21,12 +21,12 @@ export default function TenantPortal() {
   }, [user, role, loading, navigate]);
 
   const handleSignOut = async () => {
+    await signOut();
     toast({
       title: "Déconnexion",
       description: "Vous avez été déconnecté avec succès",
     });
-    // La fonction signOut gère déjà la redirection
-    await signOut();
+    navigate('/auth', { replace: true });
   };
 
   if (loading) {
