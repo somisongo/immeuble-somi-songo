@@ -28,7 +28,7 @@ export const useProperties = () => {
     try {
       console.log('Fetching properties for user:', user.id);
       
-      // Récupérer les propriétés avec les informations des locataires
+      // Fetch properties only
       const { data: propertiesData, error: propertiesError } = await supabase
         .from('properties')
         .select('*')
@@ -37,54 +37,20 @@ export const useProperties = () => {
       if (propertiesError) throw propertiesError;
       console.log('Properties data:', propertiesData);
 
-      // Pour chaque propriété, récupérer les informations du bail actif et du locataire
-      const propertiesWithTenants: Property[] = [];
+      // Convert to expected format without tenant information for now
+      const propertiesFormatted: Property[] = (propertiesData || []).map(property => ({
+        id: property.id,
+        unit: property.unit_number,
+        bedrooms: property.bedrooms,
+        bathrooms: property.bathrooms,
+        rent: Number(property.rent_amount),
+        status: property.status as "occupied" | "vacant" | "maintenance",
+        tenant: undefined, // Will be updated separately if needed
+        leaseEnd: undefined
+      }));
 
-      for (const property of propertiesData || []) {
-        console.log('Processing property:', property.unit_number);
-        
-        // Récupérer le bail actif pour cette propriété
-        const { data: leaseData, error: leaseError } = await supabase
-          .from('leases')
-          .select(`
-            *,
-            tenants (
-              first_name,
-              last_name
-            )
-          `)
-          .eq('property_id', property.id)
-          .eq('status', 'active')
-          .maybeSingle();
-
-        console.log('Lease data for', property.unit_number, ':', leaseData);
-        if (leaseError) console.error('Lease error:', leaseError);
-
-        const propertyWithTenant: Property = {
-          id: property.id,
-          unit: property.unit_number,
-          bedrooms: property.bedrooms,
-          bathrooms: property.bathrooms,
-          rent: Number(property.rent_amount),
-          status: property.status as "occupied" | "vacant" | "maintenance",
-          tenant: leaseData?.tenants 
-            ? `${leaseData.tenants.first_name} ${leaseData.tenants.last_name}`
-            : undefined,
-          leaseEnd: leaseData?.end_date 
-            ? new Date(leaseData.end_date).toLocaleDateString('fr-FR', {
-                day: '2-digit',
-                month: 'short',
-                year: 'numeric'
-              })
-            : undefined
-        };
-
-        console.log('Property with tenant:', propertyWithTenant);
-        propertiesWithTenants.push(propertyWithTenant);
-      }
-
-      console.log('Final properties with tenants:', propertiesWithTenants);
-      setProperties(propertiesWithTenants);
+      console.log('Final properties:', propertiesFormatted);
+      setProperties(propertiesFormatted);
     } catch (error) {
       console.error('Erreur lors du chargement des propriétés:', error);
       toast.error('Erreur lors du chargement des propriétés');
