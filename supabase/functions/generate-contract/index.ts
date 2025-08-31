@@ -49,6 +49,12 @@ const generateContractHTML = (data: ContractData): string => {
             text-align: center; 
             margin-bottom: 40px; 
         }
+        .logo {
+            display: block;
+            margin: 0 auto 20px auto;
+            max-width: 150px;
+            height: auto;
+        }
         .title { 
             font-size: 24px; 
             font-weight: bold; 
@@ -125,6 +131,7 @@ const generateContractHTML = (data: ContractData): string => {
 </head>
 <body>
     <div class="header">
+        <img src="https://lovable.dev/placeholder.svg" alt="Immeuble SOMI SONGO Logo" class="logo">
         <div class="title">CONTRAT DE BAIL</div>
         <div class="subtitle">IMMEUBLE RÉSIDENTIEL FAMILLE SONGO</div>
     </div>

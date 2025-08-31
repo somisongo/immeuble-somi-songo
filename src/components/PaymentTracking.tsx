@@ -301,15 +301,21 @@ export const PaymentTracking = () => {
   const generateReport = () => {
     const doc = new jsPDF();
     
-    // En-tête du rapport
-    doc.setFontSize(18);
-    doc.text('RAPPORT DE PAIEMENTS', 105, 20, { align: 'center' });
-    
-    doc.setFontSize(12);
-    doc.text(`Date de génération: ${new Date().toLocaleDateString('fr-FR')}`, 20, 35);
-    
-    // Statistiques globales
-    let yPosition = 50;
+    // Logo en en-tête
+    const logoImg = new Image();
+    logoImg.onload = () => {
+      // Ajouter le logo
+      doc.addImage(logoImg, 'PNG', 20, 10, 40, 20);
+      
+      // En-tête du rapport
+      doc.setFontSize(18);
+      doc.text('RAPPORT DE PAIEMENTS', 105, 25, { align: 'center' });
+      
+      doc.setFontSize(12);
+      doc.text(`Date de génération: ${new Date().toLocaleDateString('fr-FR')}`, 20, 40);
+      
+      // Statistiques globales
+      let yPosition = 55;
     doc.setFontSize(14);
     doc.text('RÉSUMÉ GLOBAL', 20, yPosition);
     yPosition += 10;
@@ -381,19 +387,27 @@ export const PaymentTracking = () => {
       yPosition += 15;
     });
     
-    doc.save(`rapport-paiements-${new Date().toISOString().split('T')[0]}.pdf`);
-    toast.success('Rapport généré avec succès');
+      doc.save(`rapport-paiements-${new Date().toISOString().split('T')[0]}.pdf`);
+      toast.success('Rapport généré avec succès');
+    };
+    logoImg.src = '/lovable-uploads/853c19f0-d043-4f34-89a3-eeed4fa269d9.png';
   };
 
   const generateReceipt = (payment: Payment) => {
     const doc = new jsPDF();
     
-    // En-tête du reçu
-    doc.setFontSize(20);
-    doc.text('REÇU DE PAIEMENT', 105, 30, { align: 'center' });
-    
-    // Informations du reçu
-    let yPosition = 60;
+    // Logo en en-tête
+    const logoImg = new Image();
+    logoImg.onload = () => {
+      // Ajouter le logo
+      doc.addImage(logoImg, 'PNG', 20, 10, 40, 20);
+      
+      // En-tête du reçu
+      doc.setFontSize(20);
+      doc.text('REÇU DE PAIEMENT', 105, 35, { align: 'center' });
+      
+      // Informations du reçu
+      let yPosition = 65;
     doc.setFontSize(12);
     
     doc.text('INFORMATIONS DU PAIEMENT', 20, yPosition);
@@ -444,8 +458,10 @@ export const PaymentTracking = () => {
     doc.setFontSize(8);
     doc.text(`Généré le ${new Date().toLocaleString('fr-FR')}`, 105, 280, { align: 'center' });
     
-    doc.save(`recu-${payment.tenant.replace(/\s+/g, '-')}-${payment.due_date}.pdf`);
-    toast.success('Reçu généré avec succès');
+      doc.save(`recu-${payment.tenant.replace(/\s+/g, '-')}-${payment.due_date}.pdf`);
+      toast.success('Reçu généré avec succès');
+    };
+    logoImg.src = '/lovable-uploads/853c19f0-d043-4f34-89a3-eeed4fa269d9.png';
   };
 
   const getStatusIcon = (status: string) => {

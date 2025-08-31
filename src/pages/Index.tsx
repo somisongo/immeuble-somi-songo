@@ -66,7 +66,11 @@ const Index = () => {
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <Building2 className="h-8 w-8 text-primary-foreground" />
+                <img 
+                  src="/lovable-uploads/853c19f0-d043-4f34-89a3-eeed4fa269d9.png" 
+                  alt="Immeuble SOMI SONGO Logo" 
+                  className="h-16 w-auto"
+                />
                 <div>
                   <h1 className="text-2xl font-bold text-primary-foreground">Gestionnaire Immobilier - Immeuble SOMI SONGO</h1>
                   <p className="text-primary-foreground/80">Immeuble de 5 Appartements</p>
