@@ -57,9 +57,14 @@ export const TenantDashboard = () => {
         .from('tenants')
         .select('*')
         .eq('user_id', user.id)
-        .single();
+        .maybeSingle();
 
       if (tenantError) throw tenantError;
+      if (!tenant) {
+        console.log('No tenant found for user:', user.id);
+        setLoading(false);
+        return;
+      }
 
       setTenantData(tenant);
 
@@ -76,7 +81,7 @@ export const TenantDashboard = () => {
         `)
         .eq('tenant_id', tenant.id)
         .eq('status', 'active')
-        .single();
+        .maybeSingle();
 
       if (leaseError) {
         console.error('Error fetching lease:', leaseError);
