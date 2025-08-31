@@ -92,10 +92,18 @@ export const PropertyAssignment = () => {
   const fetchTenants = async () => {
     if (!user?.id) return;
 
+    // Récupérer uniquement les locataires avec des contrats actifs
     const { data, error } = await supabase
       .from('tenants')
-      .select('*')
+      .select(`
+        *,
+        leases!inner(
+          id,
+          status
+        )
+      `)
       .eq('owner_id', user.id)
+      .eq('leases.status', 'active')
       .order('first_name');
 
     if (error) throw error;

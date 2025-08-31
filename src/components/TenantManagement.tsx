@@ -39,10 +39,21 @@ export const TenantManagement = () => {
   }, [user]);
 
   const fetchTenants = async () => {
+    if (!user) return;
+    
     try {
+      // Récupérer uniquement les locataires avec des contrats actifs
       const { data, error } = await supabase
         .from('tenants')
-        .select('*')
+        .select(`
+          *,
+          leases!inner(
+            id,
+            status
+          )
+        `)
+        .eq('owner_id', user.id)
+        .eq('leases.status', 'active')
         .order('created_at', { ascending: false });
 
       if (error) throw error;

@@ -71,10 +71,21 @@ export const CreateLeaseDialog = ({ onLeaseCreated }: CreateLeaseDialogProps) =>
     if (!user?.id) return;
 
     try {
+      // Récupérer uniquement les locataires avec des contrats actifs
       const { data, error } = await supabase
         .from('tenants')
-        .select('id, first_name, last_name, email')
-        .eq('owner_id', user.id);
+        .select(`
+          id, 
+          first_name, 
+          last_name, 
+          email,
+          leases!inner(
+            id,
+            status
+          )
+        `)
+        .eq('owner_id', user.id)
+        .eq('leases.status', 'active');
 
       if (error) throw error;
       setTenants(data || []);
