@@ -390,7 +390,7 @@ export const PaymentTracking = () => {
       doc.save(`rapport-paiements-${new Date().toISOString().split('T')[0]}.pdf`);
       toast.success('Rapport généré avec succès');
     };
-    logoImg.src = '/lovable-uploads/853c19f0-d043-4f34-89a3-eeed4fa269d9.png';
+    logoImg.src = '/logo-somi-songo.png';
   };
 
   const generateReceipt = (payment: Payment) => {
@@ -461,7 +461,7 @@ export const PaymentTracking = () => {
       doc.save(`recu-${payment.tenant.replace(/\s+/g, '-')}-${payment.due_date}.pdf`);
       toast.success('Reçu généré avec succès');
     };
-    logoImg.src = '/lovable-uploads/853c19f0-d043-4f34-89a3-eeed4fa269d9.png';
+    logoImg.src = '/logo-somi-songo.png';
   };
 
   const getStatusIcon = (status: string) => {
