@@ -56,23 +56,28 @@ export default function ContractClausesManager() {
 
   const fetchData = async () => {
     try {
-      // Récupérer les clauses
+      // Récupérer les clauses pour l'utilisateur actuel
       const { data: clausesData, error: clausesError } = await supabase
         .from('contract_clauses')
         .select('*')
+        .eq('owner_id', user?.id)
         .order('order_index');
 
       if (clausesError) throw clausesError;
 
-      // Récupérer les infos du bailleur
+      // Récupérer les infos du bailleur pour l'utilisateur actuel
       const { data: landlordData, error: landlordError } = await supabase
         .from('landlord_info')
         .select('*')
-        .single();
+        .eq('owner_id', user?.id)
+        .maybeSingle();
 
-      if (landlordError && landlordError.code !== 'PGRST116') {
-        throw landlordError;
+      if (landlordError) {
+        console.error('Erreur lors de la récupération des infos bailleur:', landlordError);
       }
+
+      console.log('Clauses récupérées:', clausesData);
+      console.log('Infos bailleur récupérées:', landlordData);
 
       setClauses(clausesData || []);
       if (landlordData) {
