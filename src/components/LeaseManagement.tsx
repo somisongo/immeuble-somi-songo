@@ -153,7 +153,8 @@ export const LeaseManagement = () => {
                 end_date: leaseData.end_date,
                 status: leaseData.status,
                 property: leaseData.properties
-              }
+              },
+              owner_id: user?.id
             }
           });
 

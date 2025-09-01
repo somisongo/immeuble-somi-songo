@@ -1,9 +1,15 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
+
+const supabase = createClient(
+  Deno.env.get('SUPABASE_URL') ?? '',
+  Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
+);
 
 interface ContractData {
   tenant: {
@@ -23,12 +29,27 @@ interface ContractData {
       bathrooms: number;
     };
   };
+  owner_id: string;
 }
 
-const generateContractHTML = (data: ContractData): string => {
+const generateContractHTML = (data: ContractData, landlordInfo: any, clauses: any[], annexes: any[]): string => {
   const startDate = new Date(data.lease.start_date).toLocaleDateString('fr-FR');
   const endDate = new Date(data.lease.end_date).toLocaleDateString('fr-FR');
   const currentDate = new Date().toLocaleDateString('fr-FR');
+  
+  // Fonction pour remplacer les variables dans le contenu
+  const replaceVariables = (content: string): string => {
+    return content
+      .replace(/\{\{rent_amount\}\}/g, data.lease.rent_amount.toString())
+      .replace(/\{\{rent_amount_words\}\}/g, numberToFrenchWords(data.lease.rent_amount))
+      .replace(/\{\{deposit_amount\}\}/g, (data.lease.deposit_amount || data.lease.rent_amount * 3).toString())
+      .replace(/\{\{deposit_amount_words\}\}/g, numberToFrenchWords(data.lease.deposit_amount || data.lease.rent_amount * 3))
+      .replace(/\{\{bank_name\}\}/g, landlordInfo?.bank_name || 'ECOBANK')
+      .replace(/\{\{bank_account\}\}/g, landlordInfo?.bank_account || '35080005368')
+      .replace(/\{\{unit_number\}\}/g, data.lease.property.unit_number)
+      .replace(/\{\{bedrooms\}\}/g, data.lease.property.bedrooms.toString())
+      .replace(/\{\{bathrooms\}\}/g, data.lease.property.bathrooms.toString());
+  };
   
   return `
 <!DOCTYPE html>
@@ -138,8 +159,8 @@ const generateContractHTML = (data: ContractData): string => {
 
     <div class="section">
         <h3>ENTRE</h3>
-        <p>1. Madame, Mademoiselle, Monsieur <strong>Paul Songo Miziro</strong> de nationalité <strong>Congolaise</strong><br>
-        Passeport n° OP1205813, demeurant au n° 14 de l'Avenue (Rue) Saka, Quartier Kinsuka-Pecheur, Commune de Ngaliema ci-après dénommé(e) « bailleur » d'une part</p>
+        <p>1. Madame, Mademoiselle, Monsieur <strong>${landlordInfo?.full_name?.toUpperCase() || 'PAUL SONGO MIZIRO'}</strong> de nationalité <strong>${landlordInfo?.nationality || 'Congolaise'}</strong><br>
+        Passeport n° ${landlordInfo?.passport_number || 'OP1205813'}, demeurant ${landlordInfo?.address || 'au n° 14 de l\'Avenue (Rue) Saka, Quartier Kinsuka-Pecheur, Commune de Ngaliema'} ci-après dénommé(e) « bailleur » d'une part</p>
         
         <p>ET</p>
         
@@ -152,102 +173,12 @@ const generateContractHTML = (data: ContractData): string => {
     <div class="section">
         <h3>IL A ÉTÉ CONVENU ET ARRÊTÉ CE QUI SUIT</h3>
 
+        ${clauses.map((clause, index) => `
         <div class="article">
-            <div class="article-title">Article 1er - Objet :</div>
-            <p>Le (la) bailleur (resse) donne en location au locataire qui accepte son appartement dans l'immeuble résidentiel sis Avenue Saka n° 14, Quartier Kinsuka, Commune de Ngaliema</p>
-            <p><strong>Appartement ${data.lease.property.unit_number} - ${data.lease.property.bedrooms} chambres, ${data.lease.property.bathrooms} salle(s) de bain</strong></p>
+            <div class="article-title">${clause.article_number ? `Article ${clause.article_number}° - ` : ''}${clause.title}</div>
+            <p>${replaceVariables(clause.content).replace(/\n/g, '<br>')}</p>
         </div>
-
-        <div class="article">
-            <div class="article-title">Article 2° - Loyer :</div>
-            <p>Le taux mensuel du loyer est fixé à la somme de <span class="amount">${data.lease.rent_amount} USD</span> (Chiffres)<br>
-            <strong>${numberToFrenchWords(data.lease.rent_amount)} dollars Américains</strong> (Montant en lettre) payable à la banque (ECOBANK), au numéro bancaire que voici :</p>
-            <div class="bank-account">35080005368</div>
-            <p>Le locataire tâchera à présenter son bordereau/ reçu au bailleur ou à son mandataire.</p>
-        </div>
-
-        <div class="article">
-            <div class="article-title">Article 3° -</div>
-            <p>À la signature du présent contrat, une garantie locative équivaut à <span class="amount">${data.lease.deposit_amount || data.lease.rent_amount * 3} USD</span><br>
-            (Chiffres) <strong>${numberToFrenchWords(data.lease.deposit_amount || data.lease.rent_amount * 3)} dollars Américains</strong> (Montant en lettre) et <span class="amount">${data.lease.rent_amount} USD</span><br>
-            (Chiffres) <strong>${numberToFrenchWords(data.lease.rent_amount)} dollars Américains</strong> (Montant en lettre)</p>
-            <p>3 Mois plus un mois anticipatif, sera perçu indépendamment du paiement du premier terme du loyer. Le locataire ne pourra se prévaloir de ce versement pour refuser le paiement du loyer, même le dernier. Cette garantie ne pourra être réajustée en cours de bail ni produire d'intérêt.</p>
-        </div>
-
-        <div class="article">
-            <p>En cas de cession de bail pour quelque cause que ce soit après paiement intégral des frais éventuels de remise, le solde de la garantie sera tenu à la disposition du locataire.</p>
-        </div>
-
-        <div class="article">
-            <div class="article-title">Article 4° - Consommation d'eau, d'électricité etc. :</div>
-            <p>Les frais résultant de la consommation d'eau, d'électricité et de l'assainissement du milieu sont compris dans le loyer et seront à charge du bailleur en l'état actuel. Cependant dès que l'introduction des compteurs à électricité prépayé devient effective, les frais de la consommation d'électricité seront à charge du locataire.</p>
-        </div>
-
-        <div class="article">
-            <div class="article-title">Article 5e – Utilisation du générateur.</div>
-            <p>L'immeuble possède un générateur de 25 KVA et dont les frais d'utilisation et d'entretien ne sont pas inclus dans le loyer. Le locateur souhaitant utiliser les services de ce générateur payera un montant de <strong>100 USD</strong> Mensuellement comme contribution à l'entretien et l'approvisionnement en carburant. Étant donnée que ce générateur n'a pas la capacité de supporter tous les appareils pour tous les 5 appartements de l'immeuble simultanément, seuls les appareils suivants sont autorisés : Le frigo, la télévision, les ampoules (la lumière).</p>
-        </div>
-
-        <div class="article">
-            <div class="article-title">Article 6° - Destination et occupation du lieu loué :</div>
-            <p>L'appartement loué est uniquement à usage du locataire ; il est interdit au locataire de changer la destination des lieux loués sans l'accord préalable et écrit du bailleur. Il est interdit de sous-louer tout ou partie du bien loué, de céder son bail à une tierce personne, sans l'accord écrit et préalable du bailleur.</p>
-        </div>
-
-        <div class="article">
-            <div class="article-title">Article 7° - Modification des lieux loués :</div>
-            <p>Il est interdit au locataire d'apporter une quelconque modification aux biens loués sans l'autorisation préalable et écrit du bailleur. Lorsque la modification aura été faite sans l'accord du bailleur, ce dernier a la faculté de demander soit la remise des lieux dans leur état initial aux frais du locataire, soit de l'acquérir sans que le locataire puisse prétendre à une quelconque indemnisation.</p>
-        </div>
-
-        <div class="article">
-            <div class="article-title">Article 9° - Dégâts et clause de réparation</div>
-            <p>Tous les biens liste dans l'annexe ci-bas sont en très bon état et ne nécessitent pas une modification. De ce fait, le Locataire n'est pas responsable des dégâts occasionnés par un éventuel vice de construction. Le Locataire est tenu d'informer le Bailleur sans tarder pour toutes les réparations qui incombent à celui-ci.</p>
-        </div>
-
-        <div class="article">
-            <p>Les dégâts éventuels imputables au Locataire sont réparés sans délai par les techniciens choisis par le bailleur.<br>
-            L'entretien des climatiseurs sera tenu par un technicien que le bailleur se réserve le droit de choisir, chaque 2 mois. Les frais résultants de l'entretien seront à charge du locataire.</p>
-        </div>
-
-        <div class="article">
-            <div class="article-title">Article 10° - Entretien des lieux loués :</div>
-            <p>Le locataire s'engage à utiliser les lieux loués en bon père de famille et à les restituer à la fin du bail dans l'état où il les a trouvés sauf usure normale.</p>
-        </div>
-
-        <div class="article">
-            <div class="article-title">Article 11° - inspection les lieux loués :</div>
-            <p>Le locataire laissera inspecter les lieux loués deux fois l'an, par le bailleur ou son mandataire et c'est à la période où le bailleur jugera convenable, à condition toutefois, d'en prévenir le locataire 7 jours avant.</p>
-        </div>
-
-        <div class="article">
-            <div class="article-title">Article 12° – Avenant :</div>
-            <p>Toute modification au présent contrat fera l'objet d'un avenant.</p>
-        </div>
-
-        <div class="article">
-            <div class="article-title">Article 13° - Résiliation :</div>
-            <p>La partie qui désire résilier le contrat doit donner à l'autre un préavis de 3 mois, conformément à l'usage des lieux. Le bailleur peut donc donner un préavis au locataire si celui-ci s'est acquitté de son loyer pendant 3 mois successifs.</p>
-        </div>
-
-        <div class="article">
-            <div class="article-title">Article 14° - Contestation :</div>
-            <p>Pour toute litige à l'exécution du présent contrat, les parties s'adresseront à l'Autorité Municipale des lieux loués pour une conciliation. En cas d'échec de conciliation, le litige sera soumis aux Cours et tribunaux de la ville de Kinshasa.</p>
-        </div>
-
-        <div class="article">
-            <div class="article-title">Article 15 : Remise des clés</div>
-            <p>Le jour de l'expiration du présent bail, le Locataire devra remettre au bailleur ou à son Mandataire toutes les clés des locaux et de la porte d'entrée de la maison.<br>
-            Le Bailleur ne pourra pas prendre la libre disposition des lieux au jour de l'expiration du bail, ce dernier aura droit en cas de force majeure, à une compensation pour le manque à gagner, calculée proportionnellement au loyer équivalent au nombre de jours concernés.</p>
-        </div>
-
-        <div class="article">
-            <div class="article-title">Article 16 : Résolution des litiges</div>
-            <p>Tout litige éventuel survenu au cours de l'application du présent bail sera d'abord réglé à l'amiable, faute de quoi, il sera porté devant les instances judiciaires compétentes de la République Démocratique du Congo.</p>
-        </div>
-
-        <div class="article">
-            <div class="article-title">Article 17° - :</div>
-            <p>Le présent contrat est établi en Deux exemplaires et ne pourra souffrir d'aucune rature ou surcharge quelconque. Il entre vigueur dès sa signature.</p>
-        </div>
+        `).join('')}
     </div>
 
     <div class="date">
@@ -270,23 +201,15 @@ const generateContractHTML = (data: ContractData): string => {
         <div style="height: 80px; border-bottom: 1px solid #000; margin-top: 20px; width: 300px; display: inline-block;"></div>
     </div>
 
+    ${annexes.length > 0 ? `
     <div style="page-break-before: always; padding-top: 40px;">
         <h3 style="text-decoration: underline; margin-bottom: 30px;">ANNEXE</h3>
-        <h4 style="font-style: italic; margin-bottom: 20px;">Biens qui sont dans l'appartement</h4>
-        
-        <ol style="line-height: 2;">
-            <li>Meubles cuisine, deux lustres cuisine,</li>
-            <li>Trois salles de bain avec trois miroirs, trois cuves RAK/ céramique de WC, trois plafonniers, deux colonnes de douche et trois lavabos,</li>
-            <li>Deux lustres au salon, deux appliques,</li>
-            <li>Deux appliques chambre parents, un plafonnier,</li>
-            <li>Un plafonnier dans chaque chambre enfant,</li>
-            <li>Trois plafonniers dans les deux vérandas de l'appartement</li>
-            <li>Cinq appliques de colonne,</li>
-            <li>Deux plafonniers dans les deux couloirs,</li>
-            <li><strong>32 Prises électriques, 4 interrupteurs doubles, 12 interrupteurs simple, et 5 JVD pour split du type SCHNUDER,</strong></li>
-            <li>Deux climatiseurs de capacité <strong>12BTU</strong> (marque Hisense) au salon et <strong>9BTU</strong> (marque Jacobs) dans la chambre des parents.</li>
-        </ol>
+        ${annexes.map(annex => `
+        <h4 style="font-style: italic; margin-bottom: 20px;">${annex.title}</h4>
+        <div style="line-height: 1.8; white-space: pre-wrap;">${replaceVariables(annex.content)}</div>
+        `).join('')}
     </div>
+    ` : ''}
 </body>
 </html>
   `;
@@ -326,9 +249,9 @@ const handler = async (req: Request): Promise<Response> => {
   }
 
   try {
-    const { tenant, lease }: ContractData = await req.json();
+    const { tenant, lease, owner_id }: ContractData = await req.json();
 
-    if (!tenant || !lease) {
+    if (!tenant || !lease || !owner_id) {
       return new Response(
         JSON.stringify({ error: "Données du contrat manquantes" }),
         {
@@ -338,10 +261,57 @@ const handler = async (req: Request): Promise<Response> => {
       );
     }
 
-    const htmlContent = generateContractHTML({ tenant, lease });
+    // Récupérer les informations du bailleur
+    const { data: landlordInfo, error: landlordError } = await supabase
+      .from('landlord_info')
+      .select('*')
+      .eq('owner_id', owner_id)
+      .single();
 
-    // In a real implementation, you would use a library like Puppeteer or jsPDF
-    // For now, we'll return the HTML content that can be printed as PDF
+    if (landlordError && landlordError.code !== 'PGRST116') {
+      console.error('Error fetching landlord info:', landlordError);
+    }
+
+    // Récupérer les clauses du contrat (non-annexes)
+    const { data: clauses, error: clausesError } = await supabase
+      .from('contract_clauses')
+      .select('*')
+      .eq('owner_id', owner_id)
+      .eq('is_annex', false)
+      .order('order_index');
+
+    if (clausesError) {
+      console.error('Error fetching clauses:', clausesError);
+      return new Response(
+        JSON.stringify({ error: "Erreur lors de la récupération des clauses" }),
+        {
+          status: 500,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        }
+      );
+    }
+
+    // Récupérer les annexes
+    const { data: annexes, error: annexesError } = await supabase
+      .from('contract_clauses')
+      .select('*')
+      .eq('owner_id', owner_id)
+      .eq('is_annex', true)
+      .order('order_index');
+
+    if (annexesError) {
+      console.error('Error fetching annexes:', annexesError);
+      return new Response(
+        JSON.stringify({ error: "Erreur lors de la récupération des annexes" }),
+        {
+          status: 500,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        }
+      );
+    }
+
+    const htmlContent = generateContractHTML({ tenant, lease, owner_id }, landlordInfo, clauses || [], annexes || []);
+
     return new Response(
       JSON.stringify({ 
         success: true, 

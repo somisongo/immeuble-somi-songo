@@ -14,6 +14,81 @@ export type Database = {
   }
   public: {
     Tables: {
+      contract_clauses: {
+        Row: {
+          article_number: number | null
+          content: string
+          created_at: string
+          id: string
+          is_annex: boolean
+          order_index: number
+          owner_id: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          article_number?: number | null
+          content: string
+          created_at?: string
+          id?: string
+          is_annex?: boolean
+          order_index?: number
+          owner_id: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          article_number?: number | null
+          content?: string
+          created_at?: string
+          id?: string
+          is_annex?: boolean
+          order_index?: number
+          owner_id?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      landlord_info: {
+        Row: {
+          address: string
+          bank_account: string | null
+          bank_name: string | null
+          created_at: string
+          full_name: string
+          id: string
+          nationality: string
+          owner_id: string
+          passport_number: string | null
+          updated_at: string
+        }
+        Insert: {
+          address: string
+          bank_account?: string | null
+          bank_name?: string | null
+          created_at?: string
+          full_name: string
+          id?: string
+          nationality?: string
+          owner_id: string
+          passport_number?: string | null
+          updated_at?: string
+        }
+        Update: {
+          address?: string
+          bank_account?: string | null
+          bank_name?: string | null
+          created_at?: string
+          full_name?: string
+          id?: string
+          nationality?: string
+          owner_id?: string
+          passport_number?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       leases: {
         Row: {
           created_at: string

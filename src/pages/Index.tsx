@@ -9,11 +9,12 @@ import { PaymentTracking } from "@/components/PaymentTracking";
 import { TenantManagement } from "@/components/TenantManagement";
 import { PropertyAssignment } from "@/components/PropertyAssignment";
 import { UserRoleManager } from "@/components/UserRoleManager";
+import ContractClausesManager from "@/components/ContractClausesManager";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { useAuth } from "@/hooks/useAuth";
 import { useUserRole } from "@/hooks/useUserRole";
 import { useProperties } from "@/hooks/useProperties";
-import { Building2, BarChart3, FileText, CreditCard, Users, LogOut, Settings, UserPlus } from "lucide-react";
+import { Building2, BarChart3, FileText, CreditCard, Users, LogOut, Settings, UserPlus, FileEdit } from "lucide-react";
 import { toast } from "sonner";
 
 const Index = () => {
@@ -96,7 +97,7 @@ const Index = () => {
         {/* Main Content */}
         <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-            <TabsList className="grid w-full grid-cols-7 bg-card shadow-card">
+            <TabsList className="grid w-full grid-cols-8 bg-card shadow-card">
               <TabsTrigger value="dashboard" className="flex items-center gap-2">
                 <BarChart3 className="h-4 w-4" />
                 Tableau de bord
@@ -120,6 +121,10 @@ const Index = () => {
               <TabsTrigger value="payments" className="flex items-center gap-2">
                 <CreditCard className="h-4 w-4" />
                 Paiements
+              </TabsTrigger>
+              <TabsTrigger value="contracts" className="flex items-center gap-2">
+                <FileEdit className="h-4 w-4" />
+                Clauses
               </TabsTrigger>
               <TabsTrigger value="users" className="flex items-center gap-2">
                 <Settings className="h-4 w-4" />
@@ -177,6 +182,10 @@ const Index = () => {
 
             <TabsContent value="payments">
               <PaymentTracking />
+            </TabsContent>
+
+            <TabsContent value="contracts">
+              <ContractClausesManager />
             </TabsContent>
 
             <TabsContent value="users">
