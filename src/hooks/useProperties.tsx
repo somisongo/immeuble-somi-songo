@@ -43,7 +43,6 @@ export const useProperties = () => {
             )
           )
         `)
-        .eq('owner_id', user.id)
         .eq('leases.status', 'active');
 
       if (propertiesError) throw propertiesError;
@@ -52,8 +51,7 @@ export const useProperties = () => {
       const occupiedIds = (propertiesData || []).map(p => p.id);
       const vacantQuery = supabase
         .from('properties')
-        .select('*')
-        .eq('owner_id', user.id);
+        .select('*');
       
       // Only add the not.in filter if there are occupied properties
       const { data: vacantPropertiesData, error: vacantError } = occupiedIds.length > 0
