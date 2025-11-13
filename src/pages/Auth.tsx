@@ -14,6 +14,8 @@ const Auth = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const { signIn, signUp, user } = useAuth();
@@ -54,6 +56,12 @@ const Auth = () => {
     setLoading(true);
     setError('');
 
+    if (!firstName.trim() || !lastName.trim()) {
+      setError('Le prénom et le nom sont requis');
+      setLoading(false);
+      return;
+    }
+
     if (password.length < 6) {
       setError('Le mot de passe doit contenir au moins 6 caractères');
       setLoading(false);
@@ -66,7 +74,7 @@ const Auth = () => {
       return;
     }
 
-    const { error } = await signUp(email, password);
+    const { error } = await signUp(email, password, firstName, lastName);
     
     if (error) {
       if (error.message.includes('User already registered')) {
@@ -165,6 +173,38 @@ const Auth = () => {
 
             <TabsContent value="signup">
               <form onSubmit={handleSignUp} className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="signup-firstname">Prénom</Label>
+                  <div className="relative">
+                    <UserPlus className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                    <Input
+                      id="signup-firstname"
+                      type="text"
+                      placeholder="Jean"
+                      value={firstName}
+                      onChange={(e) => setFirstName(e.target.value)}
+                      className="pl-10"
+                      required
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="signup-lastname">Nom</Label>
+                  <div className="relative">
+                    <UserPlus className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                    <Input
+                      id="signup-lastname"
+                      type="text"
+                      placeholder="Dupont"
+                      value={lastName}
+                      onChange={(e) => setLastName(e.target.value)}
+                      className="pl-10"
+                      required
+                    />
+                  </div>
+                </div>
+
                 <div className="space-y-2">
                   <Label htmlFor="signup-email">Email</Label>
                   <div className="relative">
