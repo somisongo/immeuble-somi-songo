@@ -49,11 +49,16 @@ export const useProperties = () => {
       if (propertiesError) throw propertiesError;
 
       // Also fetch properties without active leases
-      const { data: vacantPropertiesData, error: vacantError } = await supabase
+      const occupiedIds = (propertiesData || []).map(p => p.id);
+      const vacantQuery = supabase
         .from('properties')
         .select('*')
-        .eq('owner_id', user.id)
-        .not('id', 'in', `(${(propertiesData || []).map(p => p.id).join(',') || 'null'})`);
+        .eq('owner_id', user.id);
+      
+      // Only add the not.in filter if there are occupied properties
+      const { data: vacantPropertiesData, error: vacantError } = occupiedIds.length > 0
+        ? await vacantQuery.not('id', 'in', `(${occupiedIds.join(',')})`)
+        : await vacantQuery;
 
       if (vacantError) throw vacantError;
 
