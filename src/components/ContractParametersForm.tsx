@@ -4,7 +4,39 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
+import { useProperties } from "@/hooks/useProperties";
+
+const NATIONALITIES = [
+  "Afghane", "Albanaise", "Algérienne", "Allemande", "Américaine", "Andorrane", "Angolaise", 
+  "Antiguaise", "Argentine", "Arménienne", "Australienne", "Autrichienne", "Azerbaïdjanaise",
+  "Bahamienne", "Bahreïnienne", "Bangladaise", "Barbadienne", "Belge", "Bélizienne", "Béninoise",
+  "Bhoutanaise", "Biélorusse", "Birmane", "Bolivienne", "Bosnienne", "Botswanaise", "Brésilienne",
+  "Britannique", "Brunéienne", "Bulgare", "Burkinabé", "Burundaise", "Cambodgienne", "Camerounaise",
+  "Canadienne", "Cap-verdienne", "Centrafricaine", "Chilienne", "Chinoise", "Chypriote", "Colombienne",
+  "Comorienne", "Congolaise", "Congolaise (RDC)", "Costaricaine", "Croate", "Cubaine", "Danoise",
+  "Djiboutienne", "Dominicaine", "Égyptienne", "Émirienne", "Équatorienne", "Érythréenne", "Espagnole",
+  "Estonienne", "Éthiopienne", "Fidjienne", "Finlandaise", "Française", "Gabonaise", "Gambienne",
+  "Géorgienne", "Ghanéenne", "Grecque", "Grenadienne", "Guatémaltèque", "Guinéenne", "Guinéenne équatoriale",
+  "Guyanienne", "Haïtienne", "Hondurienne", "Hongroise", "Indienne", "Indonésienne", "Irakienne",
+  "Iranienne", "Irlandaise", "Islandaise", "Israélienne", "Italienne", "Ivoirienne", "Jamaïcaine",
+  "Japonaise", "Jordanienne", "Kazakhe", "Kényane", "Kirghize", "Kiribatienne", "Koweïtienne",
+  "Laotienne", "Lettone", "Libanaise", "Libérienne", "Libyenne", "Liechtensteinoise", "Lituanienne",
+  "Luxembourgeoise", "Macédonienne", "Malgache", "Malaisienne", "Malawienne", "Maldivienne", "Malienne",
+  "Maltaise", "Marocaine", "Marshallaise", "Mauricienne", "Mauritanienne", "Mexicaine", "Micronésienne",
+  "Moldave", "Monégasque", "Mongole", "Monténégrine", "Mozambicaine", "Namibienne", "Nauruane",
+  "Néerlandaise", "Néo-zélandaise", "Népalaise", "Nicaraguayenne", "Nigériane", "Nigérienne", "Nord-coréenne",
+  "Norvégienne", "Omanaise", "Ougandaise", "Ouzbèke", "Pakistanaise", "Palaosienne", "Palestinienne",
+  "Panaméenne", "Papouane-néo-guinéenne", "Paraguayenne", "Péruvienne", "Philippine", "Polonaise",
+  "Portugaise", "Qatarienne", "Roumaine", "Russe", "Rwandaise", "Saint-lucienne", "Salvadorienne",
+  "Samoane", "Santoméenne", "Saoudienne", "Sénégalaise", "Serbe", "Seychelloise", "Sierra-léonaise",
+  "Singapourienne", "Slovaque", "Slovène", "Somalienne", "Soudanaise", "Sri-lankaise", "Sud-africaine",
+  "Sud-coréenne", "Sud-soudanaise", "Suédoise", "Suisse", "Surinamaise", "Swazie", "Syrienne",
+  "Tadjike", "Tanzanienne", "Tchadienne", "Tchèque", "Thaïlandaise", "Timoraise", "Togolaise",
+  "Tongienne", "Trinidadienne", "Tunisienne", "Turkmène", "Turque", "Tuvaluane", "Ukrainienne",
+  "Uruguayenne", "Vanuatuane", "Vénézuélienne", "Vietnamienne", "Yéménite", "Zambienne", "Zimbabwéenne"
+];
 
 interface ContractParameters {
   // Informations du locataire
@@ -30,6 +62,9 @@ interface ContractParameters {
 }
 
 export const ContractParametersForm = () => {
+  const { properties, loading } = useProperties();
+  const vacantProperties = properties.filter(p => p.status === 'vacant');
+  
   const [parameters, setParameters] = useState<ContractParameters>({
     tenant_name: "",
     tenant_nationality: "Congolaise",
@@ -97,11 +132,21 @@ export const ContractParametersForm = () => {
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="tenant_nationality">Nationalité</Label>
-                <Input
-                  id="tenant_nationality"
+                <Select
                   value={parameters.tenant_nationality}
-                  onChange={(e) => handleChange("tenant_nationality", e.target.value)}
-                />
+                  onValueChange={(value) => handleChange("tenant_nationality", value)}
+                >
+                  <SelectTrigger id="tenant_nationality">
+                    <SelectValue placeholder="Sélectionnez une nationalité" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {NATIONALITIES.map((nationality) => (
+                      <SelectItem key={nationality} value={nationality}>
+                        {nationality}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
 
               <div className="space-y-2">
@@ -143,13 +188,28 @@ export const ContractParametersForm = () => {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="unit_number">Numéro d'appartement</Label>
-              <Input
-                id="unit_number"
+              <Label htmlFor="unit_number">Numéro d'appartement *</Label>
+              <Select
                 value={parameters.unit_number}
-                onChange={(e) => handleChange("unit_number", e.target.value)}
-                placeholder="Appartement n°..."
-              />
+                onValueChange={(value) => handleChange("unit_number", value)}
+              >
+                <SelectTrigger id="unit_number">
+                  <SelectValue placeholder="Sélectionnez un appartement vacant" />
+                </SelectTrigger>
+                <SelectContent>
+                  {loading ? (
+                    <SelectItem value="loading" disabled>Chargement...</SelectItem>
+                  ) : vacantProperties.length === 0 ? (
+                    <SelectItem value="none" disabled>Aucun appartement vacant</SelectItem>
+                  ) : (
+                    vacantProperties.map((property) => (
+                      <SelectItem key={property.id} value={property.unit}>
+                        {property.unit} - {property.bedrooms} ch, {property.bathrooms} sdb
+                      </SelectItem>
+                    ))
+                  )}
+                </SelectContent>
+              </Select>
             </div>
           </div>
 
