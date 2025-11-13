@@ -18,6 +18,7 @@ interface UserRole {
   profiles?: {
     first_name?: string;
     last_name?: string;
+    email?: string;
   };
 }
 
@@ -35,6 +36,7 @@ interface Profile {
   user_id: string;
   first_name?: string;
   last_name?: string;
+  email?: string;
 }
 
 export const UserRoleManager = () => {
@@ -66,7 +68,7 @@ export const UserRoleManager = () => {
       // Fetch all profiles to match with user roles
       const { data: allProfilesData, error: allProfilesError } = await supabase
         .from('profiles')
-        .select('id, user_id, first_name, last_name');
+        .select('id, user_id, first_name, last_name, email');
 
       if (allProfilesError) throw allProfilesError;
 
@@ -302,9 +304,16 @@ export const UserRoleManager = () => {
                     ) : (
                       profiles.map((profile) => (
                         <SelectItem key={profile.id} value={profile.user_id}>
-                          {profile.first_name && profile.last_name
-                            ? `${profile.first_name} ${profile.last_name}`
-                            : `Utilisateur ${profile.user_id.substring(0, 8)}`}
+                          <div className="flex flex-col">
+                            <span className="font-medium">
+                              {profile.first_name && profile.last_name
+                                ? `${profile.first_name} ${profile.last_name}`
+                                : `Utilisateur ${profile.user_id.substring(0, 8)}`}
+                            </span>
+                            {profile.email && (
+                              <span className="text-sm text-muted-foreground">{profile.email}</span>
+                            )}
+                          </div>
                         </SelectItem>
                       ))
                     )}
@@ -425,7 +434,10 @@ export const UserRoleManager = () => {
                           : `Utilisateur ${userRole.user_id.substring(0, 8)}...`}
                       </p>
                       <p className="text-sm text-muted-foreground">
-                        {new Date(userRole.created_at).toLocaleDateString('fr-FR')}
+                        {userRole.profiles?.email || 'Email non disponible'}
+                      </p>
+                      <p className="text-xs text-muted-foreground">
+                        Créé le {new Date(userRole.created_at).toLocaleDateString('fr-FR')}
                       </p>
                     </div>
                   </div>
