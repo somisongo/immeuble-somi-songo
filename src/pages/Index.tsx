@@ -9,7 +9,7 @@ import { PaymentTracking } from "@/components/PaymentTracking";
 import { TenantManagement } from "@/components/TenantManagement";
 import { PropertyAssignment } from "@/components/PropertyAssignment";
 import { UserRoleManager } from "@/components/UserRoleManager";
-import ContractClausesManager from "@/components/ContractClausesManager";
+import { ContractManager } from "@/components/ContractManager";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { useAuth } from "@/hooks/useAuth";
 import { useUserRole } from "@/hooks/useUserRole";
@@ -185,7 +185,7 @@ const Index = () => {
             </TabsContent>
 
             <TabsContent value="contracts">
-              <ContractClausesManager />
+              <ContractManager />
             </TabsContent>
 
             <TabsContent value="users">
