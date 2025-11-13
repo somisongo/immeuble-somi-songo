@@ -15,6 +15,10 @@ interface UserRole {
   user_id: string;
   role: 'owner' | 'tenant';
   created_at: string;
+  profiles?: {
+    first_name?: string;
+    last_name?: string;
+  };
 }
 
 interface Tenant {
@@ -59,6 +63,24 @@ export const UserRoleManager = () => {
 
       if (rolesError) throw rolesError;
 
+      // Fetch all profiles to match with user roles
+      const { data: allProfilesData, error: allProfilesError } = await supabase
+        .from('profiles')
+        .select('id, user_id, first_name, last_name');
+
+      if (allProfilesError) throw allProfilesError;
+
+      // Create a map for quick profile lookup
+      const profilesMap = new Map(
+        (allProfilesData || []).map(p => [p.user_id, p])
+      );
+
+      // Combine roles with profile data
+      const rolesWithProfiles = (rolesData || []).map(role => ({
+        ...role,
+        profiles: profilesMap.get(role.user_id)
+      }));
+
       // Fetch tenants without user accounts
       const { data: tenantsData, error: tenantsError } = await supabase
         .from('tenants')
@@ -75,13 +97,14 @@ export const UserRoleManager = () => {
 
       if (profilesError) throw profilesError;
 
+
       // Filter profiles that don't have a role yet
-      const userRoleIds = (rolesData || []).map(r => r.user_id);
-      const profilesWithoutRole = (profilesData || []).filter(
+      const userRoleIds = rolesWithProfiles.map(r => r.user_id);
+      const profilesWithoutRole = (allProfilesData || []).filter(
         p => !userRoleIds.includes(p.user_id)
       );
 
-      setUserRoles(rolesData || []);
+      setUserRoles(rolesWithProfiles);
       setTenants(tenantsData || []);
       setProfiles(profilesWithoutRole);
     } catch (error) {
@@ -397,7 +420,9 @@ export const UserRoleManager = () => {
                     <User className="h-4 w-4 text-muted-foreground" />
                     <div>
                       <p className="font-medium">
-                        {userRole.user_id.substring(0, 8)}...
+                        {userRole.profiles?.first_name && userRole.profiles?.last_name
+                          ? `${userRole.profiles.first_name} ${userRole.profiles.last_name}`
+                          : `Utilisateur ${userRole.user_id.substring(0, 8)}...`}
                       </p>
                       <p className="text-sm text-muted-foreground">
                         {new Date(userRole.created_at).toLocaleDateString('fr-FR')}
