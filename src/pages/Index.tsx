@@ -11,9 +11,11 @@ import { PropertyAssignment } from "@/components/PropertyAssignment";
 import { UserRoleManager } from "@/components/UserRoleManager";
 import { ContractManager } from "@/components/ContractManager";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
+import { LanguageSelector } from "@/components/LanguageSelector";
 import { useAuth } from "@/hooks/useAuth";
 import { useUserRole } from "@/hooks/useUserRole";
 import { useProperties } from "@/hooks/useProperties";
+import { useLanguage } from "@/hooks/useLanguage";
 import { Building2, BarChart3, FileText, CreditCard, Users, LogOut, Settings, UserPlus, FileEdit, BookOpen } from "lucide-react";
 import { toast } from "sonner";
 import UserGuide from "@/components/UserGuide";
@@ -25,6 +27,7 @@ const Index = () => {
   const { signOut, user } = useAuth();
   const { role, loading } = useUserRole();
   const { properties, loading: propertiesLoading } = useProperties();
+  const { t } = useLanguage();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -37,7 +40,7 @@ const Index = () => {
 
   const handleSignOut = async () => {
     await signOut();
-    toast.success('Déconnexion réussie');
+    toast.success(t('common.signOut'));
     navigate('/auth', { replace: true });
   };
 
@@ -84,13 +87,14 @@ const Index = () => {
                 <span className="text-primary-foreground/80">
                   {user?.email}
                 </span>
+                <LanguageSelector />
                 <Button 
                   variant="secondary" 
                   className="shadow-md"
                   onClick={handleSignOut}
                 >
                   <LogOut className="h-4 w-4 mr-2" />
-                  Déconnexion
+                  {t('common.signOut')}
                 </Button>
               </div>
             </div>
@@ -103,39 +107,39 @@ const Index = () => {
             <TabsList className="grid w-full grid-cols-9 bg-card shadow-card">
               <TabsTrigger value="dashboard" className="flex items-center gap-2">
                 <BarChart3 className="h-4 w-4" />
-                Tableau de bord
+                {t('dashboard.tabs.dashboard')}
               </TabsTrigger>
               <TabsTrigger value="properties" className="flex items-center gap-2">
                 <Building2 className="h-4 w-4" />
-                Propriétés
+                {t('dashboard.tabs.properties')}
               </TabsTrigger>
               <TabsTrigger value="tenants" className="flex items-center gap-2">
                 <Users className="h-4 w-4" />
-                Locataires
+                {t('dashboard.tabs.tenants')}
               </TabsTrigger>
               <TabsTrigger value="assignments" className="flex items-center gap-2">
                 <UserPlus className="h-4 w-4" />
-                Assignations
+                {t('dashboard.tabs.assignments')}
               </TabsTrigger>
               <TabsTrigger value="leases" className="flex items-center gap-2">
                 <FileText className="h-4 w-4" />
-                Baux
+                {t('dashboard.tabs.leases')}
               </TabsTrigger>
               <TabsTrigger value="payments" className="flex items-center gap-2">
                 <CreditCard className="h-4 w-4" />
-                Paiements
+                {t('dashboard.tabs.payments')}
               </TabsTrigger>
               <TabsTrigger value="contracts" className="flex items-center gap-2">
                 <FileEdit className="h-4 w-4" />
-                Clauses
+                {t('dashboard.tabs.contracts')}
               </TabsTrigger>
               <TabsTrigger value="users" className="flex items-center gap-2">
                 <Settings className="h-4 w-4" />
-                Utilisateurs
+                {t('dashboard.tabs.users')}
               </TabsTrigger>
               <TabsTrigger value="guide" className="flex items-center gap-2">
                 <BookOpen className="h-4 w-4" />
-                Guide
+                {t('dashboard.tabs.guide')}
               </TabsTrigger>
             </TabsList>
 
