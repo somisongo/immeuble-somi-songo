@@ -7,8 +7,9 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 import { toast } from '@/hooks/use-toast';
-import { User, UserPlus, Shield } from 'lucide-react';
+import { User, UserPlus, Shield, Edit } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 
 interface UserRole {
   id: string;
@@ -32,7 +33,7 @@ interface Tenant {
 }
 
 interface Profile {
-  id: string;
+  id?: string;
   user_id: string;
   first_name?: string;
   last_name?: string;
@@ -50,6 +51,14 @@ export const UserRoleManager = () => {
   const [selectedProfile, setSelectedProfile] = useState<string>('');
   const [selectedRole, setSelectedRole] = useState<'owner' | 'tenant'>('tenant');
   const [loading, setLoading] = useState(true);
+  const [editingUser, setEditingUser] = useState<Profile | null>(null);
+  const [editDialogOpen, setEditDialogOpen] = useState(false);
+  const [editForm, setEditForm] = useState({
+    first_name: '',
+    last_name: '',
+    email: '',
+    phone: ''
+  });
 
   useEffect(() => {
     fetchData();
@@ -253,6 +262,59 @@ export const UserRoleManager = () => {
     }
   };
 
+  const openEditDialog = (userRole: UserRole) => {
+    if (userRole.profiles) {
+      const profileData = {
+        user_id: userRole.user_id,
+        first_name: userRole.profiles.first_name || '',
+        last_name: userRole.profiles.last_name || '',
+        email: userRole.profiles.email || ''
+      };
+      setEditingUser(profileData);
+      setEditForm({
+        first_name: profileData.first_name,
+        last_name: profileData.last_name,
+        email: profileData.email,
+        phone: ''
+      });
+      setEditDialogOpen(true);
+    }
+  };
+
+  const updateUserProfile = async () => {
+    if (!editingUser) return;
+
+    try {
+      const { error } = await supabase
+        .from('profiles')
+        .update({
+          first_name: editForm.first_name,
+          last_name: editForm.last_name,
+          email: editForm.email,
+          phone: editForm.phone || null
+        })
+        .eq('user_id', editingUser.user_id);
+
+      if (error) throw error;
+
+      toast({
+        title: "Succès",
+        description: "Profil mis à jour avec succès.",
+      });
+
+      setEditDialogOpen(false);
+      setEditingUser(null);
+      fetchData();
+    } catch (error: any) {
+      console.error('Error updating profile:', error);
+      toast({
+        title: "Erreur",
+        description: "Impossible de mettre à jour le profil.",
+        variant: "destructive",
+      });
+    }
+  };
+
   if (loading) {
     return (
       <div className="space-y-6">
@@ -448,6 +510,13 @@ export const UserRoleManager = () => {
                     <Button
                       variant="ghost"
                       size="sm"
+                      onClick={() => openEditDialog(userRole)}
+                    >
+                      <Edit className="h-4 w-4" />
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="sm"
                       onClick={() => removeUserRole(userRole.id)}
                     >
                       <Shield className="h-4 w-4 text-destructive" />
@@ -459,6 +528,56 @@ export const UserRoleManager = () => {
           )}
         </CardContent>
       </Card>
+
+      {/* Edit User Dialog */}
+      <Dialog open={editDialogOpen} onOpenChange={setEditDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Modifier l'utilisateur</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 mt-4">
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="edit-first-name">Prénom</Label>
+                <Input
+                  id="edit-first-name"
+                  value={editForm.first_name}
+                  onChange={(e) => setEditForm({ ...editForm, first_name: e.target.value })}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="edit-last-name">Nom</Label>
+                <Input
+                  id="edit-last-name"
+                  value={editForm.last_name}
+                  onChange={(e) => setEditForm({ ...editForm, last_name: e.target.value })}
+                />
+              </div>
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="edit-email">Email</Label>
+              <Input
+                id="edit-email"
+                type="email"
+                value={editForm.email}
+                onChange={(e) => setEditForm({ ...editForm, email: e.target.value })}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="edit-phone">Téléphone</Label>
+              <Input
+                id="edit-phone"
+                type="tel"
+                value={editForm.phone}
+                onChange={(e) => setEditForm({ ...editForm, phone: e.target.value })}
+              />
+            </div>
+            <Button onClick={updateUserProfile} className="w-full">
+              Enregistrer les modifications
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
