@@ -8,6 +8,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Users, Mail, Phone, Plus, Edit, Trash2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
+import { useLanguage } from "@/hooks/useLanguage";
 import { toast } from "sonner";
 
 interface Tenant {
@@ -31,6 +32,7 @@ export const TenantManagement = () => {
     phone: ""
   });
   const { user } = useAuth();
+  const { t } = useLanguage();
 
   useEffect(() => {
     if (user) {
@@ -60,7 +62,7 @@ export const TenantManagement = () => {
       setTenants(data || []);
     } catch (error) {
       console.error('Error fetching tenants:', error);
-      toast.error('Erreur lors du chargement des locataires');
+      toast.error(t('tenants.errorLoading'));
     }
   };
 
@@ -77,7 +79,7 @@ export const TenantManagement = () => {
           .eq('id', selectedTenant.id);
 
         if (error) throw error;
-        toast.success('Locataire modifié avec succès');
+        toast.success(t('tenants.successEdit'));
       } else {
         // Create new tenant
         const { error } = await supabase
@@ -85,14 +87,14 @@ export const TenantManagement = () => {
           .insert([{ ...formData, owner_id: user.id }]);
 
         if (error) throw error;
-        toast.success('Locataire ajouté avec succès');
+        toast.success(t('tenants.successAdd'));
       }
 
       fetchTenants();
       handleCloseDialog();
     } catch (error) {
       console.error('Error saving tenant:', error);
-      toast.error('Erreur lors de la sauvegarde');
+      toast.error(t('tenants.errorSaving'));
     }
   };
 
@@ -108,7 +110,7 @@ export const TenantManagement = () => {
   };
 
   const handleDelete = async (tenantId: string) => {
-    if (!confirm('Êtes-vous sûr de vouloir supprimer ce locataire ?')) return;
+    if (!confirm(t('tenants.confirmDelete'))) return;
 
     try {
       const { error } = await supabase
@@ -117,11 +119,11 @@ export const TenantManagement = () => {
         .eq('id', tenantId);
 
       if (error) throw error;
-      toast.success('Locataire supprimé avec succès');
+      toast.success(t('tenants.successDelete'));
       fetchTenants();
     } catch (error) {
       console.error('Error deleting tenant:', error);
-      toast.error('Erreur lors de la suppression');
+      toast.error(t('tenants.errorDeleting'));
     }
   };
 
@@ -139,24 +141,24 @@ export const TenantManagement = () => {
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <h2 className="text-2xl font-bold">Gestion des Locataires</h2>
+        <h2 className="text-2xl font-bold">{t('tenants.title')}</h2>
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
             <Button className="bg-gradient-primary hover:bg-primary-dark">
               <Plus className="h-4 w-4 mr-2" />
-              Ajouter un Locataire
+              {t('tenants.addTenant')}
             </Button>
           </DialogTrigger>
           <DialogContent className="sm:max-w-md">
             <DialogHeader>
               <DialogTitle>
-                {selectedTenant ? 'Modifier le Locataire' : 'Nouveau Locataire'}
+                {selectedTenant ? t('tenants.editTenant') : t('tenants.addTenant')}
               </DialogTitle>
             </DialogHeader>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="first_name">Prénom *</Label>
+                  <Label htmlFor="first_name">{t('tenants.firstName')} *</Label>
                   <Input
                     id="first_name"
                     value={formData.first_name}
@@ -165,7 +167,7 @@ export const TenantManagement = () => {
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="last_name">Nom *</Label>
+                  <Label htmlFor="last_name">{t('tenants.lastName')} *</Label>
                   <Input
                     id="last_name"
                     value={formData.last_name}
@@ -175,7 +177,7 @@ export const TenantManagement = () => {
                 </div>
               </div>
               <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
+                <Label htmlFor="email">{t('tenants.email')}</Label>
                 <Input
                   id="email"
                   type="email"
@@ -184,7 +186,7 @@ export const TenantManagement = () => {
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="phone">Téléphone</Label>
+                <Label htmlFor="phone">{t('tenants.phone')}</Label>
                 <Input
                   id="phone"
                   value={formData.phone}
@@ -193,10 +195,10 @@ export const TenantManagement = () => {
               </div>
               <div className="flex gap-2 pt-4">
                 <Button type="submit" className="flex-1 bg-gradient-primary hover:bg-primary-dark">
-                  {selectedTenant ? 'Modifier' : 'Ajouter'}
+                  {selectedTenant ? t('common.edit') : t('common.add')}
                 </Button>
                 <Button type="button" variant="outline" onClick={handleCloseDialog} className="flex-1">
-                  Annuler
+                  {t('common.cancel')}
                 </Button>
               </div>
             </form>
@@ -243,7 +245,7 @@ export const TenantManagement = () => {
                   className="flex-1"
                 >
                   <Edit className="h-4 w-4 mr-1" />
-                  Modifier
+                  {t('common.edit')}
                 </Button>
                 <Button
                   onClick={() => handleDelete(tenant.id)}
@@ -262,13 +264,13 @@ export const TenantManagement = () => {
       {tenants.length === 0 && (
         <Card className="p-8 text-center">
           <Users className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-          <h3 className="text-lg font-semibold mb-2">Aucun locataire</h3>
+          <h3 className="text-lg font-semibold mb-2">{t('tenants.noTenants')}</h3>
           <p className="text-muted-foreground mb-4">
-            Commencez par ajouter vos premiers locataires
+            {t('tenants.addFirstTenant')}
           </p>
           <Button onClick={() => setIsDialogOpen(true)} className="bg-gradient-primary hover:bg-primary-dark">
             <Plus className="h-4 w-4 mr-2" />
-            Ajouter un Locataire
+            {t('tenants.addTenant')}
           </Button>
         </Card>
       )}

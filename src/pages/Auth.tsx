@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
+import { useLanguage } from '@/hooks/useLanguage';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -19,6 +20,7 @@ const Auth = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const { signIn, signUp, user } = useAuth();
+  const { t } = useLanguage();
   const navigate = useNavigate();
 
   // Redirect if already authenticated
@@ -37,14 +39,14 @@ const Auth = () => {
     
     if (error) {
       if (error.message.includes('Invalid login credentials')) {
-        setError('Email ou mot de passe incorrect');
+        setError(t('auth.errorInvalidCredentials'));
       } else if (error.message.includes('Email not confirmed')) {
-        setError('Veuillez confirmer votre email avant de vous connecter');
+        setError(t('auth.errorEmailNotConfirmed'));
       } else {
         setError(error.message);
       }
     } else {
-      toast.success('Connexion réussie !');
+      toast.success(t('auth.signInSuccess'));
       navigate('/');
     }
     
@@ -57,19 +59,19 @@ const Auth = () => {
     setError('');
 
     if (!firstName.trim() || !lastName.trim()) {
-      setError('Le prénom et le nom sont requis');
+      setError(t('auth.errorNameRequired'));
       setLoading(false);
       return;
     }
 
     if (password.length < 6) {
-      setError('Le mot de passe doit contenir au moins 6 caractères');
+      setError(t('auth.errorPasswordLength'));
       setLoading(false);
       return;
     }
 
     if (password !== confirmPassword) {
-      setError('Les mots de passe ne correspondent pas');
+      setError(t('auth.errorPasswordMatch'));
       setLoading(false);
       return;
     }
@@ -78,12 +80,12 @@ const Auth = () => {
     
     if (error) {
       if (error.message.includes('User already registered')) {
-        setError('Un compte existe déjà avec cet email');
+        setError(t('auth.errorUserExists'));
       } else {
         setError(error.message);
       }
     } else {
-      toast.success('Compte créé ! Vérifiez votre email pour confirmer votre inscription.');
+      toast.success(t('auth.signUpSuccess'));
     }
     
     setLoading(false);
@@ -99,9 +101,9 @@ const Auth = () => {
             </div>
           </div>
           <div>
-            <CardTitle className="text-2xl font-bold">Gestionnaire Immobilier</CardTitle>
+            <CardTitle className="text-2xl font-bold">{t('auth.title')}</CardTitle>
             <CardDescription>
-              Accédez à votre tableau de bord de gestion
+              {t('auth.subtitle')}
             </CardDescription>
           </div>
         </CardHeader>
@@ -111,18 +113,18 @@ const Auth = () => {
             <TabsList className="grid w-full grid-cols-2">
               <TabsTrigger value="signin" className="flex items-center gap-2">
                 <LogIn className="h-4 w-4" />
-                Connexion
+                {t('auth.signIn')}
               </TabsTrigger>
               <TabsTrigger value="signup" className="flex items-center gap-2">
                 <UserPlus className="h-4 w-4" />
-                Inscription
+                {t('auth.signUp')}
               </TabsTrigger>
             </TabsList>
 
             <TabsContent value="signin">
               <form onSubmit={handleSignIn} className="space-y-4">
                 <div className="space-y-2">
-                  <Label htmlFor="email">Email</Label>
+                  <Label htmlFor="email">{t('auth.email')}</Label>
                   <div className="relative">
                     <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                     <Input
@@ -138,7 +140,7 @@ const Auth = () => {
                 </div>
                 
                 <div className="space-y-2">
-                  <Label htmlFor="password">Mot de passe</Label>
+                  <Label htmlFor="password">{t('auth.password')}</Label>
                   <div className="relative">
                     <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                     <Input
@@ -166,7 +168,7 @@ const Auth = () => {
                   className="w-full bg-gradient-primary hover:bg-primary-dark"
                   disabled={loading}
                 >
-                  {loading ? 'Connexion...' : 'Se connecter'}
+                  {loading ? t('common.loading') : t('auth.signIn')}
                 </Button>
               </form>
             </TabsContent>
@@ -174,7 +176,7 @@ const Auth = () => {
             <TabsContent value="signup">
               <form onSubmit={handleSignUp} className="space-y-4">
                 <div className="space-y-2">
-                  <Label htmlFor="signup-firstname">Prénom</Label>
+                  <Label htmlFor="signup-firstname">{t('auth.firstName')}</Label>
                   <div className="relative">
                     <UserPlus className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                     <Input
@@ -190,7 +192,7 @@ const Auth = () => {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="signup-lastname">Nom</Label>
+                  <Label htmlFor="signup-lastname">{t('auth.lastName')}</Label>
                   <div className="relative">
                     <UserPlus className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                     <Input
@@ -206,7 +208,7 @@ const Auth = () => {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="signup-email">Email</Label>
+                  <Label htmlFor="signup-email">{t('auth.email')}</Label>
                   <div className="relative">
                     <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                     <Input
@@ -222,7 +224,7 @@ const Auth = () => {
                 </div>
                 
                 <div className="space-y-2">
-                  <Label htmlFor="signup-password">Mot de passe</Label>
+                  <Label htmlFor="signup-password">{t('auth.password')}</Label>
                   <div className="relative">
                     <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                     <Input
@@ -236,13 +238,10 @@ const Auth = () => {
                       required
                     />
                   </div>
-                  <p className="text-sm text-muted-foreground">
-                    Minimum 6 caractères
-                  </p>
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="confirm-password">Confirmer le mot de passe</Label>
+                  <Label htmlFor="confirm-password">{t('auth.confirmPassword')}</Label>
                   <div className="relative">
                     <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                     <Input
@@ -271,7 +270,7 @@ const Auth = () => {
                   className="w-full bg-gradient-primary hover:bg-primary-dark"
                   disabled={loading}
                 >
-                  {loading ? 'Création...' : 'Créer un compte'}
+                  {loading ? t('common.loading') : t('auth.signUp')}
                 </Button>
               </form>
             </TabsContent>

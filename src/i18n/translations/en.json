@@ -11,7 +11,16 @@
     "actions": "Actions",
     "status": "Status",
     "date": "Date",
-    "amount": "Amount"
+    "amount": "Amount",
+    "yes": "Yes",
+    "no": "No",
+    "confirm": "Confirm",
+    "close": "Close",
+    "perMonth": "/month",
+    "bedrooms": "bedrooms",
+    "bathrooms": "bathrooms",
+    "bedroom": "bedroom",
+    "bathroom": "bathroom"
   },
   "dashboard": {
     "title": "Property Management Dashboard",
@@ -33,25 +42,51 @@
   },
   "properties": {
     "title": "Properties",
+    "apartment": "Apartment",
     "unit": "Unit",
     "bedrooms": "bedrooms",
     "bathrooms": "bathrooms",
     "rent": "Rent",
     "occupied": "Occupied",
-    "available": "Available",
+    "vacant": "Vacant",
     "maintenance": "Maintenance",
     "tenant": "Tenant",
-    "leaseEnds": "Lease ends on",
+    "leaseExpires": "Lease expires:",
     "manageLease": "Manage Lease",
-    "trackPayment": "Track Payment",
+    "trackPayment": "Payment",
     "assignTenant": "Assign Tenant"
+  },
+  "metrics": {
+    "totalProperties": "Total Apartments",
+    "occupiedProperties": "Occupied Apartments",
+    "monthlyRevenue": "Monthly Revenue",
+    "globalPerformance": "Overall Performance",
+    "threeBedroomApartments": "3-bedroom apartments",
+    "occupancyRate": "occupancy rate",
+    "from": "From",
+    "occupiedApartments": "occupied apartments",
+    "potentialRevenue": "potential revenue",
+    "noData": "No data"
   },
   "tenants": {
     "title": "Tenant Management",
     "name": "Name",
+    "firstName": "First Name",
+    "lastName": "Last Name",
     "email": "Email",
     "phone": "Phone",
-    "addTenant": "Add Tenant"
+    "addTenant": "Add Tenant",
+    "editTenant": "Edit Tenant",
+    "deleteTenant": "Delete Tenant",
+    "confirmDelete": "Are you sure you want to delete this tenant?",
+    "successAdd": "Tenant added successfully",
+    "successEdit": "Tenant updated successfully",
+    "successDelete": "Tenant deleted successfully",
+    "errorLoading": "Error loading tenants",
+    "errorSaving": "Error saving tenant",
+    "errorDeleting": "Error deleting tenant",
+    "noTenants": "No tenants yet",
+    "addFirstTenant": "Add your first tenant to get started"
   },
   "leases": {
     "title": "Lease Management",
@@ -85,12 +120,25 @@
     "tenant": "Tenant"
   },
   "auth": {
+    "title": "Property Manager",
+    "subtitle": "Access your management dashboard",
     "signIn": "Sign In",
     "signUp": "Sign Up",
-    "email": "Email",
+    "email": "Email Address",
     "password": "Password",
+    "confirmPassword": "Confirm Password",
+    "firstName": "First Name",
+    "lastName": "Last Name",
     "forgotPassword": "Forgot password?",
     "noAccount": "Don't have an account?",
-    "haveAccount": "Already have an account?"
+    "haveAccount": "Already have an account?",
+    "signInSuccess": "Successfully signed in!",
+    "signUpSuccess": "Account created! Check your email to confirm your registration.",
+    "errorInvalidCredentials": "Invalid email or password",
+    "errorEmailNotConfirmed": "Please confirm your email before signing in",
+    "errorUserExists": "An account with this email already exists",
+    "errorPasswordLength": "Password must be at least 6 characters",
+    "errorPasswordMatch": "Passwords do not match",
+    "errorNameRequired": "First name and last name are required"
   }
 }
