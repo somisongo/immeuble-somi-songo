@@ -7,6 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
 import { useProperties } from "@/hooks/useProperties";
+import { useLanguage } from "@/hooks/useLanguage";
 
 const NATIONALITIES = [
   "Afghane", "Albanaise", "Algérienne", "Allemande", "Américaine", "Andorrane", "Angolaise", 
@@ -64,6 +65,7 @@ interface ContractParameters {
 export const ContractParametersForm = () => {
   const { properties, loading } = useProperties();
   const vacantProperties = properties.filter(p => p.status === 'vacant');
+  const { t } = useLanguage();
   
   const [parameters, setParameters] = useState<ContractParameters>({
     tenant_name: "",
@@ -86,11 +88,11 @@ export const ContractParametersForm = () => {
     
     // Validation
     if (!parameters.tenant_name || !parameters.tenant_passport || !parameters.start_date || !parameters.end_date) {
-      toast.error("Veuillez remplir tous les champs obligatoires");
+      toast.error(t('contractParameters.errorSave'));
       return;
     }
     
-    toast.success("Paramètres enregistrés avec succès!");
+    toast.success(t('contractParameters.successSave'));
     console.log("Contract parameters:", parameters);
   };
 
@@ -107,19 +109,19 @@ export const ContractParametersForm = () => {
   return (
     <Card className="w-full">
       <CardHeader>
-        <CardTitle>Paramètres du Contrat de Bail</CardTitle>
+        <CardTitle>{t('contractParameters.title')}</CardTitle>
         <CardDescription>
-          Remplissez les informations nécessaires pour générer le contrat
+          {t('contractParameters.description')}
         </CardDescription>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Informations du locataire */}
           <div className="space-y-4">
-            <h3 className="text-lg font-semibold">Informations du Locataire</h3>
+            <h3 className="text-lg font-semibold">{t('contractParameters.tenantInfo')}</h3>
             
             <div className="space-y-2">
-              <Label htmlFor="tenant_name">Nom complet du locataire *</Label>
+              <Label htmlFor="tenant_name">{t('contractParameters.tenantName')} *</Label>
               <Input
                 id="tenant_name"
                 value={parameters.tenant_name}
@@ -131,13 +133,13 @@ export const ContractParametersForm = () => {
 
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="tenant_nationality">Nationalité</Label>
+                <Label htmlFor="tenant_nationality">{t('contractParameters.tenantNationality')}</Label>
                 <Select
                   value={parameters.tenant_nationality}
                   onValueChange={(value) => handleChange("tenant_nationality", value)}
                 >
                   <SelectTrigger id="tenant_nationality">
-                    <SelectValue placeholder="Sélectionnez une nationalité" />
+                    <SelectValue placeholder={t('contractParameters.tenantNationality')} />
                   </SelectTrigger>
                   <SelectContent>
                     {NATIONALITIES.map((nationality) => (
@@ -150,7 +152,7 @@ export const ContractParametersForm = () => {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="tenant_passport">Numéro de passeport *</Label>
+                <Label htmlFor="tenant_passport">{t('contractParameters.tenantPassport')} *</Label>
                 <Input
                   id="tenant_passport"
                   value={parameters.tenant_passport}
@@ -162,12 +164,12 @@ export const ContractParametersForm = () => {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="tenant_address">Adresse du locataire</Label>
+              <Label htmlFor="tenant_address">{t('contractParameters.tenantAddress')}</Label>
               <Textarea
                 id="tenant_address"
                 value={parameters.tenant_address}
                 onChange={(e) => handleChange("tenant_address", e.target.value)}
-                placeholder="Adresse complète..."
+                placeholder={t('contractParameters.tenantAddress')}
                 rows={2}
               />
             </div>
@@ -175,39 +177,34 @@ export const ContractParametersForm = () => {
 
           {/* Informations de la propriété */}
           <div className="space-y-4">
-            <h3 className="text-lg font-semibold">Informations de la Propriété</h3>
+            <h3 className="text-lg font-semibold">{t('contractParameters.propertyInfo')}</h3>
             
             <div className="space-y-2">
-              <Label htmlFor="property_address">Adresse de la propriété</Label>
+              <Label htmlFor="property_address">{t('contractParameters.propertyAddress')}</Label>
               <Textarea
                 id="property_address"
                 value={parameters.property_address}
                 onChange={(e) => handleChange("property_address", e.target.value)}
+                placeholder={t('contractParameters.propertyAddress')}
                 rows={2}
               />
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="unit_number">Numéro d'appartement *</Label>
+              <Label htmlFor="unit_number">{t('contractParameters.unitNumber')}</Label>
               <Select
                 value={parameters.unit_number}
                 onValueChange={(value) => handleChange("unit_number", value)}
               >
                 <SelectTrigger id="unit_number">
-                  <SelectValue placeholder="Sélectionnez un appartement vacant" />
+                  <SelectValue placeholder={t('contractParameters.unitNumber')} />
                 </SelectTrigger>
                 <SelectContent>
-                  {loading ? (
-                    <SelectItem value="loading" disabled>Chargement...</SelectItem>
-                  ) : vacantProperties.length === 0 ? (
-                    <SelectItem value="none" disabled>Aucun appartement vacant</SelectItem>
-                  ) : (
-                    vacantProperties.map((property) => (
-                      <SelectItem key={property.id} value={property.unit}>
-                        {property.unit} - {property.bedrooms} ch, {property.bathrooms} sdb
-                      </SelectItem>
-                    ))
-                  )}
+                  {vacantProperties.map((property) => (
+                    <SelectItem key={property.id} value={property.unit}>
+                      {property.unit}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
             </div>
@@ -215,21 +212,20 @@ export const ContractParametersForm = () => {
 
           {/* Informations financières */}
           <div className="space-y-4">
-            <h3 className="text-lg font-semibold">Informations Financières</h3>
+            <h3 className="text-lg font-semibold">{t('contractParameters.financialInfo')}</h3>
             
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="rent_amount">Loyer mensuel (USD)</Label>
+                <Label htmlFor="rent_amount">{t('contractParameters.rentAmount')}</Label>
                 <Input
                   id="rent_amount"
-                  type="number"
                   value={parameters.rent_amount}
                   onChange={(e) => handleChange("rent_amount", e.target.value)}
+                  placeholder="700"
                 />
               </div>
-
               <div className="space-y-2">
-                <Label htmlFor="rent_amount_words">Loyer en lettres</Label>
+                <Label htmlFor="rent_amount_words">{t('contractParameters.rentAmountWords')}</Label>
                 <Input
                   id="rent_amount_words"
                   value={parameters.rent_amount_words}
@@ -241,17 +237,16 @@ export const ContractParametersForm = () => {
 
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="deposit_amount">Garantie locative (USD)</Label>
+                <Label htmlFor="deposit_amount">{t('contractParameters.depositAmount')}</Label>
                 <Input
                   id="deposit_amount"
-                  type="number"
                   value={parameters.deposit_amount}
                   onChange={(e) => handleChange("deposit_amount", e.target.value)}
+                  placeholder="2100"
                 />
               </div>
-
               <div className="space-y-2">
-                <Label htmlFor="deposit_amount_words">Garantie en lettres</Label>
+                <Label htmlFor="deposit_amount_words">{t('contractParameters.depositAmountWords')}</Label>
                 <Input
                   id="deposit_amount_words"
                   value={parameters.deposit_amount_words}
@@ -264,11 +259,11 @@ export const ContractParametersForm = () => {
 
           {/* Dates */}
           <div className="space-y-4">
-            <h3 className="text-lg font-semibold">Dates du Bail</h3>
+            <h3 className="text-lg font-semibold">{t('contractParameters.dates')}</h3>
             
             <div className="grid grid-cols-3 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="start_date">Date de début *</Label>
+                <Label htmlFor="start_date">{t('contractParameters.startDate')} *</Label>
                 <Input
                   id="start_date"
                   type="date"
@@ -277,9 +272,8 @@ export const ContractParametersForm = () => {
                   required
                 />
               </div>
-
               <div className="space-y-2">
-                <Label htmlFor="end_date">Date de fin *</Label>
+                <Label htmlFor="end_date">{t('contractParameters.endDate')} *</Label>
                 <Input
                   id="end_date"
                   type="date"
@@ -288,9 +282,8 @@ export const ContractParametersForm = () => {
                   required
                 />
               </div>
-
               <div className="space-y-2">
-                <Label htmlFor="signature_date">Date de signature</Label>
+                <Label htmlFor="signature_date">{t('contractParameters.signatureDate')}</Label>
                 <Input
                   id="signature_date"
                   type="date"
@@ -301,29 +294,26 @@ export const ContractParametersForm = () => {
             </div>
           </div>
 
-          <div className="flex justify-end gap-4">
-            <Button type="button" variant="outline" onClick={() => {
-              // Reset form
-              setParameters({
-                tenant_name: "",
-                tenant_nationality: "Congolaise",
-                tenant_passport: "",
-                tenant_address: "",
-                property_address: "Avenue Saka n° 14, Quartier Kinsuka, Commune de Ngaliema",
-                unit_number: "",
-                rent_amount: "700",
-                rent_amount_words: "sept cents",
-                deposit_amount: "2100",
-                deposit_amount_words: "deux milles cent",
-                start_date: "",
-                end_date: "",
-                signature_date: new Date().toISOString().split('T')[0]
-              });
-            }}>
-              Réinitialiser
+          <div className="flex gap-2 justify-end">
+            <Button type="button" variant="outline" onClick={() => setParameters({
+              tenant_name: "",
+              tenant_nationality: "Congolaise",
+              tenant_passport: "",
+              tenant_address: "",
+              property_address: "Avenue Saka n° 14, Quartier Kinsuka, Commune de Ngaliema",
+              unit_number: "",
+              rent_amount: "700",
+              rent_amount_words: "sept cents",
+              deposit_amount: "2100",
+              deposit_amount_words: "deux milles cent",
+              start_date: "",
+              end_date: "",
+              signature_date: new Date().toISOString().split('T')[0]
+            })}>
+              {t('contractParameters.reset')}
             </Button>
             <Button type="submit">
-              Enregistrer et Prévisualiser
+              {t('contractParameters.savePreview')}
             </Button>
           </div>
         </form>

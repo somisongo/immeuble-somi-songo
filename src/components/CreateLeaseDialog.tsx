@@ -8,6 +8,7 @@ import { Plus } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
+import { useLanguage } from "@/hooks/useLanguage";
 
 interface Property {
   id: string;
@@ -41,6 +42,7 @@ export const CreateLeaseDialog = ({ onLeaseCreated }: CreateLeaseDialogProps) =>
     end_date: "",
   });
   const { user } = useAuth();
+  const { t } = useLanguage();
 
   useEffect(() => {
     if (open) {
@@ -63,7 +65,7 @@ export const CreateLeaseDialog = ({ onLeaseCreated }: CreateLeaseDialogProps) =>
       setProperties(data || []);
     } catch (error) {
       console.error('Erreur lors du chargement des propriétés:', error);
-      toast.error('Erreur lors du chargement des propriétés');
+      toast.error(t('createLease.errorLoadProperties'));
     }
   };
 
@@ -91,7 +93,7 @@ export const CreateLeaseDialog = ({ onLeaseCreated }: CreateLeaseDialogProps) =>
       setTenants(data || []);
     } catch (error) {
       console.error('Erreur lors du chargement des locataires:', error);
-      toast.error('Erreur lors du chargement des locataires');
+      toast.error(t('createLease.errorLoadTenants'));
     }
   };
 
