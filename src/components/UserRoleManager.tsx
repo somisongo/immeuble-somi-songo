@@ -658,9 +658,12 @@ export const UserRoleManager = () => {
                 id="edit-email"
                 type="email"
                 value={editForm.email}
-                onChange={(e) => setEditForm({ ...editForm, email: e.target.value })}
-                className={isFieldModified('email') ? 'border-primary' : ''}
+                disabled
+                className="bg-muted cursor-not-allowed"
               />
+              <p className="text-xs text-muted-foreground">
+                L'email ne peut pas être modifié car il est lié au compte d'authentification.
+              </p>
             </div>
             <div className="space-y-2">
               <Label htmlFor="edit-phone" className="flex items-center gap-2">
