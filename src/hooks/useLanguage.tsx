@@ -57,3 +57,6 @@ export const useLanguage = () => {
   }
   return context;
 };
+
+// Export for use in components
+export type { Language };
