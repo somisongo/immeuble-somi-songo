@@ -19,9 +19,9 @@ const handler = async (req: Request): Promise<Response> => {
     const { html, filename }: DocxRequest = await req.json();
 
     // Nettoyer le HTML et préparer pour le format MHTML
+    // Garder les images mais supprimer les classes CSS
     const cleanHtml = html
-      .replace(/class="[^"]*"/gi, '') // Supprimer les classes CSS
-      .replace(/<img[^>]*src="([^"]*)"[^>]*>/gi, ''); // Supprimer les images
+      .replace(/class="[^"]*"/gi, ''); // Supprimer les classes CSS
 
     // Créer un document MHTML (format supporté par Word)
     const boundary = "----=_NextPart_" + Date.now();
