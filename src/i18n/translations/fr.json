@@ -330,6 +330,15 @@
     "step6Description": "Consultez vos revenus mensuels et exportez les données",
     "needHelp": "Besoin d'aide ? Contactez le support technique."
   },
+  "userGuide": {
+    "title": "Guide d'Utilisation",
+    "subtitle": "Guide complet pour utiliser la plateforme de gestion immobilière",
+    "version": "Version 1.0",
+    "printVersion": "Imprimer / Version PDF",
+    "printReady": "Préparation de la version imprimable...",
+    "welcomeTitle": "Bienvenue !",
+    "welcomeDescription": "Cette plateforme vous permet de gérer efficacement vos propriétés, locataires, baux et paiements en un seul endroit."
+  },
   "documentation": {
     "title": "Documentation",
     "subtitle": "Guides d'utilisation et documentation technique complète",
