@@ -39,7 +39,7 @@
       "payments": "Payments",
       "contracts": "Contracts",
       "users": "Users",
-      "guide": "Guide"
+      "documentation": "Documentation"
     }
   },
   "properties": {
@@ -329,6 +329,12 @@
     "step6": "Step 6: Analyze Revenue",
     "step6Description": "View your monthly revenue and export data",
     "needHelp": "Need help? Contact technical support."
+  },
+  "documentation": {
+    "title": "Documentation",
+    "subtitle": "User guides and complete technical documentation",
+    "userGuide": "User Guide",
+    "technicalGuide": "Technical Admin Guide"
   },
   "technicalDoc": {
     "title": "Technical Documentation",
