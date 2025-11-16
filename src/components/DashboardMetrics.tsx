@@ -1,5 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Building, Users, DollarSign, TrendingUp } from "lucide-react";
+import { useLanguage } from "@/hooks/useLanguage";
 
 interface Property {
   id: string;
@@ -17,6 +18,7 @@ interface DashboardMetricsProps {
 }
 
 export const DashboardMetrics = ({ properties }: DashboardMetricsProps) => {
+  const { t } = useLanguage();
   const totalProperties = properties.length;
   const occupiedProperties = properties.filter(p => p.status === "occupied");
   const occupiedCount = occupiedProperties.length;
@@ -35,40 +37,40 @@ export const DashboardMetrics = ({ properties }: DashboardMetricsProps) => {
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
       <Card className="bg-gradient-card shadow-card">
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">Total Appartements</CardTitle>
+          <CardTitle className="text-sm font-medium">{t('metrics.totalProperties')}</CardTitle>
           <Building className="h-4 w-4 text-muted-foreground" />
         </CardHeader>
         <CardContent>
           <div className="text-2xl font-bold">{totalProperties}</div>
-          <p className="text-xs text-muted-foreground">Appartements 3 chambres</p>
+          <p className="text-xs text-muted-foreground">{t('metrics.threeBedroomApartments')}</p>
         </CardContent>
       </Card>
       
       <Card className="bg-gradient-card shadow-card">
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">Appartements Occupés</CardTitle>
+          <CardTitle className="text-sm font-medium">{t('metrics.occupiedProperties')}</CardTitle>
           <Users className="h-4 w-4 text-muted-foreground" />
         </CardHeader>
         <CardContent>
           <div className="text-2xl font-bold text-success">{occupiedCount}</div>
-          <p className="text-xs text-muted-foreground">{occupancyRate}% taux d'occupation</p>
+          <p className="text-xs text-muted-foreground">{occupancyRate}% {t('metrics.occupancyRate')}</p>
         </CardContent>
       </Card>
       
       <Card className="bg-gradient-card shadow-card">
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">Revenus Mensuels</CardTitle>
+          <CardTitle className="text-sm font-medium">{t('metrics.monthlyRevenue')}</CardTitle>
           <DollarSign className="h-4 w-4 text-muted-foreground" />
         </CardHeader>
         <CardContent>
           <div className="text-2xl font-bold text-success">${monthlyRevenue.toLocaleString()}</div>
-          <p className="text-xs text-muted-foreground">De {occupiedCount} appartements occupés</p>
+          <p className="text-xs text-muted-foreground">{t('metrics.from')} {occupiedCount} {t('metrics.occupiedApartments')}</p>
         </CardContent>
       </Card>
       
       <Card className="bg-gradient-card shadow-card">
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">Performance Globale</CardTitle>
+          <CardTitle className="text-sm font-medium">{t('metrics.globalPerformance')}</CardTitle>
           <TrendingUp className="h-4 w-4 text-muted-foreground" />
         </CardHeader>
         <CardContent>
@@ -77,8 +79,8 @@ export const DashboardMetrics = ({ properties }: DashboardMetricsProps) => {
           </div>
           <p className="text-xs text-muted-foreground">
             {potentialRevenue > 0 
-              ? `${performanceGap >= 0 ? '+' : ''}${performanceGap}% revenus potentiels`
-              : 'Aucune donnée'}
+              ? `${performanceGap >= 0 ? '+' : ''}${performanceGap}% ${t('metrics.potentialRevenue')}`
+              : t('metrics.noData')}
           </p>
         </CardContent>
       </Card>

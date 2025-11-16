@@ -11,7 +11,16 @@
     "actions": "Actions",
     "status": "Statut",
     "date": "Date",
-    "amount": "Montant"
+    "amount": "Montant",
+    "yes": "Oui",
+    "no": "Non",
+    "confirm": "Confirmer",
+    "close": "Fermer",
+    "perMonth": "/mois",
+    "bedrooms": "chambres",
+    "bathrooms": "salles de bain",
+    "bedroom": "chambre",
+    "bathroom": "salle de bain"
   },
   "dashboard": {
     "title": "Tableau de bord de gestion immobilière",
@@ -33,25 +42,51 @@
   },
   "properties": {
     "title": "Propriétés",
+    "apartment": "Appartement",
     "unit": "Unité",
     "bedrooms": "chambres",
     "bathrooms": "salles de bain",
     "rent": "Loyer",
     "occupied": "Occupé",
-    "available": "Disponible",
+    "vacant": "Vacant",
     "maintenance": "Maintenance",
     "tenant": "Locataire",
-    "leaseEnds": "Bail se termine le",
-    "manageLease": "Gérer le bail",
-    "trackPayment": "Suivre le paiement",
-    "assignTenant": "Assigner un locataire"
+    "leaseExpires": "Bail expire :",
+    "manageLease": "Gérer le Bail",
+    "trackPayment": "Paiement",
+    "assignTenant": "Assigner Locataire"
+  },
+  "metrics": {
+    "totalProperties": "Total Appartements",
+    "occupiedProperties": "Appartements Occupés",
+    "monthlyRevenue": "Revenus Mensuels",
+    "globalPerformance": "Performance Globale",
+    "threeBedroomApartments": "Appartements 3 chambres",
+    "occupancyRate": "taux d'occupation",
+    "from": "De",
+    "occupiedApartments": "appartements occupés",
+    "potentialRevenue": "revenus potentiels",
+    "noData": "Aucune donnée"
   },
   "tenants": {
     "title": "Gestion des locataires",
     "name": "Nom",
+    "firstName": "Prénom",
+    "lastName": "Nom",
     "email": "Email",
     "phone": "Téléphone",
-    "addTenant": "Ajouter un locataire"
+    "addTenant": "Ajouter un locataire",
+    "editTenant": "Modifier le locataire",
+    "deleteTenant": "Supprimer le locataire",
+    "confirmDelete": "Êtes-vous sûr de vouloir supprimer ce locataire ?",
+    "successAdd": "Locataire ajouté avec succès",
+    "successEdit": "Locataire modifié avec succès",
+    "successDelete": "Locataire supprimé avec succès",
+    "errorLoading": "Erreur lors du chargement des locataires",
+    "errorSaving": "Erreur lors de la sauvegarde",
+    "errorDeleting": "Erreur lors de la suppression",
+    "noTenants": "Aucun locataire pour le moment",
+    "addFirstTenant": "Ajoutez votre premier locataire pour commencer"
   },
   "leases": {
     "title": "Gestion des baux",
@@ -85,12 +120,25 @@
     "tenant": "Locataire"
   },
   "auth": {
-    "signIn": "Se connecter",
+    "title": "Gestionnaire Immobilier",
+    "subtitle": "Accédez à votre tableau de bord de gestion",
+    "signIn": "Connexion",
     "signUp": "S'inscrire",
-    "email": "Email",
+    "email": "Adresse email",
     "password": "Mot de passe",
+    "confirmPassword": "Confirmer le mot de passe",
+    "firstName": "Prénom",
+    "lastName": "Nom",
     "forgotPassword": "Mot de passe oublié ?",
     "noAccount": "Pas de compte ?",
-    "haveAccount": "Vous avez déjà un compte ?"
+    "haveAccount": "Vous avez déjà un compte ?",
+    "signInSuccess": "Connexion réussie !",
+    "signUpSuccess": "Compte créé ! Vérifiez votre email pour confirmer votre inscription.",
+    "errorInvalidCredentials": "Email ou mot de passe incorrect",
+    "errorEmailNotConfirmed": "Veuillez confirmer votre email avant de vous connecter",
+    "errorUserExists": "Un compte existe déjà avec cet email",
+    "errorPasswordLength": "Le mot de passe doit contenir au moins 6 caractères",
+    "errorPasswordMatch": "Les mots de passe ne correspondent pas",
+    "errorNameRequired": "Le prénom et le nom sont requis"
   }
 }
