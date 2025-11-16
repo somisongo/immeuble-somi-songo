@@ -11,6 +11,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { toast } from "sonner";
 import { Trash2, Plus, Edit, Save, X, Eye } from "lucide-react";
+import { useLanguage } from "@/hooks/useLanguage";
 
 interface ContractClause {
   id: string;
@@ -33,6 +34,7 @@ interface LandlordInfo {
 
 export default function ContractClausesManager() {
   const { user } = useAuth();
+  const { t } = useLanguage();
   const [clauses, setClauses] = useState<ContractClause[]>([]);
   const [landlordInfo, setLandlordInfo] = useState<LandlordInfo>({
     full_name: "",
@@ -89,7 +91,7 @@ export default function ContractClausesManager() {
       }
     } catch (error: any) {
       console.error('Erreur:', error);
-      toast.error("Erreur lors du chargement des données");
+      toast.error(t('contractClauses.errorLoad'));
     } finally {
       setLoading(false);
     }
@@ -119,10 +121,10 @@ export default function ContractClausesManager() {
       }
 
       setEditingLandlord(false);
-      toast.success("Informations du bailleur sauvegardées");
+      toast.success(t('contractClauses.successSave'));
     } catch (error: any) {
       console.error('Erreur:', error);
-      toast.error("Erreur lors de la sauvegarde");
+      toast.error(t('contractClauses.errorSave'));
     }
   };
 
@@ -139,16 +141,16 @@ export default function ContractClausesManager() {
         clause.id === updatedClause.id ? updatedClause : clause
       ));
       setEditingClause(null);
-      toast.success("Clause mise à jour");
+      toast.success(t('contractClauses.successUpdate'));
     } catch (error: any) {
       console.error('Erreur:', error);
-      toast.error("Erreur lors de la sauvegarde");
+      toast.error(t('contractClauses.errorUpdate'));
     }
   };
 
   const addClause = async () => {
     if (!newClause.title || !newClause.content) {
-      toast.error("Veuillez remplir le titre et le contenu");
+      toast.error(t('contractClauses.errorCreate'));
       return;
     }
 
@@ -176,15 +178,15 @@ export default function ContractClausesManager() {
         is_annex: false
       });
       setShowCreateDialog(false);
-      toast.success("Clause ajoutée");
+      toast.success(t('contractClauses.successCreate'));
     } catch (error: any) {
       console.error('Erreur:', error);
-      toast.error("Erreur lors de l'ajout");
+      toast.error(t('contractClauses.errorCreate'));
     }
   };
 
   const deleteClause = async (clauseId: string) => {
-    if (!confirm("Êtes-vous sûr de vouloir supprimer cette clause ?")) {
+    if (!confirm(t('contractClauses.errorDelete'))) {
       return;
     }
 
@@ -197,15 +199,15 @@ export default function ContractClausesManager() {
       if (error) throw error;
 
       setClauses(prev => prev.filter(clause => clause.id !== clauseId));
-      toast.success("Clause supprimée");
+      toast.success(t('contractClauses.successDelete'));
     } catch (error: any) {
       console.error('Erreur:', error);
-      toast.error("Erreur lors de la suppression");
+      toast.error(t('contractClauses.errorDelete'));
     }
   };
 
   if (loading) {
-    return <div className="p-4">Chargement...</div>;
+    return <div className="p-4">{t('common.loading')}</div>;
   }
 
   const mainClauses = clauses.filter(c => !c.is_annex);
@@ -216,9 +218,9 @@ export default function ContractClausesManager() {
       {/* Informations du bailleur */}
       <Card>
         <CardHeader>
-          <CardTitle>Informations du bailleur</CardTitle>
+          <CardTitle>{t('contractClauses.landlordInfo')}</CardTitle>
           <CardDescription>
-            Ces informations apparaîtront dans tous les contrats
+            {t('contractClauses.landlordInfo')}
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -226,7 +228,7 @@ export default function ContractClausesManager() {
             <>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <Label htmlFor="full_name">Nom complet</Label>
+                  <Label htmlFor="full_name">{t('contractClauses.fullName')}</Label>
                   <Input
                     id="full_name"
                     value={landlordInfo.full_name}
@@ -237,7 +239,7 @@ export default function ContractClausesManager() {
                   />
                 </div>
                 <div>
-                  <Label htmlFor="nationality">Nationalité</Label>
+                  <Label htmlFor="nationality">{t('contractClauses.nationality')}</Label>
                   <Input
                     id="nationality"
                     value={landlordInfo.nationality}
@@ -249,7 +251,7 @@ export default function ContractClausesManager() {
                 </div>
               </div>
               <div>
-                <Label htmlFor="passport_number">Numéro de passeport</Label>
+                <Label htmlFor="passport_number">{t('contractClauses.passportNumber')}</Label>
                 <Input
                   id="passport_number"
                   value={landlordInfo.passport_number || ""}
@@ -260,7 +262,7 @@ export default function ContractClausesManager() {
                 />
               </div>
               <div>
-                <Label htmlFor="address">Adresse</Label>
+                <Label htmlFor="address">{t('contractClauses.address')}</Label>
                 <Textarea
                   id="address"
                   value={landlordInfo.address}
@@ -272,7 +274,7 @@ export default function ContractClausesManager() {
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <Label htmlFor="bank_name">Banque</Label>
+                  <Label htmlFor="bank_name">{t('contractClauses.bankName')}</Label>
                   <Input
                     id="bank_name"
                     value={landlordInfo.bank_name}
@@ -283,7 +285,7 @@ export default function ContractClausesManager() {
                   />
                 </div>
                 <div>
-                  <Label htmlFor="bank_account">Numéro de compte</Label>
+                  <Label htmlFor="bank_account">{t('contractClauses.bankAccount')}</Label>
                   <Input
                     id="bank_account"
                     value={landlordInfo.bank_account || ""}
@@ -297,25 +299,27 @@ export default function ContractClausesManager() {
               <div className="flex gap-2">
                 <Button onClick={saveLandlordInfo}>
                   <Save className="h-4 w-4 mr-2" />
-                  Sauvegarder
+                  {t('contractClauses.saveLandlord')}
                 </Button>
                 <Button variant="outline" onClick={() => setEditingLandlord(false)}>
                   <X className="h-4 w-4 mr-2" />
-                  Annuler
+                  {t('contractClauses.cancelEdit')}
                 </Button>
               </div>
             </>
           ) : (
             <>
               <div className="space-y-2">
-                <p><strong>Nom:</strong> {landlordInfo.full_name || "Non défini"}</p>
-                <p><strong>Nationalité:</strong> {landlordInfo.nationality}</p>
-                <p><strong>Adresse:</strong> {landlordInfo.address || "Non définie"}</p>
-                <p><strong>Banque:</strong> {landlordInfo.bank_name} - {landlordInfo.bank_account || "Non défini"}</p>
+                <p><strong>{t('contractClauses.fullName')}:</strong> {landlordInfo.full_name || t('metrics.noData')}</p>
+                <p><strong>{t('contractClauses.nationality')}:</strong> {landlordInfo.nationality}</p>
+                <p><strong>{t('contractClauses.passportNumber')}:</strong> {landlordInfo.passport_number || t('metrics.noData')}</p>
+                <p><strong>{t('contractClauses.address')}:</strong> {landlordInfo.address || t('metrics.noData')}</p>
+                <p><strong>{t('contractClauses.bankName')}:</strong> {landlordInfo.bank_name}</p>
+                <p><strong>{t('contractClauses.bankAccount')}:</strong> {landlordInfo.bank_account || t('metrics.noData')}</p>
               </div>
-              <Button onClick={() => setEditingLandlord(true)}>
+              <Button variant="outline" onClick={() => setEditingLandlord(true)}>
                 <Edit className="h-4 w-4 mr-2" />
-                Modifier
+                {t('contractClauses.editLandlord')}
               </Button>
             </>
           )}
@@ -326,28 +330,28 @@ export default function ContractClausesManager() {
       <Card>
         <CardHeader className="flex flex-row items-center justify-between">
           <div>
-            <CardTitle>Clauses du contrat</CardTitle>
+            <CardTitle>{t('contractClauses.clauses')}</CardTitle>
             <CardDescription>
-              Gérez les articles du contrat de bail
+              {t('contractClauses.clauses')}
             </CardDescription>
           </div>
           <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
             <DialogTrigger asChild>
               <Button>
                 <Plus className="h-4 w-4 mr-2" />
-                Ajouter une clause
+                {t('contractClauses.addClause')}
               </Button>
             </DialogTrigger>
             <DialogContent className="max-w-2xl">
               <DialogHeader>
-                <DialogTitle>Créer une nouvelle clause</DialogTitle>
+                <DialogTitle>{t('contractClauses.createClause')}</DialogTitle>
                 <DialogDescription>
-                  Ajoutez une nouvelle clause ou annexe au contrat
+                  {t('contractClauses.createClause')}
                 </DialogDescription>
               </DialogHeader>
               <div className="space-y-4">
                 <div>
-                  <Label htmlFor="new_title">Titre</Label>
+                  <Label htmlFor="new_title">{t('contractClauses.title')}</Label>
                   <Input
                     id="new_title"
                     value={newClause.title}
@@ -358,7 +362,7 @@ export default function ContractClausesManager() {
                   />
                 </div>
                 <div>
-                  <Label htmlFor="new_content">Contenu</Label>
+                  <Label htmlFor="new_content">{t('contractClauses.content')}</Label>
                   <Textarea
                     id="new_content"
                     value={newClause.content}
@@ -371,7 +375,7 @@ export default function ContractClausesManager() {
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <Label htmlFor="new_article_number">Numéro d'article (optionnel)</Label>
+                    <Label htmlFor="new_article_number">{t('contractClauses.articleNumber')}</Label>
                     <Input
                       id="new_article_number"
                       type="number"
@@ -391,17 +395,17 @@ export default function ContractClausesManager() {
                         is_annex: !!checked
                       }))}
                     />
-                    <Label htmlFor="new_is_annex">C'est une annexe</Label>
+                    <Label htmlFor="new_is_annex">{t('contractClauses.annexes')}</Label>
                   </div>
                 </div>
               </div>
               <DialogFooter>
                 <Button variant="outline" onClick={() => setShowCreateDialog(false)}>
-                  Annuler
+                  {t('contractClauses.cancel')}
                 </Button>
                 <Button onClick={addClause}>
                   <Plus className="h-4 w-4 mr-2" />
-                  Ajouter
+                  {t('contractClauses.create')}
                 </Button>
               </DialogFooter>
             </DialogContent>
@@ -411,10 +415,10 @@ export default function ContractClausesManager() {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Article</TableHead>
-                <TableHead>Titre</TableHead>
-                <TableHead>Contenu</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
+                <TableHead>{t('contractClauses.articleNumber')}</TableHead>
+                <TableHead>{t('contractClauses.title')}</TableHead>
+                <TableHead>{t('contractClauses.content')}</TableHead>
+                <TableHead className="text-right">{t('contractClauses.actions')}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -475,7 +479,7 @@ export default function ContractClausesManager() {
               {mainClauses.length === 0 && (
                 <TableRow>
                   <TableCell colSpan={4} className="text-center text-muted-foreground">
-                    Aucune clause trouvée. Cliquez sur "Ajouter une clause" pour commencer.
+                    {t('contractClauses.noClauses')}. {t('contractClauses.addFirstClause')}.
                   </TableCell>
                 </TableRow>
               )}
@@ -487,18 +491,18 @@ export default function ContractClausesManager() {
       {/* Tableau des annexes */}
       <Card>
         <CardHeader>
-          <CardTitle>Annexes</CardTitle>
+          <CardTitle>{t('contractClauses.annexes')}</CardTitle>
           <CardDescription>
-            Gérez les annexes du contrat
+            {t('contractClauses.annexes')}
           </CardDescription>
         </CardHeader>
         <CardContent>
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Titre</TableHead>
-                <TableHead>Contenu</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
+                <TableHead>{t('contractClauses.title')}</TableHead>
+                <TableHead>{t('contractClauses.content')}</TableHead>
+                <TableHead className="text-right">{t('contractClauses.actions')}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -553,7 +557,7 @@ export default function ContractClausesManager() {
               {annexClauses.length === 0 && (
                 <TableRow>
                   <TableCell colSpan={3} className="text-center text-muted-foreground">
-                    Aucune annexe trouvée.
+                    {t('contractClauses.noAnnexes')}.
                   </TableCell>
                 </TableRow>
               )}
@@ -567,14 +571,14 @@ export default function ContractClausesManager() {
         <Dialog open={!!editingClause} onOpenChange={() => setEditingClause(null)}>
           <DialogContent className="max-w-2xl">
             <DialogHeader>
-              <DialogTitle>Modifier la clause</DialogTitle>
+              <DialogTitle>{t('contractClauses.editClause')}</DialogTitle>
               <DialogDescription>
-                Modifiez les informations de la clause
+                {t('contractClauses.editClause')}
               </DialogDescription>
             </DialogHeader>
             <div className="space-y-4">
               <div>
-                <Label htmlFor="edit_title">Titre</Label>
+                <Label htmlFor="edit_title">{t('contractClauses.title')}</Label>
                 <Input
                   id="edit_title"
                   value={editingClause.title}
@@ -585,7 +589,7 @@ export default function ContractClausesManager() {
                 />
               </div>
               <div>
-                <Label htmlFor="edit_content">Contenu</Label>
+                <Label htmlFor="edit_content">{t('contractClauses.content')}</Label>
                 <Textarea
                   id="edit_content"
                   value={editingClause.content}
@@ -598,7 +602,7 @@ export default function ContractClausesManager() {
               </div>
               {!editingClause.is_annex && (
                 <div>
-                  <Label htmlFor="edit_article_number">Numéro d'article</Label>
+                  <Label htmlFor="edit_article_number">{t('contractClauses.articleNumber')}</Label>
                   <Input
                     id="edit_article_number"
                     type="number"
@@ -613,12 +617,11 @@ export default function ContractClausesManager() {
             </div>
             <DialogFooter>
               <Button variant="outline" onClick={() => setEditingClause(null)}>
-                <X className="h-4 w-4 mr-2" />
-                Annuler
+                {t('contractClauses.cancel')}
               </Button>
               <Button onClick={() => editingClause && saveClause(editingClause)}>
                 <Save className="h-4 w-4 mr-2" />
-                Sauvegarder
+                {t('contractClauses.save')}
               </Button>
             </DialogFooter>
           </DialogContent>
