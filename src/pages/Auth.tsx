@@ -38,13 +38,9 @@ const Auth = () => {
     const { error } = await signIn(email, password);
     
     if (error) {
-      if (error.message.includes('Invalid login credentials')) {
-        setError(t('auth.errorInvalidCredentials'));
-      } else if (error.message.includes('Email not confirmed')) {
-        setError(t('auth.errorEmailNotConfirmed'));
-      } else {
-        setError(error.message);
-      }
+      // Log detailed error server-side only, show generic message to prevent user enumeration
+      console.error('[AUTH]', error.code);
+      setError(t('auth.errorInvalidCredentials'));
     } else {
       toast.success(t('auth.signInSuccess'));
       navigate('/');
@@ -79,11 +75,9 @@ const Auth = () => {
     const { error } = await signUp(email, password, firstName, lastName);
     
     if (error) {
-      if (error.message.includes('User already registered')) {
-        setError(t('auth.errorUserExists'));
-      } else {
-        setError(error.message);
-      }
+      // Log error code only, show generic message to prevent user enumeration
+      console.error('[AUTH]', error.code);
+      setError(t('auth.errorSignupFailed'));
     } else {
       toast.success(t('auth.signUpSuccess'));
     }
