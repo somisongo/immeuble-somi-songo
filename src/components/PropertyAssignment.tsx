@@ -354,10 +354,10 @@ export const PropertyAssignment = () => {
                   <div className="flex items-center gap-4">
                     <div>
                       <h4 className="font-semibold">
-                        {assignment.tenant.first_name} {assignment.tenant.last_name}
+                        {assignment.tenant?.first_name || 'N/A'} {assignment.tenant?.last_name || ''}
                       </h4>
                       <p className="text-sm text-muted-foreground">
-                        Appartement {assignment.property.unit_number} • 
+                        Appartement {assignment.property?.unit_number || 'N/A'} • 
                         ${assignment.rent_amount}/mois • 
                         Du {assignment.start_date} au {assignment.end_date}
                       </p>
@@ -392,8 +392,8 @@ export const PropertyAssignment = () => {
                 <SelectContent>
                   {tenants.map((tenant) => (
                     <SelectItem key={tenant.id} value={tenant.id}>
-                      {tenant.first_name} {tenant.last_name}
-                      {tenant.email && ` (${tenant.email})`}
+                      {tenant?.first_name || 'N/A'} {tenant?.last_name || ''}
+                      {tenant?.email && ` (${tenant.email})`}
                     </SelectItem>
                   ))}
                 </SelectContent>
