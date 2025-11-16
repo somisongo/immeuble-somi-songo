@@ -284,24 +284,35 @@ export const UserRoleManager = () => {
   };
 
   const openEditDialog = (userRole: UserRole) => {
-    if (userRole.profiles) {
-      const profileData = {
-        user_id: userRole.user_id,
-        first_name: userRole.profiles.first_name || '',
-        last_name: userRole.profiles.last_name || '',
-        email: userRole.profiles.email || ''
-      };
-      const formData = {
-        first_name: userRole.profiles.first_name || '',
-        last_name: userRole.profiles.last_name || '',
-        email: userRole.profiles.email || '',
-        phone: userRole.profiles.phone || ''
-      };
-      setEditingUser(profileData);
-      setEditForm(formData);
-      setInitialForm(formData);
-      setEditDialogOpen(true);
+    console.log('Opening edit dialog for user:', userRole);
+    
+    if (!userRole.profiles) {
+      toast({
+        title: "Erreur",
+        description: "Impossible de charger les informations de l'utilisateur.",
+        variant: "destructive",
+      });
+      return;
     }
+
+    const profileData = {
+      user_id: userRole.user_id,
+      first_name: userRole.profiles.first_name || '',
+      last_name: userRole.profiles.last_name || '',
+      email: userRole.profiles.email || ''
+    };
+    const formData = {
+      first_name: userRole.profiles.first_name || '',
+      last_name: userRole.profiles.last_name || '',
+      email: userRole.profiles.email || '',
+      phone: userRole.profiles.phone || ''
+    };
+    
+    console.log('Form data:', formData);
+    setEditingUser(profileData);
+    setEditForm(formData);
+    setInitialForm(formData);
+    setEditDialogOpen(true);
   };
 
   const isFieldModified = (fieldName: keyof typeof editForm) => {
@@ -310,6 +321,8 @@ export const UserRoleManager = () => {
 
   const updateUserProfile = async () => {
     if (!editingUser) return;
+
+    console.log('Updating profile with data:', editForm);
 
     try {
       const { error } = await supabase
@@ -322,7 +335,12 @@ export const UserRoleManager = () => {
         })
         .eq('user_id', editingUser.user_id);
 
-      if (error) throw error;
+      if (error) {
+        console.error('Supabase error:', error);
+        throw error;
+      }
+
+      console.log('Profile updated successfully');
 
       toast({
         title: "Succès",
@@ -331,12 +349,12 @@ export const UserRoleManager = () => {
 
       setEditDialogOpen(false);
       setEditingUser(null);
-      fetchData();
+      await fetchData();
     } catch (error: any) {
       console.error('Error updating profile:', error);
       toast({
         title: "Erreur",
-        description: "Impossible de mettre à jour le profil.",
+        description: error.message || "Impossible de mettre à jour le profil.",
         variant: "destructive",
       });
     }
