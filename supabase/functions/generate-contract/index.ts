@@ -60,7 +60,7 @@ const generateContractHTML = (data: ContractData, landlordInfo: any, clauses: an
     <style>
         @page {
             size: A4;
-            margin: 0;
+            margin: 1in;
         }
         
         body { 
@@ -75,7 +75,7 @@ const generateContractHTML = (data: ContractData, landlordInfo: any, clauses: an
         .page-header {
             background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
             color: white;
-            padding: 30px 40px 20px 40px;
+            padding: 20px 30px 15px 30px;
             border-bottom: 4px solid #1d4ed8;
         }
         
@@ -146,9 +146,9 @@ const generateContractHTML = (data: ContractData, landlordInfo: any, clauses: an
         }
         
         .content-wrapper {
-            padding: 40px 50px;
-            max-width: 210mm;
-            margin: 0 auto;
+            padding: 30px 0;
+            max-width: 100%;
+            margin: 0;
         }
         
         .info-card {
@@ -321,10 +321,10 @@ const generateContractHTML = (data: ContractData, landlordInfo: any, clauses: an
         
         .page-footer {
             background: #f1f5f9;
-            padding: 20px 40px;
+            padding: 15px 30px;
             text-align: center;
             border-top: 3px solid #3b82f6;
-            margin-top: 50px;
+            margin-top: 40px;
         }
         
         .footer-content {
