@@ -385,8 +385,8 @@ const generateContractHTML = (data: ContractData, landlordInfo: any, clauses: an
     <div class="page-header">
         <div class="header-content">
             <div class="logo-section">
-                <img src="https://phxoqxegjcqjmdszyipa.supabase.co/storage/v1/object/public/lovable-uploads/fac5cb0d-2b04-4cba-81e5-079a75bbf8a8.png" 
-                     alt="Logo" class="logo">
+                <img src="https://phxoqxegjcqjmdszyipa.supabase.co/storage/v1/object/public/lovable-uploads/logo-header.png" 
+                     alt="Logo IMMEUBLE SOMI SONGO" class="logo">
                 <div class="company-info">
                     <h1>IMMEUBLE SOMI SONGO</h1>
                     <p>Gestion Immobilière Professionnelle</p>
