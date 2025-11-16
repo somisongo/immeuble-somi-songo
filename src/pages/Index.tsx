@@ -14,8 +14,9 @@ import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { useAuth } from "@/hooks/useAuth";
 import { useUserRole } from "@/hooks/useUserRole";
 import { useProperties } from "@/hooks/useProperties";
-import { Building2, BarChart3, FileText, CreditCard, Users, LogOut, Settings, UserPlus, FileEdit } from "lucide-react";
+import { Building2, BarChart3, FileText, CreditCard, Users, LogOut, Settings, UserPlus, FileEdit, BookOpen } from "lucide-react";
 import { toast } from "sonner";
+import UserGuide from "@/components/UserGuide";
 
 const Index = () => {
   const [activeTab, setActiveTab] = useState("dashboard");
@@ -97,7 +98,7 @@ const Index = () => {
         {/* Main Content */}
         <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-            <TabsList className="grid w-full grid-cols-8 bg-card shadow-card">
+            <TabsList className="grid w-full grid-cols-9 bg-card shadow-card">
               <TabsTrigger value="dashboard" className="flex items-center gap-2">
                 <BarChart3 className="h-4 w-4" />
                 Tableau de bord
@@ -129,6 +130,10 @@ const Index = () => {
               <TabsTrigger value="users" className="flex items-center gap-2">
                 <Settings className="h-4 w-4" />
                 Utilisateurs
+              </TabsTrigger>
+              <TabsTrigger value="guide" className="flex items-center gap-2">
+                <BookOpen className="h-4 w-4" />
+                Guide
               </TabsTrigger>
             </TabsList>
 
@@ -190,6 +195,10 @@ const Index = () => {
 
             <TabsContent value="users">
               <UserRoleManager />
+            </TabsContent>
+
+            <TabsContent value="guide">
+              <UserGuide />
             </TabsContent>
           </Tabs>
         </main>
