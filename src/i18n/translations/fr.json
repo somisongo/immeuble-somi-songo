@@ -20,7 +20,9 @@
     "bedrooms": "chambres",
     "bathrooms": "salles de bain",
     "bedroom": "chambre",
-    "bathroom": "salle de bain"
+    "bathroom": "salle de bain",
+    "tenant": "Locataire",
+    "owner": "Propriétaire"
   },
   "dashboard": {
     "title": "Tableau de bord de gestion immobilière",

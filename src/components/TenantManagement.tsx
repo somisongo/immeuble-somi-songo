@@ -215,7 +215,7 @@ export const TenantManagement = () => {
                   <Users className="h-5 w-5 text-primary" />
                   {tenant.first_name} {tenant.last_name}
                 </CardTitle>
-                <Badge variant="secondary">Locataire</Badge>
+                <Badge variant="secondary">{t('common.tenant')}</Badge>
               </div>
             </CardHeader>
             <CardContent className="space-y-3">
