@@ -307,5 +307,10 @@
     "errorCreate": "Erreur lors de la création de la clause",
     "errorUpdate": "Erreur lors de la modification de la clause",
     "errorDelete": "Erreur lors de la suppression de la clause"
+  },
+  "tenantPortal": {
+    "title": "Portail Locataire - Immeuble SOMI SONGO",
+    "signOut": "Déconnexion",
+    "signOutSuccess": "Vous avez été déconnecté avec succès"
   }
 }
