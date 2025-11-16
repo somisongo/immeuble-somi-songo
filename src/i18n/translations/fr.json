@@ -39,7 +39,7 @@
       "payments": "Paiements",
       "contracts": "Contrats",
       "users": "Utilisateurs",
-      "guide": "Guide"
+      "documentation": "Documentation"
     }
   },
   "properties": {
@@ -329,6 +329,12 @@
     "step6": "Étape 6 : Analyser les revenus",
     "step6Description": "Consultez vos revenus mensuels et exportez les données",
     "needHelp": "Besoin d'aide ? Contactez le support technique."
+  },
+  "documentation": {
+    "title": "Documentation",
+    "subtitle": "Guides d'utilisation et documentation technique complète",
+    "userGuide": "Guide Utilisateur",
+    "technicalGuide": "Guide Technique Administrateur"
   },
   "technicalDoc": {
     "title": "Documentation Technique",

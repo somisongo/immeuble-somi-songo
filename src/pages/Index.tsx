@@ -18,10 +18,9 @@ import { useProperties } from "@/hooks/useProperties";
 import { useLanguage } from "@/hooks/useLanguage";
 import { Building2, BarChart3, FileText, CreditCard, Users, LogOut, Settings, UserPlus, FileEdit, BookOpen, FileCode } from "lucide-react";
 import { toast } from "sonner";
-import UserGuide from "@/components/UserGuide";
 import { RevenueChart } from "@/components/RevenueChart";
 import { RevenueExport } from "@/components/RevenueExport";
-import { TechnicalDocumentation } from "@/components/TechnicalDocumentation";
+import { DocumentationHub } from "@/components/DocumentationHub";
 
 const Index = () => {
   const [activeTab, setActiveTab] = useState("dashboard");
@@ -105,7 +104,7 @@ const Index = () => {
         {/* Main Content */}
         <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-            <TabsList className="grid w-full grid-cols-10 bg-card shadow-card">
+            <TabsList className="grid w-full grid-cols-9 bg-card shadow-card">
               <TabsTrigger value="dashboard" className="flex items-center gap-2">
                 <BarChart3 className="h-4 w-4" />
                 {t('dashboard.tabs.dashboard')}
@@ -138,13 +137,9 @@ const Index = () => {
                 <Settings className="h-4 w-4" />
                 {t('dashboard.tabs.users')}
               </TabsTrigger>
-              <TabsTrigger value="guide" className="flex items-center gap-2">
+              <TabsTrigger value="documentation" className="flex items-center gap-2">
                 <BookOpen className="h-4 w-4" />
-                {t('dashboard.tabs.guide')}
-              </TabsTrigger>
-              <TabsTrigger value="technical" className="flex items-center gap-2">
-                <FileCode className="h-4 w-4" />
-                {t('technicalDoc.title')}
+                {t('dashboard.tabs.documentation')}
               </TabsTrigger>
             </TabsList>
 
@@ -217,12 +212,8 @@ const Index = () => {
               <UserRoleManager />
             </TabsContent>
 
-            <TabsContent value="guide">
-              <UserGuide />
-            </TabsContent>
-
-            <TabsContent value="technical" className="space-y-4">
-              <TechnicalDocumentation />
+            <TabsContent value="documentation">
+              <DocumentationHub />
             </TabsContent>
           </Tabs>
         </main>
