@@ -64,6 +64,12 @@ export const UserRoleManager = () => {
     email: '',
     phone: ''
   });
+  const [initialForm, setInitialForm] = useState({
+    first_name: '',
+    last_name: '',
+    email: '',
+    phone: ''
+  });
 
   useEffect(() => {
     fetchData();
@@ -285,15 +291,21 @@ export const UserRoleManager = () => {
         last_name: userRole.profiles.last_name || '',
         email: userRole.profiles.email || ''
       };
-      setEditingUser(profileData);
-      setEditForm({
+      const formData = {
         first_name: userRole.profiles.first_name || '',
         last_name: userRole.profiles.last_name || '',
         email: userRole.profiles.email || '',
         phone: userRole.profiles.phone || ''
-      });
+      };
+      setEditingUser(profileData);
+      setEditForm(formData);
+      setInitialForm(formData);
       setEditDialogOpen(true);
     }
+  };
+
+  const isFieldModified = (fieldName: keyof typeof editForm) => {
+    return editForm[fieldName] !== initialForm[fieldName];
   };
 
   const updateUserProfile = async () => {
@@ -562,38 +574,62 @@ export const UserRoleManager = () => {
           <div className="space-y-4 mt-4">
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="edit-first-name">Prénom</Label>
+                <Label htmlFor="edit-first-name" className="flex items-center gap-2">
+                  Prénom
+                  {isFieldModified('first_name') && (
+                    <Badge variant="secondary" className="text-xs">Modifié</Badge>
+                  )}
+                </Label>
                 <Input
                   id="edit-first-name"
                   value={editForm.first_name}
                   onChange={(e) => setEditForm({ ...editForm, first_name: e.target.value })}
+                  className={isFieldModified('first_name') ? 'border-primary' : ''}
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="edit-last-name">Nom</Label>
+                <Label htmlFor="edit-last-name" className="flex items-center gap-2">
+                  Nom
+                  {isFieldModified('last_name') && (
+                    <Badge variant="secondary" className="text-xs">Modifié</Badge>
+                  )}
+                </Label>
                 <Input
                   id="edit-last-name"
                   value={editForm.last_name}
                   onChange={(e) => setEditForm({ ...editForm, last_name: e.target.value })}
+                  className={isFieldModified('last_name') ? 'border-primary' : ''}
                 />
               </div>
             </div>
             <div className="space-y-2">
-              <Label htmlFor="edit-email">Email</Label>
+              <Label htmlFor="edit-email" className="flex items-center gap-2">
+                Email
+                {isFieldModified('email') && (
+                  <Badge variant="secondary" className="text-xs">Modifié</Badge>
+                )}
+              </Label>
               <Input
                 id="edit-email"
                 type="email"
                 value={editForm.email}
                 onChange={(e) => setEditForm({ ...editForm, email: e.target.value })}
+                className={isFieldModified('email') ? 'border-primary' : ''}
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="edit-phone">Téléphone</Label>
+              <Label htmlFor="edit-phone" className="flex items-center gap-2">
+                Téléphone
+                {isFieldModified('phone') && (
+                  <Badge variant="secondary" className="text-xs">Modifié</Badge>
+                )}
+              </Label>
               <Input
                 id="edit-phone"
                 type="tel"
                 value={editForm.phone}
                 onChange={(e) => setEditForm({ ...editForm, phone: e.target.value })}
+                className={isFieldModified('phone') ? 'border-primary' : ''}
               />
             </div>
             <Button onClick={updateUserProfile} className="w-full">
