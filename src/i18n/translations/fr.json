@@ -311,6 +311,38 @@
     "errorUpdate": "Erreur lors de la modification de la clause",
     "errorDelete": "Erreur lors de la suppression de la clause"
   },
+  "guide": {
+    "title": "Guide d'utilisation",
+    "welcome": "Bienvenue dans le gestionnaire immobilier SOMI SONGO",
+    "description": "Ce guide vous aidera à utiliser toutes les fonctionnalités de l'application",
+    "gettingStarted": "Pour commencer",
+    "step1": "Étape 1 : Ajouter des locataires",
+    "step1Description": "Allez dans l'onglet Locataires pour ajouter vos locataires",
+    "step2": "Étape 2 : Assigner les propriétés",
+    "step2Description": "Utilisez l'onglet Assignations pour lier locataires et appartements",
+    "step3": "Étape 3 : Créer des baux",
+    "step3Description": "Générez des baux avec toutes les informations nécessaires",
+    "step4": "Étape 4 : Suivre les paiements",
+    "step4Description": "Enregistrez et suivez tous les paiements de loyer",
+    "step5": "Étape 5 : Générer des contrats",
+    "step5Description": "Créez et exportez des contrats en PDF ou DOCX",
+    "step6": "Étape 6 : Analyser les revenus",
+    "step6Description": "Consultez vos revenus mensuels et exportez les données",
+    "needHelp": "Besoin d'aide ? Contactez le support technique."
+  },
+  "technicalDoc": {
+    "title": "Documentation Technique",
+    "description": "Téléchargez la documentation technique complète du système de gestion immobilière SOMI SONGO au format PDF.",
+    "download": "Télécharger la Documentation",
+    "contents": "Contenu de la documentation",
+    "content1": "Vue d'ensemble du système et architecture",
+    "content2": "Stack technique détaillé (React, TypeScript, Supabase)",
+    "content3": "Structure de la base de données et schémas",
+    "content4": "Modules fonctionnels et composants",
+    "content5": "Sécurité, authentification et RLS",
+    "content6": "APIs, Edge Functions et intégrations",
+    "content7": "Guide de déploiement et configuration"
+  },
   "tenantPortal": {
     "title": "Portail Locataire - Immeuble SOMI SONGO",
     "signOut": "Déconnexion",
