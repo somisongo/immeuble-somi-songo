@@ -4,7 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Calendar, User, FileText, Edit } from "lucide-react";
+import { Calendar, User, FileText, Edit, Eye } from "lucide-react";
 import { useState, useEffect } from "react";
 import { CreateLeaseDialog } from "./CreateLeaseDialog";
 import { supabase } from "@/integrations/supabase/client";
@@ -12,6 +12,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
+import { ContractPreviewDialog } from "./ContractPreviewDialog";
 
 interface Lease {
   id: string;
@@ -29,6 +30,9 @@ export const LeaseManagement = () => {
   const [leases, setLeases] = useState<Lease[]>([]);
   const [loading, setLoading] = useState(true);
   const [editData, setEditData] = useState<any>({});
+  const [previewOpen, setPreviewOpen] = useState(false);
+  const [previewHtml, setPreviewHtml] = useState("");
+  const [previewLease, setPreviewLease] = useState<Lease | null>(null);
   const { user } = useAuth();
 
   useEffect(() => {
@@ -104,6 +108,59 @@ export const LeaseManagement = () => {
         return "Expiré";
       default:
         return status;
+    }
+  };
+
+  const previewContract = async (lease: Lease) => {
+    try {
+      const { data: leaseData, error: leaseError } = await supabase
+        .from('leases')
+        .select(`
+          *,
+          tenants:tenant_id (
+            id,
+            first_name,
+            last_name,
+            email,
+            phone
+          ),
+          properties:property_id (
+            id,
+            unit_number,
+            rent_amount,
+            bedrooms,
+            bathrooms
+          )
+        `)
+        .eq('id', lease.id)
+        .single();
+
+      if (leaseError) throw leaseError;
+
+      const { data, error } = await supabase.functions.invoke('generate-contract', {
+        body: {
+          tenant: leaseData.tenants,
+          lease: {
+            id: leaseData.id,
+            rent_amount: leaseData.rent_amount,
+            deposit_amount: leaseData.deposit_amount,
+            start_date: leaseData.start_date,
+            end_date: leaseData.end_date,
+            status: leaseData.status,
+            property: leaseData.properties
+          },
+          owner_id: user?.id
+        }
+      });
+
+      if (error) throw error;
+
+      setPreviewHtml(data.html);
+      setPreviewLease(lease);
+      setPreviewOpen(true);
+    } catch (error) {
+      console.error('Erreur lors de la génération de l\'aperçu:', error);
+      toast.error('Erreur lors de la génération de l\'aperçu');
     }
   };
 
@@ -401,9 +458,9 @@ export const LeaseManagement = () => {
                 </div>
                 
                 <div className="flex gap-2">
-                  <Button variant="outline" size="sm" onClick={() => downloadContract(lease)}>
-                    <FileText className="mr-2 h-4 w-4" />
-                    Voir Contrat
+                  <Button variant="outline" size="sm" onClick={() => previewContract(lease)}>
+                    <Eye className="mr-2 h-4 w-4" />
+                    Aperçu Contrat
                   </Button>
                   <Button variant="outline" size="sm" onClick={() => handleEditLease(lease)}>
                     <Edit className="mr-2 h-4 w-4" />
@@ -489,6 +546,18 @@ export const LeaseManagement = () => {
           </Card>
         ))}
       </div>
+
+      <ContractPreviewDialog
+        open={previewOpen}
+        onOpenChange={setPreviewOpen}
+        htmlContent={previewHtml}
+        contractTitle={previewLease ? `${previewLease.tenant} - Appt ${previewLease.unit}` : ""}
+        onDownload={async () => {
+          if (previewLease) {
+            await downloadContract(previewLease);
+          }
+        }}
+      />
     </div>
   );
 };
