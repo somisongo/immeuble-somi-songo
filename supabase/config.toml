@@ -1,1 +1,10 @@
 project_id = "phxoqxegjcqjmdszyipa"
+
+[functions.generate-contract]
+verify_jwt = false
+
+[functions.generate-contract-docx]
+verify_jwt = false
+
+[functions.create-user]
+verify_jwt = true
