@@ -292,14 +292,39 @@ export const UserRoleManager = () => {
     }
   };
 
-  const openEditDialog = (userRole: UserRole) => {
+  const openEditDialog = async (userRole: UserRole) => {
+    // Si le profil n'existe pas, créons-le avec les données minimales
     if (!userRole.profiles) {
-      toast({
-        title: "Erreur",
-        description: "Impossible de charger les informations de l'utilisateur.",
-        variant: "destructive",
-      });
-      return;
+      try {
+        // Créer le profil avec user_id et un email temporaire
+        const { error: insertError } = await supabase
+          .from('profiles')
+          .insert({
+            user_id: userRole.user_id,
+            email: 'email@example.com', // Sera mis à jour dans le dialog
+            first_name: '',
+            last_name: '',
+          });
+
+        if (insertError) throw insertError;
+
+        // Recharger les données
+        await fetchData();
+        
+        toast({
+          title: "Succès",
+          description: "Profil créé. Vous pouvez maintenant le modifier.",
+        });
+        return;
+      } catch (error: any) {
+        console.error('Error creating profile:', error);
+        toast({
+          title: "Erreur",
+          description: "Impossible de créer le profil de l'utilisateur.",
+          variant: "destructive",
+        });
+        return;
+      }
     }
 
     const profileData = {
