@@ -1,0 +1,96 @@
+{
+  "common": {
+    "signOut": "Déconnexion",
+    "save": "Enregistrer",
+    "cancel": "Annuler",
+    "edit": "Modifier",
+    "delete": "Supprimer",
+    "add": "Ajouter",
+    "search": "Rechercher",
+    "loading": "Chargement...",
+    "actions": "Actions",
+    "status": "Statut",
+    "date": "Date",
+    "amount": "Montant"
+  },
+  "dashboard": {
+    "title": "Tableau de bord de gestion immobilière",
+    "totalProperties": "Total des propriétés",
+    "occupancyRate": "Taux d'occupation",
+    "monthlyRevenue": "Revenus mensuels",
+    "revenuePerformance": "Performance des revenus",
+    "tabs": {
+      "dashboard": "Tableau de bord",
+      "properties": "Propriétés",
+      "tenants": "Locataires",
+      "assignments": "Assignations",
+      "leases": "Baux",
+      "payments": "Paiements",
+      "contracts": "Contrats",
+      "users": "Utilisateurs",
+      "guide": "Guide"
+    }
+  },
+  "properties": {
+    "title": "Propriétés",
+    "unit": "Unité",
+    "bedrooms": "chambres",
+    "bathrooms": "salles de bain",
+    "rent": "Loyer",
+    "occupied": "Occupé",
+    "available": "Disponible",
+    "maintenance": "Maintenance",
+    "tenant": "Locataire",
+    "leaseEnds": "Bail se termine le",
+    "manageLease": "Gérer le bail",
+    "trackPayment": "Suivre le paiement",
+    "assignTenant": "Assigner un locataire"
+  },
+  "tenants": {
+    "title": "Gestion des locataires",
+    "name": "Nom",
+    "email": "Email",
+    "phone": "Téléphone",
+    "addTenant": "Ajouter un locataire"
+  },
+  "leases": {
+    "title": "Gestion des baux",
+    "property": "Propriété",
+    "tenant": "Locataire",
+    "startDate": "Date de début",
+    "endDate": "Date de fin",
+    "rentAmount": "Montant du loyer",
+    "status": "Statut",
+    "createLease": "Créer un bail"
+  },
+  "payments": {
+    "title": "Suivi des paiements",
+    "lease": "Bail",
+    "dueDate": "Date d'échéance",
+    "paidDate": "Date de paiement",
+    "method": "Méthode",
+    "pending": "En attente",
+    "paid": "Payé",
+    "overdue": "En retard"
+  },
+  "contracts": {
+    "title": "Gestion des contrats",
+    "generate": "Générer un contrat",
+    "clauses": "Gestion des clauses"
+  },
+  "users": {
+    "title": "Gestion des rôles utilisateurs",
+    "role": "Rôle",
+    "owner": "Propriétaire",
+    "tenant": "Locataire"
+  },
+  "auth": {
+    "signIn": "Se connecter",
+    "signUp": "S'inscrire",
+    "email": "Email",
+    "password": "Mot de passe",
+    "forgotPassword": "Mot de passe oublié ?",
+    "noAccount": "Pas de compte ?",
+    "haveAccount": "Vous avez déjà un compte ?"
+  }
+}

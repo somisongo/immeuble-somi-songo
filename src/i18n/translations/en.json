@@ -1,0 +1,96 @@
+{
+  "common": {
+    "signOut": "Sign Out",
+    "save": "Save",
+    "cancel": "Cancel",
+    "edit": "Edit",
+    "delete": "Delete",
+    "add": "Add",
+    "search": "Search",
+    "loading": "Loading...",
+    "actions": "Actions",
+    "status": "Status",
+    "date": "Date",
+    "amount": "Amount"
+  },
+  "dashboard": {
+    "title": "Property Management Dashboard",
+    "totalProperties": "Total Properties",
+    "occupancyRate": "Occupancy Rate",
+    "monthlyRevenue": "Monthly Revenue",
+    "revenuePerformance": "Revenue Performance",
+    "tabs": {
+      "dashboard": "Dashboard",
+      "properties": "Properties",
+      "tenants": "Tenants",
+      "assignments": "Assignments",
+      "leases": "Leases",
+      "payments": "Payments",
+      "contracts": "Contracts",
+      "users": "Users",
+      "guide": "Guide"
+    }
+  },
+  "properties": {
+    "title": "Properties",
+    "unit": "Unit",
+    "bedrooms": "bedrooms",
+    "bathrooms": "bathrooms",
+    "rent": "Rent",
+    "occupied": "Occupied",
+    "available": "Available",
+    "maintenance": "Maintenance",
+    "tenant": "Tenant",
+    "leaseEnds": "Lease ends on",
+    "manageLease": "Manage Lease",
+    "trackPayment": "Track Payment",
+    "assignTenant": "Assign Tenant"
+  },
+  "tenants": {
+    "title": "Tenant Management",
+    "name": "Name",
+    "email": "Email",
+    "phone": "Phone",
+    "addTenant": "Add Tenant"
+  },
+  "leases": {
+    "title": "Lease Management",
+    "property": "Property",
+    "tenant": "Tenant",
+    "startDate": "Start Date",
+    "endDate": "End Date",
+    "rentAmount": "Rent Amount",
+    "status": "Status",
+    "createLease": "Create Lease"
+  },
+  "payments": {
+    "title": "Payment Tracking",
+    "lease": "Lease",
+    "dueDate": "Due Date",
+    "paidDate": "Paid Date",
+    "method": "Method",
+    "pending": "Pending",
+    "paid": "Paid",
+    "overdue": "Overdue"
+  },
+  "contracts": {
+    "title": "Contract Management",
+    "generate": "Generate Contract",
+    "clauses": "Clauses Management"
+  },
+  "users": {
+    "title": "User Role Management",
+    "role": "Role",
+    "owner": "Owner",
+    "tenant": "Tenant"
+  },
+  "auth": {
+    "signIn": "Sign In",
+    "signUp": "Sign Up",
+    "email": "Email",
+    "password": "Password",
+    "forgotPassword": "Forgot password?",
+    "noAccount": "Don't have an account?",
+    "haveAccount": "Already have an account?"
+  }
+}
