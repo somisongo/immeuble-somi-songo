@@ -22,6 +22,15 @@ export const DashboardMetrics = ({ properties }: DashboardMetricsProps) => {
   const occupiedCount = occupiedProperties.length;
   const monthlyRevenue = occupiedProperties.reduce((sum, property) => sum + property.rent, 0);
   const occupancyRate = totalProperties > 0 ? Math.round((occupiedCount / totalProperties) * 100) : 0;
+  
+  // Calcul de la performance basé sur les revenus réels vs potentiels
+  const potentialRevenue = properties.reduce((sum, property) => sum + property.rent, 0);
+  const revenuePerformance = potentialRevenue > 0 
+    ? Math.round((monthlyRevenue / potentialRevenue) * 100) 
+    : 0;
+  
+  // Calcul de la différence par rapport à l'objectif (100%)
+  const performanceGap = revenuePerformance - 100;
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
       <Card className="bg-gradient-card shadow-card">
@@ -59,12 +68,18 @@ export const DashboardMetrics = ({ properties }: DashboardMetricsProps) => {
       
       <Card className="bg-gradient-card shadow-card">
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">Performance</CardTitle>
+          <CardTitle className="text-sm font-medium">Performance Globale</CardTitle>
           <TrendingUp className="h-4 w-4 text-muted-foreground" />
         </CardHeader>
         <CardContent>
-          <div className="text-2xl font-bold text-success">+12%</div>
-          <p className="text-xs text-muted-foreground">vs mois dernier</p>
+          <div className={`text-2xl font-bold ${revenuePerformance >= 80 ? 'text-success' : revenuePerformance >= 60 ? 'text-warning' : 'text-destructive'}`}>
+            {revenuePerformance}%
+          </div>
+          <p className="text-xs text-muted-foreground">
+            {potentialRevenue > 0 
+              ? `${performanceGap >= 0 ? '+' : ''}${performanceGap}% revenus potentiels`
+              : 'Aucune donnée'}
+          </p>
         </CardContent>
       </Card>
     </div>
