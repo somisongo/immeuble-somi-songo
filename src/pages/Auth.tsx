@@ -10,6 +10,24 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Building2, Mail, Lock, UserPlus, LogIn } from 'lucide-react';
 import { toast } from 'sonner';
+import { z } from 'zod';
+
+// Validation schemas
+const signInSchema = z.object({
+  email: z.string().email('Invalid email format').max(255),
+  password: z.string().min(6, 'Password must be at least 6 characters').max(100),
+});
+
+const signUpSchema = z.object({
+  email: z.string().email('Invalid email format').max(255),
+  password: z.string().min(8, 'Password must be at least 8 characters').max(100),
+  firstName: z.string().trim().min(1, 'First name is required').max(50).regex(/^[a-zA-ZÀ-ÿ\s-]+$/, 'Invalid name format'),
+  lastName: z.string().trim().min(1, 'Last name is required').max(50).regex(/^[a-zA-ZÀ-ÿ\s-]+$/, 'Invalid name format'),
+  confirmPassword: z.string(),
+}).refine((data) => data.password === data.confirmPassword, {
+  message: "Passwords don't match",
+  path: ["confirmPassword"],
+});
 
 const Auth = () => {
   const [email, setEmail] = useState('');
@@ -35,12 +53,20 @@ const Auth = () => {
     setLoading(true);
     setError('');
 
+    // Validate input
+    const validation = signInSchema.safeParse({ email, password });
+    if (!validation.success) {
+      setError(validation.error.errors[0].message);
+      setLoading(false);
+      return;
+    }
+
     const { error } = await signIn(email, password);
     
     if (error) {
       // Log detailed error server-side only, show generic message to prevent user enumeration
       console.error('[AUTH]', error.code);
-      setError(t('auth.errorInvalidCredentials'));
+      setError(t('auth.errors.invalidCredentials'));
     } else {
       toast.success(t('auth.signInSuccess'));
       navigate('/');
@@ -54,30 +80,27 @@ const Auth = () => {
     setLoading(true);
     setError('');
 
-    if (!firstName.trim() || !lastName.trim()) {
-      setError(t('auth.errorNameRequired'));
+    // Validate input
+    const validation = signUpSchema.safeParse({ 
+      email, 
+      password, 
+      firstName, 
+      lastName, 
+      confirmPassword 
+    });
+
+    if (!validation.success) {
+      setError(validation.error.errors[0].message);
       setLoading(false);
       return;
     }
 
-    if (password.length < 6) {
-      setError(t('auth.errorPasswordLength'));
-      setLoading(false);
-      return;
-    }
-
-    if (password !== confirmPassword) {
-      setError(t('auth.errorPasswordMatch'));
-      setLoading(false);
-      return;
-    }
-
-    const { error } = await signUp(email, password, firstName, lastName);
+    const { error } = await signUp(email, password, firstName.trim(), lastName.trim());
     
     if (error) {
       // Log error code only, show generic message to prevent user enumeration
       console.error('[AUTH]', error.code);
-      setError(t('auth.errorSignupFailed'));
+      setError(t('auth.errors.signupFailed'));
     } else {
       toast.success(t('auth.signUpSuccess'));
     }

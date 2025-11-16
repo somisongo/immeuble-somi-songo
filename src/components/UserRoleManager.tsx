@@ -12,6 +12,22 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
+import { z } from 'zod';
+
+// Validation schema
+const createUserSchema = z.object({
+  email: z.string().email('Invalid email format').max(255),
+  password: z.string().min(8, 'Password must be at least 8 characters').max(100),
+  firstName: z.string().trim().min(1, 'First name is required').max(50).regex(/^[a-zA-ZÀ-ÿ\s-]+$/, 'Invalid name format'),
+  lastName: z.string().trim().min(1, 'Last name is required').max(50).regex(/^[a-zA-ZÀ-ÿ\s-]+$/, 'Invalid name format'),
+});
+
+const updateProfileSchema = z.object({
+  firstName: z.string().trim().min(1, 'First name is required').max(50).regex(/^[a-zA-ZÀ-ÿ\s-]+$/, 'Invalid name format'),
+  lastName: z.string().trim().min(1, 'Last name is required').max(50).regex(/^[a-zA-ZÀ-ÿ\s-]+$/, 'Invalid name format'),
+  email: z.string().email('Invalid email format').max(255),
+  phone: z.string().max(20).regex(/^[0-9+\s-]*$/, 'Invalid phone format').optional(),
+});
 
 interface UserRole {
   id: string;
@@ -144,54 +160,43 @@ export const UserRoleManager = () => {
   };
 
   const createUserAccount = async () => {
-    if (!newUserEmail || !newUserPassword || !newUserFirstName || !newUserLastName) {
+    // Validate input
+    const validation = createUserSchema.safeParse({
+      email: newUserEmail,
+      password: newUserPassword,
+      firstName: newUserFirstName,
+      lastName: newUserLastName,
+    });
+
+    if (!validation.success) {
       toast({
-        title: "Erreur",
-        description: "Veuillez remplir tous les champs.",
+        title: "Erreur de validation",
+        description: validation.error.errors[0].message,
         variant: "destructive",
       });
       return;
     }
 
     try {
-      // Create user account with metadata
-      const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
-        email: newUserEmail,
-        password: newUserPassword,
-        options: {
-          emailRedirectTo: `${window.location.origin}/`,
-          data: {
-            first_name: newUserFirstName,
-            last_name: newUserLastName,
-            email: newUserEmail
-          }
-        }
+      // Call secure edge function to create user
+      const { data, error } = await supabase.functions.invoke('create-user', {
+        body: {
+          email: newUserEmail.trim(),
+          password: newUserPassword,
+          firstName: newUserFirstName.trim(),
+          lastName: newUserLastName.trim(),
+          role: newUserRole,
+          tenantId: newUserRole === 'tenant' && selectedTenant ? selectedTenant : undefined,
+        },
       });
 
-      if (signUpError) throw signUpError;
-
-      if (!signUpData.user) {
-        throw new Error('User creation failed');
+      if (error) {
+        console.error('[USER-MANAGER] User creation failed:', error);
+        throw new Error('Failed to create user account');
       }
 
-      // Assign role
-      const { error: roleError } = await supabase
-        .from('user_roles')
-        .insert({
-          user_id: signUpData.user.id,
-          role: newUserRole,
-        });
-
-      if (roleError) throw roleError;
-
-      // If it's a tenant role and a tenant is selected, link them
-      if (newUserRole === 'tenant' && selectedTenant) {
-        const { error: linkError } = await supabase
-          .from('tenants')
-          .update({ user_id: signUpData.user.id })
-          .eq('id', selectedTenant);
-
-        if (linkError) throw linkError;
+      if (!data?.success) {
+        throw new Error(data?.error || 'User creation failed');
       }
 
       toast({
@@ -208,10 +213,10 @@ export const UserRoleManager = () => {
       setSelectedTenant('');
       fetchData();
     } catch (error: any) {
-      console.error('Error creating user:', error);
+      console.error('[USER-MANAGER] Error creating user:', error);
       toast({
         title: "Erreur",
-        description: error.message || "Impossible de créer le compte.",
+        description: "Impossible de créer le compte. Veuillez réessayer.",
         variant: "destructive",
       });
     }
@@ -353,14 +358,31 @@ export const UserRoleManager = () => {
   const updateUserProfile = async () => {
     if (!editingUser) return;
 
+    // Validate input
+    const validation = updateProfileSchema.safeParse({
+      firstName: editForm.first_name,
+      lastName: editForm.last_name,
+      email: editForm.email,
+      phone: editForm.phone || '',
+    });
+
+    if (!validation.success) {
+      toast({
+        title: "Erreur de validation",
+        description: validation.error.errors[0].message,
+        variant: "destructive",
+      });
+      return;
+    }
+
     try {
       const { error } = await supabase
         .from('profiles')
         .update({
-          first_name: editForm.first_name,
-          last_name: editForm.last_name,
-          email: editForm.email,
-          phone: editForm.phone || null
+          first_name: editForm.first_name.trim(),
+          last_name: editForm.last_name.trim(),
+          email: editForm.email.trim(),
+          phone: editForm.phone?.trim() || null
         })
         .eq('user_id', editingUser.user_id);
 
@@ -375,10 +397,10 @@ export const UserRoleManager = () => {
       setEditingUser(null);
       await fetchData();
     } catch (error: any) {
-      console.error('Error updating profile:', error);
+      console.error('[USER-MANAGER] Error updating profile:', error);
       toast({
         title: "Erreur",
-        description: error.message || "Impossible de mettre à jour le profil.",
+        description: "Impossible de mettre à jour le profil.",
         variant: "destructive",
       });
     }
