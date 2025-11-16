@@ -311,6 +311,38 @@
     "errorUpdate": "Error updating clause",
     "errorDelete": "Error deleting clause"
   },
+  "guide": {
+    "title": "User Guide",
+    "welcome": "Welcome to the SOMI SONGO property manager",
+    "description": "This guide will help you use all the features of the application",
+    "gettingStarted": "Getting Started",
+    "step1": "Step 1: Add Tenants",
+    "step1Description": "Go to the Tenants tab to add your tenants",
+    "step2": "Step 2: Assign Properties",
+    "step2Description": "Use the Assignments tab to link tenants and apartments",
+    "step3": "Step 3: Create Leases",
+    "step3Description": "Generate leases with all necessary information",
+    "step4": "Step 4: Track Payments",
+    "step4Description": "Record and track all rent payments",
+    "step5": "Step 5: Generate Contracts",
+    "step5Description": "Create and export contracts in PDF or DOCX",
+    "step6": "Step 6: Analyze Revenue",
+    "step6Description": "View your monthly revenue and export data",
+    "needHelp": "Need help? Contact technical support."
+  },
+  "technicalDoc": {
+    "title": "Technical Documentation",
+    "description": "Download the complete technical documentation of the SOMI SONGO property management system in PDF format.",
+    "download": "Download Documentation",
+    "contents": "Documentation contents",
+    "content1": "System overview and architecture",
+    "content2": "Detailed technical stack (React, TypeScript, Supabase)",
+    "content3": "Database structure and schemas",
+    "content4": "Functional modules and components",
+    "content5": "Security, authentication and RLS",
+    "content6": "APIs, Edge Functions and integrations",
+    "content7": "Deployment guide and configuration"
+  },
   "tenantPortal": {
     "title": "Tenant Portal - SOMI SONGO Building",
     "signOut": "Sign Out",
