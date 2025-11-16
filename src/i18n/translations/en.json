@@ -218,8 +218,7 @@
     "signInSuccess": "Successfully signed in!",
     "signUpSuccess": "Account created! Check your email to confirm your registration.",
     "errorInvalidCredentials": "Invalid email or password",
-    "errorEmailNotConfirmed": "Please confirm your email before signing in",
-    "errorUserExists": "An account with this email already exists",
+    "errorSignupFailed": "Unable to create account. Please try again or contact support.",
     "errorPasswordLength": "Password must be at least 6 characters",
     "errorPasswordMatch": "Passwords do not match",
     "errorNameRequired": "First name and last name are required"

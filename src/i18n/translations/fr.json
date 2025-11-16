@@ -218,8 +218,7 @@
     "signInSuccess": "Connexion réussie !",
     "signUpSuccess": "Compte créé ! Vérifiez votre email pour confirmer votre inscription.",
     "errorInvalidCredentials": "Email ou mot de passe incorrect",
-    "errorEmailNotConfirmed": "Veuillez confirmer votre email avant de vous connecter",
-    "errorUserExists": "Un compte existe déjà avec cet email",
+    "errorSignupFailed": "Impossible de créer le compte. Veuillez réessayer ou contacter le support.",
     "errorPasswordLength": "Le mot de passe doit contenir au moins 6 caractères",
     "errorPasswordMatch": "Les mots de passe ne correspondent pas",
     "errorNameRequired": "Le prénom et le nom sont requis"
