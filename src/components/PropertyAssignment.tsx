@@ -249,42 +249,42 @@ export const PropertyAssignment = () => {
   const occupiedProperties = properties.filter(p => p.status === 'occupied');
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 md:space-y-6 p-2 md:p-0">
       <div className="flex items-center justify-between">
-        <h2 className="text-2xl font-bold">Assignation d'Appartements</h2>
+        <h2 className="text-xl md:text-2xl font-bold">Assignation d'Appartements</h2>
       </div>
 
       {/* Statistiques */}
-      <div className="grid grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 md:gap-4">
         <Card className="bg-gradient-card">
-          <CardContent className="p-4">
+          <CardContent className="p-3 md:p-4">
             <div className="flex items-center gap-2">
-              <Home className="h-5 w-5 text-success" />
+              <Home className="h-4 w-4 md:h-5 md:w-5 text-success" />
               <div>
-                <p className="text-sm text-muted-foreground">Appartements Vacants</p>
-                <p className="text-2xl font-bold text-success">{vacantProperties.length}</p>
+                <p className="text-xs md:text-sm text-muted-foreground">Appartements Vacants</p>
+                <p className="text-xl md:text-2xl font-bold text-success">{vacantProperties.length}</p>
               </div>
             </div>
           </CardContent>
         </Card>
         <Card className="bg-gradient-card">
-          <CardContent className="p-4">
+          <CardContent className="p-3 md:p-4">
             <div className="flex items-center gap-2">
-              <Building className="h-5 w-5 text-warning" />
+              <Building className="h-4 w-4 md:h-5 md:w-5 text-warning" />
               <div>
-                <p className="text-sm text-muted-foreground">Appartements Occupés</p>
-                <p className="text-2xl font-bold text-warning">{occupiedProperties.length}</p>
+                <p className="text-xs md:text-sm text-muted-foreground">Appartements Occupés</p>
+                <p className="text-xl md:text-2xl font-bold text-warning">{occupiedProperties.length}</p>
               </div>
             </div>
           </CardContent>
         </Card>
         <Card className="bg-gradient-card">
-          <CardContent className="p-4">
+          <CardContent className="p-3 md:p-4">
             <div className="flex items-center gap-2">
-              <Users className="h-5 w-5 text-primary" />
+              <Users className="h-4 w-4 md:h-5 md:w-5 text-primary" />
               <div>
-                <p className="text-sm text-muted-foreground">Locataires Disponibles</p>
-                <p className="text-2xl font-bold text-primary">{tenants.length}</p>
+                <p className="text-xs md:text-sm text-muted-foreground">Locataires Disponibles</p>
+                <p className="text-xl md:text-2xl font-bold text-primary">{tenants.length}</p>
               </div>
             </div>
           </CardContent>
@@ -307,24 +307,25 @@ export const PropertyAssignment = () => {
           ) : (
             <div className="grid gap-3">
               {vacantProperties.map((property) => (
-                <div key={property.id} className="flex items-center justify-between p-3 border rounded-lg">
-                  <div className="flex items-center gap-4">
-                    <div>
-                      <h4 className="font-semibold">Appartement {property.unit_number}</h4>
-                      <p className="text-sm text-muted-foreground">
+                <div key={property.id} className="flex flex-col sm:flex-row sm:items-center justify-between p-3 border rounded-lg gap-3">
+                  <div className="flex items-start sm:items-center gap-3 flex-1">
+                    <div className="flex-1">
+                      <h4 className="font-semibold text-sm md:text-base">Appartement {property.unit_number}</h4>
+                      <p className="text-xs md:text-sm text-muted-foreground">
                         {property.bedrooms} ch. • {property.bathrooms} sdb • ${property.rent_amount}/mois
                       </p>
                     </div>
-                    <Badge className={getStatusColor(property.status)}>
+                    <Badge className={`${getStatusColor(property.status)} text-xs whitespace-nowrap`}>
                       {getStatusText(property.status)}
                     </Badge>
                   </div>
                   <Button 
                     onClick={() => handleAssign(property.id)}
-                    className="bg-gradient-primary"
+                    className="bg-gradient-primary w-full sm:w-auto text-sm"
+                    size="sm"
                     disabled={tenants.length === 0}
                   >
-                    <Plus className="mr-2 h-4 w-4" />
+                    <Plus className="mr-1 h-3 w-3 md:mr-2 md:h-4 md:w-4" />
                     Assigner
                   </Button>
                 </div>
@@ -350,19 +351,19 @@ export const PropertyAssignment = () => {
           ) : (
             <div className="grid gap-3">
               {assignments.map((assignment) => (
-                <div key={assignment.id} className="flex items-center justify-between p-3 border rounded-lg">
-                  <div className="flex items-center gap-4">
-                    <div>
-                      <h4 className="font-semibold">
+                <div key={assignment.id} className="flex flex-col sm:flex-row sm:items-center justify-between p-3 border rounded-lg gap-2">
+                  <div className="flex items-start sm:items-center gap-3 flex-1">
+                    <div className="flex-1">
+                      <h4 className="font-semibold text-sm md:text-base">
                         {assignment.tenant?.first_name || 'N/A'} {assignment.tenant?.last_name || ''}
                       </h4>
-                      <p className="text-sm text-muted-foreground">
-                        Appartement {assignment.property?.unit_number || 'N/A'} • 
+                      <p className="text-xs md:text-sm text-muted-foreground break-words">
+                        Apt {assignment.property?.unit_number || 'N/A'} • 
                         ${assignment.rent_amount}/mois • 
                         Du {assignment.start_date} au {assignment.end_date}
                       </p>
                     </div>
-                    <Badge className="bg-success text-success-foreground">
+                    <Badge className="bg-success text-success-foreground text-xs whitespace-nowrap">
                       Actif
                     </Badge>
                   </div>

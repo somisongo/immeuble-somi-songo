@@ -61,56 +61,56 @@ export const PropertyCard = ({
   return (
     <Card className="bg-gradient-card shadow-card hover:shadow-elevated transition-all duration-300 hover:-translate-y-1">
       <CardHeader className="pb-3">
-        <div className="flex items-center justify-between">
-          <CardTitle className="text-xl font-semibold">{t('properties.apartment')} {unit}</CardTitle>
-          <Badge className={getStatusColor(status)}>
+        <div className="flex items-center justify-between gap-2">
+          <CardTitle className="text-base md:text-xl font-semibold truncate">{t('properties.apartment')} {unit}</CardTitle>
+          <Badge className={`${getStatusColor(status)} text-xs whitespace-nowrap`}>
             {getStatusText(status)}
           </Badge>
         </div>
       </CardHeader>
-      <CardContent className="space-y-4">
-        <div className="flex items-center gap-4 text-sm text-muted-foreground">
+      <CardContent className="space-y-3 md:space-y-4">
+        <div className="flex items-center gap-3 md:gap-4 text-xs md:text-sm text-muted-foreground">
           <div className="flex items-center gap-1">
-            <Bed className="h-4 w-4" />
+            <Bed className="h-3 w-3 md:h-4 md:w-4" />
             <span>{bedrooms} {bedrooms > 1 ? t('common.bedrooms') : t('common.bedroom')}</span>
           </div>
           <div className="flex items-center gap-1">
-            <Bath className="h-4 w-4" />
+            <Bath className="h-3 w-3 md:h-4 md:w-4" />
             <span>{bathrooms} {bathrooms > 1 ? t('common.bathrooms') : t('common.bathroom')}</span>
           </div>
         </div>
         
         {tenant && (
           <div className="flex items-center gap-2">
-            <Users className="h-4 w-4 text-muted-foreground" />
-            <span className="font-medium">{tenant}</span>
+            <Users className="h-3 w-3 md:h-4 md:w-4 text-muted-foreground flex-shrink-0" />
+            <span className="font-medium text-sm md:text-base truncate">{tenant}</span>
           </div>
         )}
         
         <div className="flex items-center gap-2">
-          <DollarSign className="h-4 w-4 text-muted-foreground" />
-          <span className="font-semibold text-lg">${rent.toLocaleString()}{t('common.perMonth')}</span>
+          <DollarSign className="h-3 w-3 md:h-4 md:w-4 text-muted-foreground" />
+          <span className="font-semibold text-base md:text-lg">${rent.toLocaleString()}{t('common.perMonth')}</span>
         </div>
         
         {leaseEnd && (
-          <div className="flex items-center gap-2 text-sm text-muted-foreground">
-            <Calendar className="h-4 w-4" />
-            <span>{t('properties.leaseExpires')} {leaseEnd}</span>
+          <div className="flex items-center gap-2 text-xs md:text-sm text-muted-foreground">
+            <Calendar className="h-3 w-3 md:h-4 md:w-4 flex-shrink-0" />
+            <span className="truncate">{t('properties.leaseExpires')} {leaseEnd}</span>
           </div>
         )}
         
-        <div className="flex gap-2 pt-2">
+        <div className="flex flex-col sm:flex-row gap-2 pt-2">
           {status === 'vacant' && onAssignTenant ? (
-            <Button onClick={onAssignTenant} className="flex-1 bg-gradient-success hover:bg-success-dark">
-              <UserPlus className="mr-2 h-4 w-4" />
+            <Button onClick={onAssignTenant} className="flex-1 bg-gradient-success hover:bg-success-dark text-sm" size="sm">
+              <UserPlus className="mr-1 h-3 w-3 md:mr-2 md:h-4 md:w-4" />
               {t('properties.assignTenant')}
             </Button>
           ) : (
             <>
-              <Button onClick={onManageLease} variant="outline" className="flex-1">
+              <Button onClick={onManageLease} variant="outline" className="flex-1 text-xs md:text-sm" size="sm">
                 {t('properties.manageLease')}
               </Button>
-              <Button onClick={onManagePayment} className="flex-1 bg-gradient-primary hover:bg-primary-dark">
+              <Button onClick={onManagePayment} className="flex-1 bg-gradient-primary hover:bg-primary-dark text-xs md:text-sm" size="sm">
                 {t('properties.trackPayment')}
               </Button>
             </>

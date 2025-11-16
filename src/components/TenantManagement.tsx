@@ -139,12 +139,12 @@ export const TenantManagement = () => {
   };
 
   return (
-    <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <h2 className="text-2xl font-bold">{t('tenants.title')}</h2>
+    <div className="space-y-4 md:space-y-6 p-2 md:p-0">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+        <h2 className="text-xl md:text-2xl font-bold">{t('tenants.title')}</h2>
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
-            <Button className="bg-gradient-primary hover:bg-primary-dark">
+            <Button className="bg-gradient-primary hover:bg-primary-dark w-full sm:w-auto text-sm md:text-base">
               <Plus className="h-4 w-4 mr-2" />
               {t('tenants.addTenant')}
             </Button>
@@ -206,30 +206,30 @@ export const TenantManagement = () => {
         </Dialog>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
         {tenants.map((tenant) => (
           <Card key={tenant.id} className="bg-gradient-card shadow-card hover:shadow-elevated transition-all duration-300">
             <CardHeader className="pb-3">
-              <div className="flex items-center justify-between">
-                <CardTitle className="text-lg font-semibold flex items-center gap-2">
-                  <Users className="h-5 w-5 text-primary" />
-                  {tenant.first_name} {tenant.last_name}
+              <div className="flex items-center justify-between gap-2">
+                <CardTitle className="text-base md:text-lg font-semibold flex items-center gap-2 flex-1 min-w-0">
+                  <Users className="h-4 w-4 md:h-5 md:w-5 text-primary flex-shrink-0" />
+                  <span className="truncate">{tenant.first_name} {tenant.last_name}</span>
                 </CardTitle>
-                <Badge variant="secondary">{t('common.tenant')}</Badge>
+                <Badge variant="secondary" className="text-xs flex-shrink-0">{t('common.tenant')}</Badge>
               </div>
             </CardHeader>
-            <CardContent className="space-y-3">
+            <CardContent className="space-y-2 md:space-y-3">
               {tenant.email && (
-                <div className="flex items-center gap-2 text-sm">
-                  <Mail className="h-4 w-4 text-muted-foreground" />
-                  <span>{tenant.email}</span>
+                <div className="flex items-center gap-2 text-xs md:text-sm">
+                  <Mail className="h-3 w-3 md:h-4 md:w-4 text-muted-foreground flex-shrink-0" />
+                  <span className="truncate">{tenant.email}</span>
                 </div>
               )}
               
               {tenant.phone && (
-                <div className="flex items-center gap-2 text-sm">
-                  <Phone className="h-4 w-4 text-muted-foreground" />
-                  <span>{tenant.phone}</span>
+                <div className="flex items-center gap-2 text-xs md:text-sm">
+                  <Phone className="h-3 w-3 md:h-4 md:w-4 text-muted-foreground flex-shrink-0" />
+                  <span className="truncate">{tenant.phone}</span>
                 </div>
               )}
 
@@ -242,18 +242,18 @@ export const TenantManagement = () => {
                   onClick={() => handleEdit(tenant)}
                   variant="outline"
                   size="sm"
-                  className="flex-1"
+                  className="flex-1 text-xs md:text-sm"
                 >
-                  <Edit className="h-4 w-4 mr-1" />
+                  <Edit className="h-3 w-3 mr-1 md:h-4 md:w-4 md:mr-1" />
                   {t('common.edit')}
                 </Button>
                 <Button
                   onClick={() => handleDelete(tenant.id)}
                   variant="outline"
                   size="sm"
-                  className="text-destructive hover:text-destructive"
+                  className="text-destructive hover:text-destructive text-xs md:text-sm"
                 >
-                  <Trash2 className="h-4 w-4" />
+                  <Trash2 className="h-3 w-3 md:h-4 md:w-4" />
                 </Button>
               </div>
             </CardContent>
