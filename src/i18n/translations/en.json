@@ -20,7 +20,9 @@
     "bedrooms": "bedrooms",
     "bathrooms": "bathrooms",
     "bedroom": "bedroom",
-    "bathroom": "bathroom"
+    "bathroom": "bathroom",
+    "tenant": "Tenant",
+    "owner": "Owner"
   },
   "dashboard": {
     "title": "Property Management Dashboard",
