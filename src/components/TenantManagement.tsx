@@ -32,7 +32,7 @@ export const TenantManagement = () => {
     phone: ""
   });
   const { user } = useAuth();
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
 
   useEffect(() => {
     if (user) {
@@ -234,7 +234,7 @@ export const TenantManagement = () => {
               )}
 
               <div className="text-xs text-muted-foreground">
-                Ajouté le {new Date(tenant.created_at).toLocaleDateString('fr-FR')}
+                {t('tenants.addedOn')} {new Date(tenant.created_at).toLocaleDateString(language === 'fr' ? 'fr-FR' : 'en-US')}
               </div>
 
               <div className="flex gap-2 pt-2">

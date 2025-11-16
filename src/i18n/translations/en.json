@@ -88,7 +88,8 @@
     "errorSaving": "Error saving tenant",
     "errorDeleting": "Error deleting tenant",
     "noTenants": "No tenants yet",
-    "addFirstTenant": "Add your first tenant to get started"
+    "addFirstTenant": "Add your first tenant to get started",
+    "addedOn": "Added on"
   },
   "leases": {
     "title": "Lease Management",

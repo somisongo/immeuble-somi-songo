@@ -88,7 +88,8 @@
     "errorSaving": "Erreur lors de la sauvegarde",
     "errorDeleting": "Erreur lors de la suppression",
     "noTenants": "Aucun locataire pour le moment",
-    "addFirstTenant": "Ajoutez votre premier locataire pour commencer"
+    "addFirstTenant": "Ajoutez votre premier locataire pour commencer",
+    "addedOn": "Ajouté le"
   },
   "leases": {
     "title": "Gestion des baux",
