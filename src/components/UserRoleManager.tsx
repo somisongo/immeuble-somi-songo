@@ -7,9 +7,11 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 import { toast } from '@/hooks/use-toast';
-import { User, UserPlus, Shield, Edit } from 'lucide-react';
+import { User, UserPlus, Shield, Edit, Trash2 } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 
 interface UserRole {
   id: string;
@@ -53,6 +55,8 @@ export const UserRoleManager = () => {
   const [loading, setLoading] = useState(true);
   const [editingUser, setEditingUser] = useState<Profile | null>(null);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [userToDelete, setUserToDelete] = useState<UserRole | null>(null);
   const [editForm, setEditForm] = useState({
     first_name: '',
     last_name: '',
@@ -237,26 +241,36 @@ export const UserRoleManager = () => {
     }
   };
 
-  const removeUserRole = async (roleId: string) => {
+  const openDeleteDialog = (userRole: UserRole) => {
+    setUserToDelete(userRole);
+    setDeleteDialogOpen(true);
+  };
+
+  const deleteUser = async () => {
+    if (!userToDelete) return;
+
     try {
-      const { error } = await supabase
+      // Delete user role
+      const { error: roleError } = await supabase
         .from('user_roles')
         .delete()
-        .eq('id', roleId);
+        .eq('id', userToDelete.id);
 
-      if (error) throw error;
+      if (roleError) throw roleError;
 
       toast({
         title: "Succès",
-        description: "Rôle supprimé avec succès.",
+        description: "Utilisateur supprimé avec succès.",
       });
 
+      setDeleteDialogOpen(false);
+      setUserToDelete(null);
       fetchData();
     } catch (error: any) {
-      console.error('Error removing role:', error);
+      console.error('Error deleting user:', error);
       toast({
         title: "Erreur",
-        description: "Impossible de supprimer le rôle.",
+        description: "Impossible de supprimer l'utilisateur.",
         variant: "destructive",
       });
     }
@@ -467,7 +481,7 @@ export const UserRoleManager = () => {
         </CardContent>
       </Card>
 
-      {/* User Roles List */}
+      {/* User Roles Table */}
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
@@ -481,49 +495,58 @@ export const UserRoleManager = () => {
               Aucun utilisateur avec un rôle assigné
             </p>
           ) : (
-            <div className="space-y-2">
-              {userRoles.map((userRole) => (
-                <div
-                  key={userRole.id}
-                  className="flex items-center justify-between p-3 border rounded-lg"
-                >
-                  <div className="flex items-center gap-3">
-                    <User className="h-4 w-4 text-muted-foreground" />
-                    <div>
-                      <p className="font-medium">
+            <div className="rounded-md border">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Nom</TableHead>
+                    <TableHead>Email</TableHead>
+                    <TableHead>Rôle</TableHead>
+                    <TableHead>Date de création</TableHead>
+                    <TableHead className="text-right">Actions</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {userRoles.map((userRole) => (
+                    <TableRow key={userRole.id}>
+                      <TableCell className="font-medium">
                         {userRole.profiles?.first_name && userRole.profiles?.last_name
                           ? `${userRole.profiles.first_name} ${userRole.profiles.last_name}`
                           : `Utilisateur ${userRole.user_id.substring(0, 8)}...`}
-                      </p>
-                      <p className="text-sm text-muted-foreground">
+                      </TableCell>
+                      <TableCell>
                         {userRole.profiles?.email || 'Email non disponible'}
-                      </p>
-                      <p className="text-xs text-muted-foreground">
-                        Créé le {new Date(userRole.created_at).toLocaleDateString('fr-FR')}
-                      </p>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Badge variant={userRole.role === 'owner' ? 'default' : 'secondary'}>
-                      {userRole.role === 'owner' ? 'Propriétaire' : 'Locataire'}
-                    </Badge>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => openEditDialog(userRole)}
-                    >
-                      <Edit className="h-4 w-4" />
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => removeUserRole(userRole.id)}
-                    >
-                      <Shield className="h-4 w-4 text-destructive" />
-                    </Button>
-                  </div>
-                </div>
-              ))}
+                      </TableCell>
+                      <TableCell>
+                        <Badge variant={userRole.role === 'owner' ? 'default' : 'secondary'}>
+                          {userRole.role === 'owner' ? 'Propriétaire' : 'Locataire'}
+                        </Badge>
+                      </TableCell>
+                      <TableCell>
+                        {new Date(userRole.created_at).toLocaleDateString('fr-FR')}
+                      </TableCell>
+                      <TableCell className="text-right">
+                        <div className="flex items-center justify-end gap-2">
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => openEditDialog(userRole)}
+                          >
+                            <Edit className="h-4 w-4" />
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => openDeleteDialog(userRole)}
+                          >
+                            <Trash2 className="h-4 w-4 text-destructive" />
+                          </Button>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
             </div>
           )}
         </CardContent>
@@ -578,6 +601,30 @@ export const UserRoleManager = () => {
           </div>
         </DialogContent>
       </Dialog>
+
+      {/* Delete User Confirmation Dialog */}
+      <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Êtes-vous sûr ?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Cette action supprimera l'utilisateur{' '}
+              <strong>
+                {userToDelete?.profiles?.first_name && userToDelete?.profiles?.last_name
+                  ? `${userToDelete.profiles.first_name} ${userToDelete.profiles.last_name}`
+                  : 'cet utilisateur'}
+              </strong>
+              . Cette action est irréversible.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Annuler</AlertDialogCancel>
+            <AlertDialogAction onClick={deleteUser} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+              Supprimer
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };
