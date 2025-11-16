@@ -17,6 +17,7 @@ import { useProperties } from "@/hooks/useProperties";
 import { Building2, BarChart3, FileText, CreditCard, Users, LogOut, Settings, UserPlus, FileEdit, BookOpen } from "lucide-react";
 import { toast } from "sonner";
 import UserGuide from "@/components/UserGuide";
+import { RevenueChart } from "@/components/RevenueChart";
 
 const Index = () => {
   const [activeTab, setActiveTab] = useState("dashboard");
@@ -139,6 +140,8 @@ const Index = () => {
 
             <TabsContent value="dashboard" className="space-y-6">
               <DashboardMetrics properties={properties} />
+              
+              <RevenueChart />
               
               <div>
                 <h2 className="text-2xl font-bold mb-6">Aperçu des Propriétés</h2>
