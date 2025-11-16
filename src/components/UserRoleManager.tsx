@@ -563,9 +563,9 @@ export const UserRoleManager = () => {
                   {userRoles.map((userRole) => (
                     <TableRow key={userRole.id}>
                       <TableCell className="font-medium">
-                        {userRole.profiles?.first_name && userRole.profiles?.last_name
-                          ? `${userRole.profiles.first_name} ${userRole.profiles.last_name}`
-                          : `Utilisateur ${userRole.user_id.substring(0, 8)}...`}
+                        {userRole.profiles?.first_name || userRole.profiles?.last_name
+                          ? `${userRole.profiles.first_name || ''} ${userRole.profiles.last_name || ''}`.trim()
+                          : 'Nom non disponible'}
                       </TableCell>
                       <TableCell>
                         {userRole.profiles?.email || 'Email non disponible'}
