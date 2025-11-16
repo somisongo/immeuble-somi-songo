@@ -307,5 +307,10 @@
     "errorCreate": "Error creating clause",
     "errorUpdate": "Error updating clause",
     "errorDelete": "Error deleting clause"
+  },
+  "tenantPortal": {
+    "title": "Tenant Portal - SOMI SONGO Building",
+    "signOut": "Sign Out",
+    "signOutSuccess": "Successfully signed out"
   }
 }

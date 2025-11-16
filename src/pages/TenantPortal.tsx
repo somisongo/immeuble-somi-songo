@@ -2,14 +2,16 @@ import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { useUserRole } from '@/hooks/useUserRole';
+import { useLanguage } from '@/hooks/useLanguage';
 import { TenantDashboard } from '@/components/TenantDashboard';
 import { Button } from '@/components/ui/button';
 import { LogOut } from 'lucide-react';
-import { toast } from '@/hooks/use-toast';
+import { toast } from 'sonner';
 
 export default function TenantPortal() {
   const { user, signOut } = useAuth();
   const { role, loading } = useUserRole();
+  const { t } = useLanguage();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -22,10 +24,7 @@ export default function TenantPortal() {
 
   const handleSignOut = async () => {
     await signOut();
-    toast({
-      title: "Déconnexion",
-      description: "Vous avez été déconnecté avec succès",
-    });
+    toast.success(t('tenantPortal.signOutSuccess'));
     navigate('/auth', { replace: true });
   };
 
@@ -49,7 +48,7 @@ export default function TenantPortal() {
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-xl font-bold text-primary-foreground">
-                Portail Locataire - Immeuble SOMI SONGO
+                {t('tenantPortal.title')}
               </h1>
             </div>
             <div className="flex items-center gap-4">
@@ -63,7 +62,7 @@ export default function TenantPortal() {
                 className="text-primary-foreground border-primary-foreground/20 hover:bg-primary-foreground/10"
               >
                 <LogOut className="h-4 w-4 mr-2" />
-                Déconnexion
+                {t('tenantPortal.signOut')}
               </Button>
             </div>
           </div>
