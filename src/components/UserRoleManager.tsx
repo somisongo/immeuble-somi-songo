@@ -49,6 +49,8 @@ export const UserRoleManager = () => {
   const [profiles, setProfiles] = useState<Profile[]>([]);
   const [newUserEmail, setNewUserEmail] = useState('');
   const [newUserPassword, setNewUserPassword] = useState('');
+  const [newUserFirstName, setNewUserFirstName] = useState('');
+  const [newUserLastName, setNewUserLastName] = useState('');
   const [newUserRole, setNewUserRole] = useState<'owner' | 'tenant'>('tenant');
   const [selectedTenant, setSelectedTenant] = useState<string>('');
   const [selectedProfile, setSelectedProfile] = useState<string>('');
@@ -142,7 +144,7 @@ export const UserRoleManager = () => {
   };
 
   const createUserAccount = async () => {
-    if (!newUserEmail || !newUserPassword) {
+    if (!newUserEmail || !newUserPassword || !newUserFirstName || !newUserLastName) {
       toast({
         title: "Erreur",
         description: "Veuillez remplir tous les champs.",
@@ -152,12 +154,17 @@ export const UserRoleManager = () => {
     }
 
     try {
-      // Create user account
+      // Create user account with metadata
       const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
         email: newUserEmail,
         password: newUserPassword,
         options: {
           emailRedirectTo: `${window.location.origin}/`,
+          data: {
+            first_name: newUserFirstName,
+            last_name: newUserLastName,
+            email: newUserEmail
+          }
         }
       });
 
@@ -195,6 +202,8 @@ export const UserRoleManager = () => {
       // Reset form
       setNewUserEmail('');
       setNewUserPassword('');
+      setNewUserFirstName('');
+      setNewUserLastName('');
       setNewUserRole('tenant');
       setSelectedTenant('');
       fetchData();
@@ -284,8 +293,6 @@ export const UserRoleManager = () => {
   };
 
   const openEditDialog = (userRole: UserRole) => {
-    console.log('Opening edit dialog for user:', userRole);
-    
     if (!userRole.profiles) {
       toast({
         title: "Erreur",
@@ -308,7 +315,6 @@ export const UserRoleManager = () => {
       phone: userRole.profiles.phone || ''
     };
     
-    console.log('Form data:', formData);
     setEditingUser(profileData);
     setEditForm(formData);
     setInitialForm(formData);
@@ -322,8 +328,6 @@ export const UserRoleManager = () => {
   const updateUserProfile = async () => {
     if (!editingUser) return;
 
-    console.log('Updating profile with data:', editForm);
-
     try {
       const { error } = await supabase
         .from('profiles')
@@ -335,12 +339,7 @@ export const UserRoleManager = () => {
         })
         .eq('user_id', editingUser.user_id);
 
-      if (error) {
-        console.error('Supabase error:', error);
-        throw error;
-      }
-
-      console.log('Profile updated successfully');
+      if (error) throw error;
 
       toast({
         title: "Succès",
@@ -448,6 +447,29 @@ export const UserRoleManager = () => {
             </TabsContent>
 
             <TabsContent value="create" className="space-y-4 mt-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="first-name">Prénom</Label>
+                  <Input
+                    id="first-name"
+                    type="text"
+                    value={newUserFirstName}
+                    onChange={(e) => setNewUserFirstName(e.target.value)}
+                    placeholder="Prénom"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="last-name">Nom</Label>
+                  <Input
+                    id="last-name"
+                    type="text"
+                    value={newUserLastName}
+                    onChange={(e) => setNewUserLastName(e.target.value)}
+                    placeholder="Nom"
+                  />
+                </div>
+              </div>
+
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <Label htmlFor="email">Email</Label>
@@ -589,6 +611,11 @@ export const UserRoleManager = () => {
           <DialogHeader>
             <DialogTitle>Modifier l'utilisateur</DialogTitle>
           </DialogHeader>
+          {(!initialForm.first_name && !initialForm.last_name && !initialForm.email) && (
+            <div className="bg-muted p-3 rounded-md text-sm text-muted-foreground">
+              ℹ️ Ce profil n'a pas encore d'informations. Veuillez les remplir ci-dessous.
+            </div>
+          )}
           <div className="space-y-4 mt-4">
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
