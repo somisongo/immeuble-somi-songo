@@ -22,6 +22,7 @@ interface UserRole {
     first_name?: string;
     last_name?: string;
     email?: string;
+    phone?: string;
   };
 }
 
@@ -81,7 +82,7 @@ export const UserRoleManager = () => {
       // Fetch all profiles to match with user roles
       const { data: allProfilesData, error: allProfilesError } = await supabase
         .from('profiles')
-        .select('id, user_id, first_name, last_name, email');
+        .select('id, user_id, first_name, last_name, email, phone');
 
       if (allProfilesError) throw allProfilesError;
 
@@ -286,10 +287,10 @@ export const UserRoleManager = () => {
       };
       setEditingUser(profileData);
       setEditForm({
-        first_name: profileData.first_name,
-        last_name: profileData.last_name,
-        email: profileData.email,
-        phone: ''
+        first_name: userRole.profiles.first_name || '',
+        last_name: userRole.profiles.last_name || '',
+        email: userRole.profiles.email || '',
+        phone: userRole.profiles.phone || ''
       });
       setEditDialogOpen(true);
     }
