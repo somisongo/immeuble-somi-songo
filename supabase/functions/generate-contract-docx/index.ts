@@ -18,10 +18,30 @@ const handler = async (req: Request): Promise<Response> => {
   try {
     const { html, filename }: DocxRequest = await req.json();
 
-    // Nettoyer le HTML et préparer pour le format MHTML
-    // Garder les images mais supprimer les classes CSS
-    const cleanHtml = html
-      .replace(/class="[^"]*"/gi, ''); // Supprimer les classes CSS
+    // Télécharger le logo et le convertir en base64
+    let logoBase64 = '';
+    try {
+      const logoUrl = 'https://phxoqxegjcqjmdszyipa.supabase.co/storage/v1/object/public/lovable-uploads/logo-header.png';
+      const logoResponse = await fetch(logoUrl);
+      if (logoResponse.ok) {
+        const logoBlob = await logoResponse.arrayBuffer();
+        const logoBytes = new Uint8Array(logoBlob);
+        logoBase64 = btoa(String.fromCharCode(...logoBytes));
+      }
+    } catch (error) {
+      console.error("Error fetching logo:", error);
+    }
+
+    // Nettoyer le HTML et remplacer l'URL du logo par le base64
+    let cleanHtml = html.replace(/class="[^"]*"/gi, ''); // Supprimer les classes CSS
+    
+    // Remplacer l'URL du logo par la version base64
+    if (logoBase64) {
+      cleanHtml = cleanHtml.replace(
+        /src="https:\/\/[^"]*logo-header\.png"/gi,
+        `src="data:image/png;base64,${logoBase64}"`
+      );
+    }
 
     // Créer un document MHTML (format supporté par Word)
     const boundary = "----=_NextPart_" + Date.now();
