@@ -12,6 +12,7 @@ import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
 
+// Language provider wraps all routes to enable translations
 const App = () => (
   <BrowserRouter>
     <QueryClientProvider client={queryClient}>
