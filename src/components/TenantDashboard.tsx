@@ -288,13 +288,13 @@ export const TenantDashboard = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-background to-muted/30 p-6">
+      <div className="min-h-screen bg-gradient-to-br from-background to-muted/30 p-3 sm:p-6">
         <div className="max-w-4xl mx-auto">
-          <div className="animate-pulse space-y-6">
-            <div className="h-8 bg-muted rounded w-1/3"></div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="animate-pulse space-y-4 sm:space-y-6">
+            <div className="h-6 sm:h-8 bg-muted rounded w-1/2 sm:w-1/3"></div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
               {[1, 2, 3, 4].map((i) => (
-                <div key={i} className="h-48 bg-muted rounded"></div>
+                <div key={i} className="h-32 sm:h-48 bg-muted rounded"></div>
               ))}
             </div>
           </div>
@@ -305,13 +305,13 @@ export const TenantDashboard = () => {
 
   if (!tenantData) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-background to-muted/30 p-6">
+      <div className="min-h-screen bg-gradient-to-br from-background to-muted/30 p-3 sm:p-6">
         <div className="max-w-4xl mx-auto">
           <Card>
-            <CardContent className="p-8 text-center">
-              <User className="h-16 w-16 mx-auto mb-4 text-muted-foreground" />
-              <h2 className="text-xl font-semibold mb-2">Aucun profil locataire trouvé</h2>
-              <p className="text-muted-foreground">
+            <CardContent className="p-6 sm:p-8 text-center">
+              <User className="h-12 w-12 sm:h-16 sm:w-16 mx-auto mb-3 sm:mb-4 text-muted-foreground" />
+              <h2 className="text-lg sm:text-xl font-semibold mb-2">Aucun profil locataire trouvé</h2>
+              <p className="text-sm sm:text-base text-muted-foreground">
                 Votre compte n'est pas encore lié à un profil de locataire. 
                 Veuillez contacter l'administrateur.
               </p>
@@ -323,48 +323,52 @@ export const TenantDashboard = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background to-muted/30 p-6">
-      <div className="max-w-6xl mx-auto space-y-6">
+    <div className="min-h-screen bg-gradient-to-br from-background to-muted/30 p-3 sm:p-6">
+      <div className="max-w-6xl mx-auto space-y-4 sm:space-y-6">
         {/* Header */}
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-4">
           <div>
-            <h1 className="text-3xl font-bold">Espace Locataire</h1>
-            <p className="text-muted-foreground">
+            <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold">Espace Locataire</h1>
+            <p className="text-sm sm:text-base text-muted-foreground">
               Bonjour {tenantData.first_name} {tenantData.last_name}
             </p>
           </div>
-          <div className="text-right">
-            <p className="text-sm text-muted-foreground">Immeuble SOMI SONGO</p>
-            <p className="font-medium">{leaseData?.properties?.unit_number || 'N/A'}</p>
+          <div className="text-left sm:text-right">
+            <p className="text-xs sm:text-sm text-muted-foreground">Immeuble SOMI SONGO</p>
+            <p className="text-sm sm:text-base font-medium">{leaseData?.properties?.unit_number || 'N/A'}</p>
           </div>
         </div>
 
         {/* Quick Actions */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-2 sm:gap-4">
           <Button 
             onClick={downloadContract} 
-            className="h-16 flex flex-col gap-2"
+            className="h-14 sm:h-16 flex flex-col gap-1 sm:gap-2 text-xs sm:text-sm"
             disabled={!leaseData}
           >
-            <Download className="h-5 w-5" />
-            Télécharger le Contrat
+            <Download className="h-4 w-4 sm:h-5 sm:w-5" />
+            <span className="hidden sm:inline">Télécharger le Contrat</span>
+            <span className="sm:hidden">Contrat</span>
           </Button>
-          <Button variant="outline" className="h-16 flex flex-col gap-2">
-            <CreditCard className="h-5 w-5" />
-            Effectuer un Paiement
+          <Button variant="outline" className="h-14 sm:h-16 flex flex-col gap-1 sm:gap-2 text-xs sm:text-sm">
+            <CreditCard className="h-4 w-4 sm:h-5 sm:w-5" />
+            <span className="hidden sm:inline">Effectuer un Paiement</span>
+            <span className="sm:hidden">Payer</span>
           </Button>
           <Button 
             variant="outline" 
-            className="h-16 flex flex-col gap-2"
+            className="h-14 sm:h-16 flex flex-col gap-1 sm:gap-2 text-xs sm:text-sm"
             onClick={generatePaymentReport}
             disabled={!payments.length}
           >
-            <Receipt className="h-5 w-5" />
-            Rapport de Paiements
+            <Receipt className="h-4 w-4 sm:h-5 sm:w-5" />
+            <span className="hidden sm:inline">Rapport de Paiements</span>
+            <span className="sm:hidden">Rapport</span>
           </Button>
-          <Button variant="outline" className="h-16 flex flex-col gap-2">
-            <FileText className="h-5 w-5" />
-            Historique des Paiements
+          <Button variant="outline" className="h-14 sm:h-16 flex flex-col gap-1 sm:gap-2 text-xs sm:text-sm">
+            <FileText className="h-4 w-4 sm:h-5 sm:w-5" />
+            <span className="hidden sm:inline">Historique des Paiements</span>
+            <span className="sm:hidden">Historique</span>
           </Button>
         </div>
 
@@ -375,22 +379,22 @@ export const TenantDashboard = () => {
               <CardTitle>Informations du Bail</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
                 <div>
-                  <h4 className="font-semibold mb-2">Logement</h4>
-                  <p>Appartement {leaseData.properties.unit_number}</p>
-                  <p>{leaseData.properties.bedrooms} chambres, {leaseData.properties.bathrooms} SDB</p>
+                  <h4 className="text-sm sm:text-base font-semibold mb-2">Logement</h4>
+                  <p className="text-sm sm:text-base">Appartement {leaseData.properties.unit_number}</p>
+                  <p className="text-sm sm:text-base">{leaseData.properties.bedrooms} chambres, {leaseData.properties.bathrooms} SDB</p>
                 </div>
                 <div>
-                  <h4 className="font-semibold mb-2">Période de Location</h4>
-                  <p>Du {new Date(leaseData.start_date).toLocaleDateString('fr-FR')}</p>
-                  <p>Au {new Date(leaseData.end_date).toLocaleDateString('fr-FR')}</p>
+                  <h4 className="text-sm sm:text-base font-semibold mb-2">Période de Location</h4>
+                  <p className="text-sm sm:text-base">Du {new Date(leaseData.start_date).toLocaleDateString('fr-FR')}</p>
+                  <p className="text-sm sm:text-base">Au {new Date(leaseData.end_date).toLocaleDateString('fr-FR')}</p>
                 </div>
                 <div>
-                  <h4 className="font-semibold mb-2">Montants</h4>
-                  <p>Loyer: ${leaseData.rent_amount}</p>
+                  <h4 className="text-sm sm:text-base font-semibold mb-2">Montants</h4>
+                  <p className="text-sm sm:text-base">Loyer: ${leaseData.rent_amount}</p>
                   {leaseData.deposit_amount && (
-                    <p>Caution: ${leaseData.deposit_amount}</p>
+                    <p className="text-sm sm:text-base">Caution: ${leaseData.deposit_amount}</p>
                   )}
                 </div>
               </div>
@@ -409,29 +413,29 @@ export const TenantDashboard = () => {
                 Aucun paiement enregistré
               </p>
             ) : (
-              <div className="space-y-4">
+              <div className="space-y-3 sm:space-y-4">
                 {payments.map((payment) => (
                   <div
                     key={payment.id}
-                    className="flex items-center justify-between p-4 border rounded-lg"
+                    className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 p-3 sm:p-4 border rounded-lg"
                   >
-                    <div>
-                      <p className="font-medium">${payment.amount}</p>
-                      <p className="text-sm text-muted-foreground">
+                    <div className="flex-1 min-w-0">
+                      <p className="font-medium text-sm sm:text-base">${payment.amount}</p>
+                      <p className="text-xs sm:text-sm text-muted-foreground truncate">
                         Échéance: {new Date(payment.due_date).toLocaleDateString('fr-FR')}
                       </p>
                       {payment.paid_date && (
-                        <p className="text-sm text-muted-foreground">
+                        <p className="text-xs sm:text-sm text-muted-foreground truncate">
                           Payé le: {new Date(payment.paid_date).toLocaleDateString('fr-FR')}
                         </p>
                       )}
                     </div>
-                    <div className="text-right">
-                      <p className={`font-medium ${getStatusColor(payment.status)}`}>
+                    <div className="text-left sm:text-right flex-shrink-0">
+                      <p className={`text-sm sm:text-base font-medium ${getStatusColor(payment.status)}`}>
                         {getStatusText(payment.status)}
                       </p>
                       {payment.payment_method && (
-                        <p className="text-sm text-muted-foreground">
+                        <p className="text-xs sm:text-sm text-muted-foreground">
                           {payment.payment_method}
                         </p>
                       )}
