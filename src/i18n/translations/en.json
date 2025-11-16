@@ -330,6 +330,15 @@
     "step6Description": "View your monthly revenue and export data",
     "needHelp": "Need help? Contact technical support."
   },
+  "userGuide": {
+    "title": "User Guide",
+    "subtitle": "Complete guide to using the property management platform",
+    "version": "Version 1.0",
+    "printVersion": "Print / PDF Version",
+    "printReady": "Preparing printable version...",
+    "welcomeTitle": "Welcome!",
+    "welcomeDescription": "This platform allows you to efficiently manage your properties, tenants, leases and payments in one place."
+  },
   "documentation": {
     "title": "Documentation",
     "subtitle": "User guides and complete technical documentation",

@@ -2,30 +2,145 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
-import { Building2, Users, FileText, CreditCard, FileSignature, UserCog, Home, Info } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Building2, Users, FileText, CreditCard, FileSignature, UserCog, Home, Info, Printer } from "lucide-react";
+import { toast } from "sonner";
+import { useLanguage } from "@/hooks/useLanguage";
 
 const UserGuide = () => {
+  const { t } = useLanguage();
+
+  const handlePrint = () => {
+    // Expand all accordion items before printing
+    const accordionTriggers = document.querySelectorAll('[data-state="closed"]');
+    accordionTriggers.forEach(trigger => {
+      if (trigger instanceof HTMLElement) {
+        trigger.click();
+      }
+    });
+
+    // Wait for accordions to expand then print
+    setTimeout(() => {
+      window.print();
+      toast.success(t('userGuide.printReady'));
+    }, 300);
+  };
+
   return (
     <div className="container mx-auto py-8 max-w-5xl">
-      <div className="mb-8 text-center">
-        <h1 className="text-4xl font-bold mb-4">Guide d'Utilisation</h1>
-        <p className="text-muted-foreground text-lg">
-          Guide complet pour utiliser la plateforme de gestion immobilière
-        </p>
-        <Badge variant="secondary" className="mt-2">Version 0.1</Badge>
-      </div>
+      <style dangerouslySetInnerHTML={{__html: `
+        @media print {
+          body * {
+            visibility: hidden;
+          }
+          
+          .printable-content, .printable-content * {
+            visibility: visible;
+          }
+          
+          .printable-content {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+          }
 
-      <Alert className="mb-6">
-        <Info className="h-4 w-4" />
-        <AlertTitle>Bienvenue !</AlertTitle>
-        <AlertDescription>
-          Cette plateforme vous permet de gérer efficacement vos propriétés, locataires, baux et paiements en un seul endroit.
-        </AlertDescription>
-      </Alert>
+          .no-print {
+            display: none !important;
+          }
 
-      <Accordion type="single" collapsible className="space-y-4">
-        {/* Introduction */}
-        <AccordionItem value="intro" className="border rounded-lg px-4">
+          .print-section {
+            page-break-inside: avoid;
+            margin-bottom: 2rem;
+          }
+
+          h1 {
+            font-size: 28pt;
+            margin-bottom: 1rem;
+          }
+
+          h2, h3 {
+            font-size: 18pt;
+            margin-top: 1.5rem;
+            margin-bottom: 0.75rem;
+          }
+
+          h4 {
+            font-size: 14pt;
+            margin-top: 1rem;
+            margin-bottom: 0.5rem;
+          }
+
+          p, li {
+            font-size: 11pt;
+            line-height: 1.6;
+          }
+
+          .accordion-item {
+            border: 1px solid #ddd;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            page-break-inside: avoid;
+          }
+
+          [data-radix-accordion-trigger] {
+            font-weight: bold;
+            font-size: 14pt;
+            margin-bottom: 0.5rem;
+          }
+
+          [data-radix-accordion-content] {
+            display: block !important;
+            height: auto !important;
+            overflow: visible !important;
+          }
+
+          .badge {
+            border: 1px solid #333;
+            padding: 0.25rem 0.5rem;
+            display: inline-block;
+          }
+
+          .card {
+            border: 1px solid #ddd;
+            padding: 1rem;
+            margin: 0.5rem 0;
+          }
+
+          @page {
+            margin: 2cm;
+            size: A4;
+          }
+        }
+      `}} />
+
+      <div className="printable-content">
+        <div className="mb-8 text-center">
+          <h1 className="text-4xl font-bold mb-4">{t('userGuide.title')}</h1>
+          <p className="text-muted-foreground text-lg">
+            {t('userGuide.subtitle')}
+          </p>
+          <Badge variant="secondary" className="mt-2">{t('userGuide.version')}</Badge>
+          
+          <div className="mt-4 no-print">
+            <Button onClick={handlePrint} variant="outline" className="gap-2">
+              <Printer className="h-4 w-4" />
+              {t('userGuide.printVersion')}
+            </Button>
+          </div>
+        </div>
+
+        <Alert className="mb-6 no-print">
+          <Info className="h-4 w-4" />
+          <AlertTitle>{t('userGuide.welcomeTitle')}</AlertTitle>
+          <AlertDescription>
+            {t('userGuide.welcomeDescription')}
+          </AlertDescription>
+        </Alert>
+
+        <Accordion type="single" collapsible className="space-y-4">
+          {/* Introduction */}
+          <AccordionItem value="intro" className="border rounded-lg px-4 accordion-item print-section">
           <AccordionTrigger className="hover:no-underline">
             <div className="flex items-center gap-2">
               <Home className="h-5 w-5 text-primary" />
@@ -390,6 +505,7 @@ const UserGuide = () => {
           </div>
         </CardContent>
       </Card>
+      </div>
     </div>
   );
 };
