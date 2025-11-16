@@ -18,65 +18,135 @@ const handler = async (req: Request): Promise<Response> => {
   try {
     const { html, filename }: DocxRequest = await req.json();
 
-    // Nettoyer le HTML pour le format Word
+    // Nettoyer le HTML et préparer pour le format MHTML
     const cleanHtml = html
-      .replace(/<style[^>]*>[\s\S]*?<\/style>/gi, '') // Supprimer les styles inline
-      .replace(/class="[^"]*"/gi, '') // Supprimer les classes
-      .replace(/<img[^>]*>/gi, '') // Supprimer les images pour l'instant
-      .replace(/background:[^;]*;/gi, ''); // Supprimer les backgrounds
+      .replace(/class="[^"]*"/gi, '') // Supprimer les classes CSS
+      .replace(/<img[^>]*src="([^"]*)"[^>]*>/gi, ''); // Supprimer les images
 
-    // Créer un document Word simple en utilisant le format Open XML
-    const wordDocument = `
-<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<?mso-application progid="Word.Document"?>
+    // Créer un document MHTML (format supporté par Word)
+    const boundary = "----=_NextPart_" + Date.now();
+    const mhtmlDocument = `MIME-Version: 1.0
+Content-Type: multipart/related; boundary="${boundary}"
+
+--${boundary}
+Content-Type: text/html; charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
+Content-Location: file:///C:/contract.html
+
+<!DOCTYPE html>
 <html xmlns:v="urn:schemas-microsoft-com:vml"
       xmlns:o="urn:schemas-microsoft-com:office:office"
       xmlns:w="urn:schemas-microsoft-com:office:word"
-      xmlns:m="http://schemas.microsoft.com/office/2004/12/omml"
       xmlns="http://www.w3.org/TR/REC-html40">
 <head>
-  <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta name="ProgId" content="Word.Document">
+  <meta name="Generator" content="Microsoft Word">
+  <meta name="Originator" content="Microsoft Word">
   <title>Contrat de Bail</title>
   <!--[if gte mso 9]>
   <xml>
     <w:WordDocument>
       <w:View>Print</w:View>
       <w:Zoom>100</w:Zoom>
+      <w:DoNotOptimizeForBrowser/>
     </w:WordDocument>
   </xml>
   <![endif]-->
   <style>
-    @page {
-      size: A4;
-      margin: 1in;
+    @page Section1 {
+      size: 8.5in 11.0in;
+      margin: 1.0in 1.0in 1.0in 1.0in;
+      mso-header-margin: 0.5in;
+      mso-footer-margin: 0.5in;
+      mso-paper-source: 0;
     }
+    div.Section1 { page: Section1; }
     body {
-      font-family: Arial, sans-serif;
-      font-size: 12pt;
+      font-family: 'Calibri', 'Arial', sans-serif;
+      font-size: 11pt;
       line-height: 1.6;
+      margin: 0;
     }
-    h1 { font-size: 18pt; font-weight: bold; color: #1e40af; }
-    h2 { font-size: 16pt; font-weight: bold; color: #1e40af; }
-    h3 { font-size: 14pt; font-weight: bold; color: #1e40af; }
-    p { margin-bottom: 10pt; text-align: justify; }
-    table { width: 100%; border-collapse: collapse; margin: 10pt 0; }
-    td { padding: 8pt; border: 1pt solid #e2e8f0; }
+    h1 {
+      font-size: 18pt;
+      font-weight: bold;
+      color: #1e40af;
+      margin-top: 12pt;
+      margin-bottom: 6pt;
+    }
+    h2 {
+      font-size: 16pt;
+      font-weight: bold;
+      color: #1e40af;
+      margin-top: 10pt;
+      margin-bottom: 6pt;
+    }
+    h3 {
+      font-size: 14pt;
+      font-weight: bold;
+      color: #1e40af;
+      margin-top: 8pt;
+      margin-bottom: 4pt;
+    }
+    p {
+      margin-bottom: 10pt;
+      text-align: justify;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 10pt 0;
+      border: 1pt solid #000;
+    }
+    td, th {
+      padding: 8pt;
+      border: 1pt solid #000;
+      vertical-align: top;
+    }
+    .info-card {
+      margin-bottom: 20pt;
+      padding: 15pt;
+      background-color: #f8fafc;
+      border-left: 4pt solid #3b82f6;
+    }
+    .highlight-box {
+      margin: 20pt 0;
+      padding: 20pt;
+      background-color: #dbeafe;
+      text-align: center;
+      border: 2pt solid #3b82f6;
+    }
+    .bank-info {
+      margin: 20pt 0;
+      padding: 20pt;
+      background-color: #f0fdf4;
+      text-align: center;
+      border: 2pt solid #22c55e;
+    }
+    .signature-section {
+      margin-top: 40pt;
+    }
   </style>
 </head>
 <body>
-  ${cleanHtml}
+  <div class="Section1">
+    ${cleanHtml}
+  </div>
 </body>
-</html>`;
+</html>
+
+--${boundary}--`;
 
     // Convertir en Blob
-    const blob = new TextEncoder().encode(wordDocument);
+    const blob = new TextEncoder().encode(mhtmlDocument);
 
     return new Response(blob, {
       status: 200,
       headers: {
         ...corsHeaders,
-        "Content-Type": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-        "Content-Disposition": `attachment; filename="${filename}"`,
+        "Content-Type": "application/msword",
+        "Content-Disposition": `attachment; filename="${filename.replace('.docx', '.doc')}"`,
       },
     });
 
