@@ -32,10 +32,29 @@ interface ContractData {
   owner_id: string;
 }
 
-const generateContractHTML = (data: ContractData, landlordInfo: any, clauses: any[], annexes: any[]): string => {
+const generateContractHTML = async (data: ContractData, landlordInfo: any, clauses: any[], annexes: any[]): Promise<string> => {
   const startDate = new Date(data.lease.start_date).toLocaleDateString('fr-FR');
   const endDate = new Date(data.lease.end_date).toLocaleDateString('fr-FR');
   const currentDate = new Date().toLocaleDateString('fr-FR');
+  
+  // Télécharger le logo et le convertir en base64
+  let logoBase64 = '';
+  try {
+    // Essayer d'abord l'URL publique Lovable
+    const logoUrl = 'https://c2321dd6-5975-4c59-9d7b-a161014b1c60.lovableproject.com/lovable-uploads/logo-header.png';
+    const logoResponse = await fetch(logoUrl);
+    if (logoResponse.ok) {
+      const logoBlob = await logoResponse.arrayBuffer();
+      const logoBytes = new Uint8Array(logoBlob);
+      logoBase64 = btoa(String.fromCharCode(...logoBytes));
+    }
+  } catch (error) {
+    console.error("Error fetching logo:", error);
+  }
+  
+  const logoSrc = logoBase64 
+    ? `data:image/png;base64,${logoBase64}`
+    : 'https://c2321dd6-5975-4c59-9d7b-a161014b1c60.lovableproject.com/lovable-uploads/logo-header.png';
   
   // Fonction pour remplacer les variables dans le contenu
   const replaceVariables = (content: string): string => {
@@ -385,7 +404,7 @@ const generateContractHTML = (data: ContractData, landlordInfo: any, clauses: an
     <div class="page-header">
         <div class="header-content">
             <div class="logo-section">
-                <img src="https://phxoqxegjcqjmdszyipa.supabase.co/storage/v1/object/public/lovable-uploads/logo-header.png" 
+                <img src="${logoSrc}" 
                      alt="Logo IMMEUBLE SOMI SONGO" class="logo">
                 <div class="company-info">
                     <h1>IMMEUBLE SOMI SONGO</h1>
@@ -657,7 +676,7 @@ const handler = async (req: Request): Promise<Response> => {
       );
     }
 
-    const htmlContent = generateContractHTML({ tenant, lease, owner_id }, landlordInfo, clauses || [], annexes || []);
+    const htmlContent = await generateContractHTML({ tenant, lease, owner_id }, landlordInfo, clauses || [], annexes || []);
 
     return new Response(
       JSON.stringify({ 

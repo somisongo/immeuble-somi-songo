@@ -21,7 +21,7 @@ const handler = async (req: Request): Promise<Response> => {
     // Télécharger le logo et le convertir en base64
     let logoBase64 = '';
     try {
-      const logoUrl = 'https://phxoqxegjcqjmdszyipa.supabase.co/storage/v1/object/public/lovable-uploads/logo-header.png';
+      const logoUrl = 'https://c2321dd6-5975-4c59-9d7b-a161014b1c60.lovableproject.com/lovable-uploads/logo-header.png';
       const logoResponse = await fetch(logoUrl);
       if (logoResponse.ok) {
         const logoBlob = await logoResponse.arrayBuffer();
@@ -38,7 +38,12 @@ const handler = async (req: Request): Promise<Response> => {
     // Remplacer l'URL du logo par la version base64
     if (logoBase64) {
       cleanHtml = cleanHtml.replace(
-        /src="https:\/\/[^"]*logo-header\.png"/gi,
+        /src="[^"]*logo-header\.png"/gi,
+        `src="data:image/png;base64,${logoBase64}"`
+      );
+      // Également remplacer les URLs base64 déjà présentes
+      cleanHtml = cleanHtml.replace(
+        /src="data:image\/png;base64,[^"]*"/gi,
         `src="data:image/png;base64,${logoBase64}"`
       );
     }
