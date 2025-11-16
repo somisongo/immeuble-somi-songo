@@ -44,15 +44,15 @@ export default function TenantPortal() {
     <div className="min-h-screen bg-gradient-to-br from-background to-muted/30">
       {/* Header */}
       <header className="bg-primary/95 backdrop-blur-sm border-b border-primary/20 sticky top-0 z-50">
-        <div className="max-w-6xl mx-auto px-6 py-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-xl font-bold text-primary-foreground">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 py-3 sm:py-4">
+          <div className="flex items-center justify-between gap-2">
+            <div className="min-w-0 flex-1">
+              <h1 className="text-base sm:text-xl font-bold text-primary-foreground truncate">
                 {t('tenantPortal.title')}
               </h1>
             </div>
-            <div className="flex items-center gap-4">
-              <span className="text-primary-foreground/80 text-sm">
+            <div className="flex items-center gap-2 sm:gap-4 flex-shrink-0">
+              <span className="text-primary-foreground/80 text-xs sm:text-sm hidden md:block truncate max-w-[150px]">
                 {user.email}
               </span>
               <Button
@@ -61,8 +61,8 @@ export default function TenantPortal() {
                 onClick={handleSignOut}
                 className="text-primary-foreground border-primary-foreground/20 hover:bg-primary-foreground/10"
               >
-                <LogOut className="h-4 w-4 mr-2" />
-                {t('tenantPortal.signOut')}
+                <LogOut className="h-3 w-3 sm:h-4 sm:w-4 sm:mr-2" />
+                <span className="hidden sm:inline">{t('tenantPortal.signOut')}</span>
               </Button>
             </div>
           </div>
