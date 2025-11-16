@@ -425,58 +425,62 @@ export const LeaseManagement = () => {
   }
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h2 className="text-2xl font-bold">Gestion des Baux</h2>
+    <div className="space-y-4 md:space-y-6 p-2 md:p-0">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+        <h2 className="text-xl md:text-2xl font-bold">Gestion des Baux</h2>
         <CreateLeaseDialog onLeaseCreated={fetchLeases} />
       </div>
       
-      <div className="grid gap-4">
+      <div className="grid gap-3 md:gap-4">
         {leases.map((lease) => (
           <Card key={lease.id} className="bg-gradient-card shadow-card hover:shadow-elevated transition-all duration-300">
-            <CardContent className="pt-6">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-4">
-                  <div className="flex items-center gap-2">
-                    <User className="h-5 w-5 text-muted-foreground" />
-                    <div>
-                      <h3 className="font-semibold">{lease.tenant}</h3>
-                      <p className="text-sm text-muted-foreground">Appartement {lease.unit}</p>
+            <CardContent className="pt-4 md:pt-6">
+              <div className="flex flex-col gap-3 md:gap-0 md:flex-row md:items-center md:justify-between">
+                <div className="flex flex-col gap-3 flex-1">
+                  <div className="flex items-start gap-2">
+                    <User className="h-4 w-4 md:h-5 md:w-5 text-muted-foreground flex-shrink-0 mt-1" />
+                    <div className="flex-1 min-w-0">
+                      <h3 className="font-semibold text-sm md:text-base truncate">{lease.tenant}</h3>
+                      <p className="text-xs md:text-sm text-muted-foreground">Appartement {lease.unit}</p>
                     </div>
                   </div>
                   
-                  <div className="flex items-center gap-2">
-                    <Calendar className="h-4 w-4 text-muted-foreground" />
-                    <span className="text-sm">{lease.startDate} - {lease.endDate}</span>
+                  <div className="flex flex-wrap items-center gap-2 md:gap-4 text-xs md:text-sm">
+                    <div className="flex items-center gap-1 md:gap-2">
+                      <Calendar className="h-3 w-3 md:h-4 md:w-4 text-muted-foreground" />
+                      <span className="truncate">{lease.startDate} - {lease.endDate}</span>
+                    </div>
+                    
+                    <div className="font-semibold whitespace-nowrap">${lease.rent}/mois</div>
+                    
+                    <Badge className={`${getStatusColor(lease.status)} text-xs`}>
+                      {getStatusText(lease.status)}
+                    </Badge>
                   </div>
-                  
-                  <div className="font-semibold">${lease.rent}/mois</div>
-                  
-                  <Badge className={getStatusColor(lease.status)}>
-                    {getStatusText(lease.status)}
-                  </Badge>
                 </div>
                 
-                <div className="flex gap-2">
-                  <Button variant="outline" size="sm" onClick={() => previewContract(lease)}>
-                    <Eye className="mr-2 h-4 w-4" />
-                    Aperçu Contrat
+                <div className="flex flex-col sm:flex-row gap-2 mt-2 md:mt-0">
+                  <Button variant="outline" size="sm" onClick={() => previewContract(lease)} className="text-xs md:text-sm w-full sm:w-auto">
+                    <Eye className="mr-1 h-3 w-3 md:mr-2 md:h-4 md:w-4" />
+                    <span className="hidden sm:inline">Aperçu</span>
+                    <span className="sm:hidden">Aperçu Contrat</span>
                   </Button>
-                  <Button variant="outline" size="sm" onClick={() => handleEditLease(lease)}>
-                    <Edit className="mr-2 h-4 w-4" />
+                  <Button variant="outline" size="sm" onClick={() => handleEditLease(lease)} className="text-xs md:text-sm w-full sm:w-auto">
+                    <Edit className="mr-1 h-3 w-3 md:mr-2 md:h-4 md:w-4" />
                     Modifier
                   </Button>
                   {lease.status === 'active' && (
                     <Button 
                       variant="destructive" 
                       size="sm" 
+                      className="text-xs md:text-sm w-full sm:w-auto"
                       onClick={() => {
                         if (confirm('Êtes-vous sûr de vouloir terminer ce bail ? L\'appartement sera libéré.')) {
                           terminateLease(lease.id, lease.propertyId);
                         }
                       }}
                     >
-                      Terminer Bail
+                      Terminer
                     </Button>
                   )}
                 </div>

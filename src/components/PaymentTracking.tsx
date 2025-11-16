@@ -516,14 +516,14 @@ export const PaymentTracking = () => {
   const totalOverdue = payments.filter(p => p.status === "overdue").reduce((sum, p) => sum + p.amount, 0);
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h2 className="text-2xl font-bold">Suivi des Paiements</h2>
-        <div className="flex gap-2">
+    <div className="space-y-4 md:space-y-6 p-2 md:p-0">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+        <h2 className="text-xl md:text-2xl font-bold">Suivi des Paiements</h2>
+        <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
           <Dialog open={createDialogOpen} onOpenChange={setCreateDialogOpen}>
             <DialogTrigger asChild>
-              <Button className="bg-gradient-primary hover:bg-primary-dark">
-                <Plus className="mr-2 h-4 w-4" />
+              <Button className="bg-gradient-primary hover:bg-primary-dark w-full sm:w-auto text-sm">
+                <Plus className="mr-1 h-3 w-3 md:mr-2 md:h-4 md:w-4" />
                 Nouveau Paiement
               </Button>
             </DialogTrigger>
@@ -754,45 +754,45 @@ export const PaymentTracking = () => {
             </DialogContent>
           </Dialog>
 
-          <Button variant="outline" onClick={generateReport}>
-            <FileText className="mr-2 h-4 w-4" />
+          <Button variant="outline" onClick={generateReport} className="w-full sm:w-auto text-sm">
+            <FileText className="mr-1 h-3 w-3 md:mr-2 md:h-4 md:w-4" />
             Générer Rapport
           </Button>
         </div>
       </div>
       
       {/* Payment Summary */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 md:gap-4 mb-4 md:mb-6">
         <Card className="bg-success-light border-success">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm text-success">Payé ce Mois</CardTitle>
+          <CardHeader className="pb-2 px-3 pt-3 md:px-6 md:pt-6">
+            <CardTitle className="text-xs md:text-sm text-success">Payé ce Mois</CardTitle>
           </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-success">${totalPaid.toLocaleString()}</div>
+          <CardContent className="px-3 pb-3 md:px-6 md:pb-6">
+            <div className="text-xl md:text-2xl font-bold text-success">${totalPaid.toLocaleString()}</div>
           </CardContent>
         </Card>
         
         <Card className="bg-warning-light border-warning">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm text-warning">En Attente</CardTitle>
+          <CardHeader className="pb-2 px-3 pt-3 md:px-6 md:pt-6">
+            <CardTitle className="text-xs md:text-sm text-warning">En Attente</CardTitle>
           </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-warning">${totalPending.toLocaleString()}</div>
+          <CardContent className="px-3 pb-3 md:px-6 md:pb-6">
+            <div className="text-xl md:text-2xl font-bold text-warning">${totalPending.toLocaleString()}</div>
           </CardContent>
         </Card>
         
         <Card className="bg-destructive/10 border-destructive">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm text-destructive">En Retard</CardTitle>
+          <CardHeader className="pb-2 px-3 pt-3 md:px-6 md:pt-6">
+            <CardTitle className="text-xs md:text-sm text-destructive">En Retard</CardTitle>
           </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-destructive">${totalOverdue.toLocaleString()}</div>
+          <CardContent className="px-3 pb-3 md:px-6 md:pb-6">
+            <div className="text-xl md:text-2xl font-bold text-destructive">${totalOverdue.toLocaleString()}</div>
           </CardContent>
         </Card>
       </div>
       
       {/* Payment List */}
-      <div className="grid gap-4">
+      <div className="grid gap-3 md:gap-4">
         {payments.length === 0 ? (
           <Card className="bg-gradient-card shadow-card">
             <CardContent className="pt-6">
@@ -807,59 +807,64 @@ export const PaymentTracking = () => {
         ) : (
           payments.map((payment) => (
             <Card key={payment.id} className="bg-gradient-card shadow-card">
-              <CardContent className="pt-6">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-4">
-                    <div className="flex items-center gap-2">
+              <CardContent className="pt-4 md:pt-6">
+                <div className="flex flex-col gap-3 md:gap-0 md:flex-row md:items-center md:justify-between">
+                  <div className="flex flex-col gap-3 flex-1">
+                    <div className="flex items-start gap-2">
                       {getStatusIcon(payment.status)}
-                      <div>
-                        <h3 className="font-semibold">{payment.tenant}</h3>
-                        <p className="text-sm text-muted-foreground">Appartement {payment.unit}</p>
+                      <div className="flex-1 min-w-0">
+                        <h3 className="font-semibold text-sm md:text-base truncate">{payment.tenant}</h3>
+                        <p className="text-xs md:text-sm text-muted-foreground">Appartement {payment.unit}</p>
                         {payment.payment_method && (
                           <p className="text-xs text-muted-foreground">Méthode: {payment.payment_method}</p>
                         )}
                       </div>
                     </div>
                     
-                    <div className="flex items-center gap-2">
-                      <DollarSign className="h-4 w-4 text-muted-foreground" />
-                      <span className="font-semibold text-lg">${payment.amount.toLocaleString()}</span>
-                    </div>
-                    
-                    <div className="flex items-center gap-2">
-                      <Calendar className="h-4 w-4 text-muted-foreground" />
-                      <div className="text-sm">
-                        <div>Échéance: {payment.due_date}</div>
-                        {payment.paid_date && <div className="text-success">Payé: {payment.paid_date}</div>}
+                    <div className="flex flex-wrap items-center gap-2 md:gap-4">
+                      <div className="flex items-center gap-1 md:gap-2">
+                        <DollarSign className="h-3 w-3 md:h-4 md:w-4 text-muted-foreground" />
+                        <span className="font-semibold text-base md:text-lg">${payment.amount.toLocaleString()}</span>
                       </div>
+                      
+                      <div className="flex items-center gap-1 md:gap-2">
+                        <Calendar className="h-3 w-3 md:h-4 md:w-4 text-muted-foreground" />
+                        <div className="text-xs md:text-sm">
+                          <div>Échéance: {payment.due_date}</div>
+                          {payment.paid_date && <div className="text-success">Payé: {payment.paid_date}</div>}
+                        </div>
+                      </div>
+                      
+                      <Badge className={`${getStatusColor(payment.status)} text-xs`}>
+                        {getStatusText(payment.status)}
+                      </Badge>
                     </div>
-                    
-                    <Badge className={getStatusColor(payment.status)}>
-                      {getStatusText(payment.status)}
-                    </Badge>
                   </div>
                   
-                  <div className="flex gap-2">
+                  <div className="flex flex-col sm:flex-row gap-2 mt-2 md:mt-0 items-stretch">
                     {payment.status === "pending" && (
                       <Button 
                         size="sm" 
-                        className="bg-gradient-success"
+                        className="bg-gradient-success text-xs md:text-sm"
                         onClick={() => markAsPaid(payment.id)}
                       >
-                        Marquer comme Payé
+                        <span className="hidden sm:inline">Marquer comme Payé</span>
+                        <span className="sm:hidden">Payé</span>
                       </Button>
                     )}
                     {payment.status === "overdue" && (
                       <Button 
                         size="sm" 
                         variant="destructive"
+                        className="text-xs md:text-sm"
                         onClick={() => toast.info('Fonctionnalité de rappel à implémenter')}
                       >
-                        Envoyer Rappel
+                        <span className="hidden sm:inline">Envoyer Rappel</span>
+                        <span className="sm:hidden">Rappel</span>
                       </Button>
                     )}
                     <Select onValueChange={(value) => updatePaymentStatus(payment.id, value)}>
-                      <SelectTrigger className="w-32">
+                      <SelectTrigger className="w-full sm:w-28 text-xs md:text-sm h-8 md:h-9">
                         <SelectValue placeholder="Actions" />
                       </SelectTrigger>
                       <SelectContent>
@@ -872,10 +877,11 @@ export const PaymentTracking = () => {
                      <Button 
                        size="sm" 
                        variant="outline"
+                       className="text-primary hover:bg-primary/10 hover:text-primary border-primary/30 text-xs md:text-sm"
                        onClick={() => generateReceipt(payment)}
-                       className="text-primary hover:bg-primary/10 hover:text-primary border-primary/30"
                      >
-                       <Receipt className="h-4 w-4" />
+                       <Receipt className="mr-1 h-3 w-3 md:h-4 md:w-4" />
+                       <span className="hidden sm:inline">Reçu</span>
                      </Button>
                      
                      <AlertDialog>
