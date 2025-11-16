@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from 'react-router-dom';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { PropertyCard } from "@/components/PropertyCard";
 import { DashboardMetrics } from "@/components/DashboardMetrics";
 import { LeaseManagement } from "@/components/LeaseManagement";
@@ -16,7 +17,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useUserRole } from "@/hooks/useUserRole";
 import { useProperties } from "@/hooks/useProperties";
 import { useLanguage } from "@/hooks/useLanguage";
-import { Building2, BarChart3, FileText, CreditCard, Users, LogOut, Settings, UserPlus, FileEdit, BookOpen, FileCode } from "lucide-react";
+import { Building2, BarChart3, FileText, CreditCard, Users, LogOut, Settings, UserPlus, FileEdit, BookOpen, Menu } from "lucide-react";
 import { toast } from "sonner";
 import { RevenueChart } from "@/components/RevenueChart";
 import { RevenueExport } from "@/components/RevenueExport";
@@ -24,6 +25,7 @@ import { DocumentationHub } from "@/components/DocumentationHub";
 
 const Index = () => {
   const [activeTab, setActiveTab] = useState("dashboard");
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const { signOut, user } = useAuth();
   const { role, loading } = useUserRole();
   const { properties, loading: propertiesLoading } = useProperties();
@@ -72,6 +74,125 @@ const Index = () => {
         <header className="bg-gradient-primary shadow-elevated">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 sm:py-6">
             <div className="flex items-center justify-between gap-2 sm:gap-4">
+              {/* Menu Hamburger Mobile */}
+              <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
+                <SheetTrigger asChild>
+                  <Button 
+                    variant="ghost" 
+                    size="sm" 
+                    className="md:hidden text-primary-foreground hover:bg-primary-foreground/10 mr-2"
+                  >
+                    <Menu className="h-5 w-5" />
+                  </Button>
+                </SheetTrigger>
+                <SheetContent side="left" className="w-[280px] sm:w-[350px] overflow-y-auto">
+                  <SheetHeader>
+                    <SheetTitle className="text-left">Navigation</SheetTitle>
+                  </SheetHeader>
+                  <nav className="mt-6 space-y-2">
+                    <Button
+                      variant={activeTab === "dashboard" ? "default" : "ghost"}
+                      className="w-full justify-start"
+                      onClick={() => {
+                        setActiveTab("dashboard");
+                        setMobileMenuOpen(false);
+                      }}
+                    >
+                      <BarChart3 className="mr-3 h-5 w-5" />
+                      {t('dashboard.tabs.dashboard')}
+                    </Button>
+                    <Button
+                      variant={activeTab === "properties" ? "default" : "ghost"}
+                      className="w-full justify-start"
+                      onClick={() => {
+                        setActiveTab("properties");
+                        setMobileMenuOpen(false);
+                      }}
+                    >
+                      <Building2 className="mr-3 h-5 w-5" />
+                      {t('dashboard.tabs.properties')}
+                    </Button>
+                    <Button
+                      variant={activeTab === "tenants" ? "default" : "ghost"}
+                      className="w-full justify-start"
+                      onClick={() => {
+                        setActiveTab("tenants");
+                        setMobileMenuOpen(false);
+                      }}
+                    >
+                      <Users className="mr-3 h-5 w-5" />
+                      {t('dashboard.tabs.tenants')}
+                    </Button>
+                    <Button
+                      variant={activeTab === "assignments" ? "default" : "ghost"}
+                      className="w-full justify-start"
+                      onClick={() => {
+                        setActiveTab("assignments");
+                        setMobileMenuOpen(false);
+                      }}
+                    >
+                      <UserPlus className="mr-3 h-5 w-5" />
+                      {t('dashboard.tabs.assignments')}
+                    </Button>
+                    <Button
+                      variant={activeTab === "leases" ? "default" : "ghost"}
+                      className="w-full justify-start"
+                      onClick={() => {
+                        setActiveTab("leases");
+                        setMobileMenuOpen(false);
+                      }}
+                    >
+                      <FileText className="mr-3 h-5 w-5" />
+                      {t('dashboard.tabs.leases')}
+                    </Button>
+                    <Button
+                      variant={activeTab === "payments" ? "default" : "ghost"}
+                      className="w-full justify-start"
+                      onClick={() => {
+                        setActiveTab("payments");
+                        setMobileMenuOpen(false);
+                      }}
+                    >
+                      <CreditCard className="mr-3 h-5 w-5" />
+                      {t('dashboard.tabs.payments')}
+                    </Button>
+                    <Button
+                      variant={activeTab === "contracts" ? "default" : "ghost"}
+                      className="w-full justify-start"
+                      onClick={() => {
+                        setActiveTab("contracts");
+                        setMobileMenuOpen(false);
+                      }}
+                    >
+                      <FileEdit className="mr-3 h-5 w-5" />
+                      {t('dashboard.tabs.contracts')}
+                    </Button>
+                    <Button
+                      variant={activeTab === "users" ? "default" : "ghost"}
+                      className="w-full justify-start"
+                      onClick={() => {
+                        setActiveTab("users");
+                        setMobileMenuOpen(false);
+                      }}
+                    >
+                      <Settings className="mr-3 h-5 w-5" />
+                      {t('dashboard.tabs.users')}
+                    </Button>
+                    <Button
+                      variant={activeTab === "documentation" ? "default" : "ghost"}
+                      className="w-full justify-start"
+                      onClick={() => {
+                        setActiveTab("documentation");
+                        setMobileMenuOpen(false);
+                      }}
+                    >
+                      <BookOpen className="mr-3 h-5 w-5" />
+                      {t('dashboard.tabs.documentation')}
+                    </Button>
+                  </nav>
+                </SheetContent>
+              </Sheet>
+
               <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
                 <img 
                   src="/lovable-uploads/fac5cb0d-2b04-4cba-81e5-079a75bbf8a8.png" 
@@ -105,7 +226,8 @@ const Index = () => {
         {/* Main Content */}
         <main className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-8 py-4 sm:py-8">
           <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4 sm:space-y-6">
-            <div className="overflow-x-auto -mx-2 px-2 sm:mx-0 sm:px-0">
+            {/* Tabs Desktop - cachés sur mobile car remplacés par le menu hamburger */}
+            <div className="overflow-x-auto -mx-2 px-2 sm:mx-0 sm:px-0 hidden md:block">
               <TabsList className="inline-flex min-w-full sm:grid sm:grid-cols-5 lg:grid-cols-9 gap-1 bg-card shadow-card p-1">
                 <TabsTrigger value="dashboard" className="flex items-center gap-1 sm:gap-2 whitespace-nowrap">
                   <BarChart3 className="h-4 w-4" />
