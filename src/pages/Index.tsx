@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from 'react-router-dom';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { PropertyCard } from "@/components/PropertyCard";
 import { DashboardMetrics } from "@/components/DashboardMetrics";
@@ -17,7 +18,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useUserRole } from "@/hooks/useUserRole";
 import { useProperties } from "@/hooks/useProperties";
 import { useLanguage } from "@/hooks/useLanguage";
-import { Building2, BarChart3, FileText, CreditCard, Users, LogOut, Settings, UserPlus, FileEdit, BookOpen, Menu } from "lucide-react";
+import { Building2, BarChart3, FileText, CreditCard, Users, LogOut, Settings, UserPlus, FileEdit, BookOpen, Menu, Search } from "lucide-react";
 import { toast } from "sonner";
 import { RevenueChart } from "@/components/RevenueChart";
 import { RevenueExport } from "@/components/RevenueExport";
@@ -26,6 +27,7 @@ import { DocumentationHub } from "@/components/DocumentationHub";
 const Index = () => {
   const [activeTab, setActiveTab] = useState("dashboard");
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
   const { signOut, user } = useAuth();
   const { role, loading } = useUserRole();
   const { properties, loading: propertiesLoading } = useProperties();
@@ -59,6 +61,22 @@ const Index = () => {
     setActiveTab("payments");
   };
 
+  const menuItems = [
+    { value: "dashboard", label: t('dashboard.tabs.dashboard'), icon: BarChart3 },
+    { value: "properties", label: t('dashboard.tabs.properties'), icon: Building2 },
+    { value: "tenants", label: t('dashboard.tabs.tenants'), icon: Users },
+    { value: "assignments", label: t('dashboard.tabs.assignments'), icon: UserPlus },
+    { value: "leases", label: t('dashboard.tabs.leases'), icon: FileText },
+    { value: "payments", label: t('dashboard.tabs.payments'), icon: CreditCard },
+    { value: "contracts", label: t('dashboard.tabs.contracts'), icon: FileEdit },
+    { value: "users", label: t('dashboard.tabs.users'), icon: Settings },
+    { value: "documentation", label: t('dashboard.tabs.documentation'), icon: BookOpen },
+  ];
+
+  const filteredMenuItems = menuItems.filter(item =>
+    item.label.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
   if (loading || propertiesLoading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-background to-muted/30 flex items-center justify-center">
@@ -89,106 +107,40 @@ const Index = () => {
                   <SheetHeader>
                     <SheetTitle className="text-left">Navigation</SheetTitle>
                   </SheetHeader>
-                  <nav className="mt-6 space-y-2">
-                    <Button
-                      variant={activeTab === "dashboard" ? "default" : "ghost"}
-                      className="w-full justify-start"
-                      onClick={() => {
-                        setActiveTab("dashboard");
-                        setMobileMenuOpen(false);
-                      }}
-                    >
-                      <BarChart3 className="mr-3 h-5 w-5" />
-                      {t('dashboard.tabs.dashboard')}
-                    </Button>
-                    <Button
-                      variant={activeTab === "properties" ? "default" : "ghost"}
-                      className="w-full justify-start"
-                      onClick={() => {
-                        setActiveTab("properties");
-                        setMobileMenuOpen(false);
-                      }}
-                    >
-                      <Building2 className="mr-3 h-5 w-5" />
-                      {t('dashboard.tabs.properties')}
-                    </Button>
-                    <Button
-                      variant={activeTab === "tenants" ? "default" : "ghost"}
-                      className="w-full justify-start"
-                      onClick={() => {
-                        setActiveTab("tenants");
-                        setMobileMenuOpen(false);
-                      }}
-                    >
-                      <Users className="mr-3 h-5 w-5" />
-                      {t('dashboard.tabs.tenants')}
-                    </Button>
-                    <Button
-                      variant={activeTab === "assignments" ? "default" : "ghost"}
-                      className="w-full justify-start"
-                      onClick={() => {
-                        setActiveTab("assignments");
-                        setMobileMenuOpen(false);
-                      }}
-                    >
-                      <UserPlus className="mr-3 h-5 w-5" />
-                      {t('dashboard.tabs.assignments')}
-                    </Button>
-                    <Button
-                      variant={activeTab === "leases" ? "default" : "ghost"}
-                      className="w-full justify-start"
-                      onClick={() => {
-                        setActiveTab("leases");
-                        setMobileMenuOpen(false);
-                      }}
-                    >
-                      <FileText className="mr-3 h-5 w-5" />
-                      {t('dashboard.tabs.leases')}
-                    </Button>
-                    <Button
-                      variant={activeTab === "payments" ? "default" : "ghost"}
-                      className="w-full justify-start"
-                      onClick={() => {
-                        setActiveTab("payments");
-                        setMobileMenuOpen(false);
-                      }}
-                    >
-                      <CreditCard className="mr-3 h-5 w-5" />
-                      {t('dashboard.tabs.payments')}
-                    </Button>
-                    <Button
-                      variant={activeTab === "contracts" ? "default" : "ghost"}
-                      className="w-full justify-start"
-                      onClick={() => {
-                        setActiveTab("contracts");
-                        setMobileMenuOpen(false);
-                      }}
-                    >
-                      <FileEdit className="mr-3 h-5 w-5" />
-                      {t('dashboard.tabs.contracts')}
-                    </Button>
-                    <Button
-                      variant={activeTab === "users" ? "default" : "ghost"}
-                      className="w-full justify-start"
-                      onClick={() => {
-                        setActiveTab("users");
-                        setMobileMenuOpen(false);
-                      }}
-                    >
-                      <Settings className="mr-3 h-5 w-5" />
-                      {t('dashboard.tabs.users')}
-                    </Button>
-                    <Button
-                      variant={activeTab === "documentation" ? "default" : "ghost"}
-                      className="w-full justify-start"
-                      onClick={() => {
-                        setActiveTab("documentation");
-                        setMobileMenuOpen(false);
-                      }}
-                    >
-                      <BookOpen className="mr-3 h-5 w-5" />
-                      {t('dashboard.tabs.documentation')}
-                    </Button>
+                  
+                  <div className="mt-4 mb-4 relative">
+                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                    <Input
+                      type="text"
+                      placeholder="Rechercher une section..."
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      className="pl-9"
+                    />
+                  </div>
+
+                  <nav className="space-y-2">
+                    {filteredMenuItems.length > 0 ? (
+                      filteredMenuItems.map((item) => (
+                        <Button
+                          key={item.value}
+                          variant={activeTab === item.value ? "default" : "ghost"}
+                          className="w-full justify-start"
+                          onClick={() => {
+                            setActiveTab(item.value);
+                            setMobileMenuOpen(false);
+                            setSearchQuery("");
+                          }}
+                        >
+                          <item.icon className="mr-3 h-5 w-5" />
+                          {item.label}
+                        </Button>
+                      ))
+                    ) : (
+                      <p className="text-center text-sm text-muted-foreground py-4">
+                        Aucune section trouvée
+                      </p>
+                    )}
                   </nav>
                 </SheetContent>
               </Sheet>
