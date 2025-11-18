@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { PropertyCard } from "@/components/PropertyCard";
 import { DashboardMetrics } from "@/components/DashboardMetrics";
@@ -18,6 +19,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useUserRole } from "@/hooks/useUserRole";
 import { useProperties } from "@/hooks/useProperties";
 import { useLanguage } from "@/hooks/useLanguage";
+import { useNotifications } from "@/hooks/useNotifications";
 import { Building2, BarChart3, FileText, CreditCard, Users, LogOut, Settings, UserPlus, FileEdit, BookOpen, Menu, Search } from "lucide-react";
 import { toast } from "sonner";
 import { RevenueChart } from "@/components/RevenueChart";
@@ -32,6 +34,7 @@ const Index = () => {
   const { role, loading } = useUserRole();
   const { properties, loading: propertiesLoading } = useProperties();
   const { t } = useLanguage();
+  const { counts: notificationCounts } = useNotifications();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -62,15 +65,15 @@ const Index = () => {
   };
 
   const menuItems = [
-    { value: "dashboard", label: t('dashboard.tabs.dashboard'), icon: BarChart3 },
-    { value: "properties", label: t('dashboard.tabs.properties'), icon: Building2 },
-    { value: "tenants", label: t('dashboard.tabs.tenants'), icon: Users },
-    { value: "assignments", label: t('dashboard.tabs.assignments'), icon: UserPlus },
-    { value: "leases", label: t('dashboard.tabs.leases'), icon: FileText },
-    { value: "payments", label: t('dashboard.tabs.payments'), icon: CreditCard },
-    { value: "contracts", label: t('dashboard.tabs.contracts'), icon: FileEdit },
-    { value: "users", label: t('dashboard.tabs.users'), icon: Settings },
-    { value: "documentation", label: t('dashboard.tabs.documentation'), icon: BookOpen },
+    { value: "dashboard", label: t('dashboard.tabs.dashboard'), icon: BarChart3, badge: 0 },
+    { value: "properties", label: t('dashboard.tabs.properties'), icon: Building2, badge: 0 },
+    { value: "tenants", label: t('dashboard.tabs.tenants'), icon: Users, badge: notificationCounts.new_tenants },
+    { value: "assignments", label: t('dashboard.tabs.assignments'), icon: UserPlus, badge: 0 },
+    { value: "leases", label: t('dashboard.tabs.leases'), icon: FileText, badge: notificationCounts.expiring_leases },
+    { value: "payments", label: t('dashboard.tabs.payments'), icon: CreditCard, badge: notificationCounts.overdue_payments },
+    { value: "contracts", label: t('dashboard.tabs.contracts'), icon: FileEdit, badge: 0 },
+    { value: "users", label: t('dashboard.tabs.users'), icon: Settings, badge: 0 },
+    { value: "documentation", label: t('dashboard.tabs.documentation'), icon: BookOpen, badge: 0 },
   ];
 
   const filteredMenuItems = menuItems.filter(item =>
@@ -125,7 +128,7 @@ const Index = () => {
                         <Button
                           key={item.value}
                           variant={activeTab === item.value ? "default" : "ghost"}
-                          className="w-full justify-start"
+                          className="w-full justify-start relative"
                           onClick={() => {
                             setActiveTab(item.value);
                             setMobileMenuOpen(false);
@@ -134,6 +137,14 @@ const Index = () => {
                         >
                           <item.icon className="mr-3 h-5 w-5" />
                           {item.label}
+                          {item.badge > 0 && (
+                            <Badge 
+                              variant="destructive" 
+                              className="ml-auto h-5 min-w-5 px-1 flex items-center justify-center text-xs"
+                            >
+                              {item.badge}
+                            </Badge>
+                          )}
                         </Button>
                       ))
                     ) : (
@@ -181,42 +192,24 @@ const Index = () => {
             {/* Tabs Desktop - cachés sur mobile car remplacés par le menu hamburger */}
             <div className="overflow-x-auto -mx-2 px-2 sm:mx-0 sm:px-0 hidden md:block">
               <TabsList className="inline-flex min-w-full sm:grid sm:grid-cols-5 lg:grid-cols-9 gap-1 bg-card shadow-card p-1">
-                <TabsTrigger value="dashboard" className="flex items-center gap-1 sm:gap-2 whitespace-nowrap">
-                  <BarChart3 className="h-4 w-4" />
-                  <span className="hidden sm:inline">{t('dashboard.tabs.dashboard')}</span>
-                </TabsTrigger>
-                <TabsTrigger value="properties" className="flex items-center gap-1 sm:gap-2 whitespace-nowrap">
-                  <Building2 className="h-4 w-4" />
-                  <span className="hidden sm:inline">{t('dashboard.tabs.properties')}</span>
-                </TabsTrigger>
-                <TabsTrigger value="tenants" className="flex items-center gap-1 sm:gap-2 whitespace-nowrap">
-                  <Users className="h-4 w-4" />
-                  <span className="hidden sm:inline">{t('dashboard.tabs.tenants')}</span>
-                </TabsTrigger>
-                <TabsTrigger value="assignments" className="flex items-center gap-1 sm:gap-2 whitespace-nowrap">
-                  <UserPlus className="h-4 w-4" />
-                  <span className="hidden sm:inline">{t('dashboard.tabs.assignments')}</span>
-                </TabsTrigger>
-                <TabsTrigger value="leases" className="flex items-center gap-1 sm:gap-2 whitespace-nowrap">
-                  <FileText className="h-4 w-4" />
-                  <span className="hidden sm:inline">{t('dashboard.tabs.leases')}</span>
-                </TabsTrigger>
-                <TabsTrigger value="payments" className="flex items-center gap-1 sm:gap-2 whitespace-nowrap">
-                  <CreditCard className="h-4 w-4" />
-                  <span className="hidden sm:inline">{t('dashboard.tabs.payments')}</span>
-                </TabsTrigger>
-                <TabsTrigger value="contracts" className="flex items-center gap-1 sm:gap-2 whitespace-nowrap">
-                  <FileEdit className="h-4 w-4" />
-                  <span className="hidden sm:inline">{t('dashboard.tabs.contracts')}</span>
-                </TabsTrigger>
-                <TabsTrigger value="users" className="flex items-center gap-1 sm:gap-2 whitespace-nowrap">
-                  <Settings className="h-4 w-4" />
-                  <span className="hidden sm:inline">{t('dashboard.tabs.users')}</span>
-                </TabsTrigger>
-                <TabsTrigger value="documentation" className="flex items-center gap-1 sm:gap-2 whitespace-nowrap">
-                  <BookOpen className="h-4 w-4" />
-                  <span className="hidden sm:inline">{t('dashboard.tabs.documentation')}</span>
-                </TabsTrigger>
+                {menuItems.map((item) => (
+                  <TabsTrigger 
+                    key={item.value}
+                    value={item.value} 
+                    className="flex items-center gap-1 sm:gap-2 whitespace-nowrap relative"
+                  >
+                    <item.icon className="h-4 w-4" />
+                    <span className="hidden sm:inline">{item.label}</span>
+                    {item.badge > 0 && (
+                      <Badge 
+                        variant="destructive" 
+                        className="ml-1 h-4 min-w-4 px-1 flex items-center justify-center text-[10px] absolute -top-1 -right-1 sm:static"
+                      >
+                        {item.badge}
+                      </Badge>
+                    )}
+                  </TabsTrigger>
+                ))}
               </TabsList>
             </div>
 
